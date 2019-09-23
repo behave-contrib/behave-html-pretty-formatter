@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="behave-html-formatter",
-    version="0.0.5",
+    version="0.0.6",
     author="Petr Schindler",
     author_email="pschindl@redhat.com",
     description="HTML formatter for Behave",
