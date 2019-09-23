@@ -1,0 +1,12 @@
+__*/
+__*.txt
+*.egg-info/
+build/
+dist/
+.vscode/
+.settings/
+.idea/
+
+*.pyc
+*.pyo
+*.bak
