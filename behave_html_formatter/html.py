@@ -460,6 +460,23 @@ class HTMLFormatter(Formatter):
             embed.text = six.u(cleaned_data)
             embed.tail = u'    '
 
+        if "link" == mime_type:
+            if not caption:
+                caption = u'Link'
+            link.text = six.u(caption)
+
+            embed_div = ET.SubElement(span, 'div',
+                                    {'id': "embed_%s" % self.embed_id,
+                                     'style': 'display: none'})
+            for single_link in data:
+                breakline = ET.SubElement(embed_div, 'br')
+                embed_string = ET.SubElement(embed_div, 'a')
+                embed_string.set("href", single_link[0])
+                embed_string.text = single_link[1]
+            breakline = ET.SubElement(embed_div, 'br')
+            breakline = ET.SubElement(embed_div, 'br')
+
+
     def embedding(self, mime_type, data, caption=None):
         self._doEmbed(self.actual['act_step_embed_span'], mime_type, data, caption)
 
