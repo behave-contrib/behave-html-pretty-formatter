@@ -31,6 +31,7 @@ from behave.formatter.base import Formatter
 from collections import Counter
 # XXX-JE-OLD: import lxml.etree as ET
 from sys import version
+from os.path import abspath
 import xml.etree.ElementTree as ET
 import six
 # XXX-JE-NOT-USED: import os.path
@@ -362,7 +363,11 @@ class HTMLFormatter(Formatter):
             step_text.text = self.actual['name']
 
         if match.location:
-            location = "%s:%s" % (match.location.filename, match.location.line)
+            if match.location.filename.startswith('../'):
+                fname = abspath(match.location.filename)
+            else:
+                fname = match.location.filename)
+            location = "%s:%s" % (fname, match.location.line)
         else:
             location = "<unknown>"
         ET.SubElement(step_file, 'span').text = location
