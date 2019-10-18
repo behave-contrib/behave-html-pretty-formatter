@@ -366,7 +366,7 @@ class HTMLFormatter(Formatter):
             if match.location.filename.startswith('../'):
                 fname = abspath(match.location.filename)
             else:
-                fname = match.location.filename)
+                fname = match.location.filename
             location = "%s:%s" % (fname, match.location.line)
         else:
             location = "<unknown>"
