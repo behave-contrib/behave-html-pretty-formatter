@@ -168,7 +168,7 @@ p{margin:0 0 0 2px}.behave #summary #totals,td #summary #totals,th
 #summary #totals{font-size:1.2em} h3.failed,#behave-header.failed{background:
 #c40d0d !important} h3.undefined,#behave-header.undefined{background:#faf834
  !important; color:#000 !important} #behave-header.failed a{color:#fff} pre {
- white-space: pre-wrap}
+ white-space: pre-wrap} .step_duration{padding-left:1em}
 """
 
 
@@ -343,12 +343,16 @@ class HTMLFormatter(Formatter):
 
         step_text = ET.SubElement(step_name, 'span', {'class': 'step val'})
 
+        step_duration = ET.SubElement(step_name, 'small', {'class': 'step_duration'})
+
         step_file = ET.SubElement(step_el, 'div', {'class': 'step_file'})
 
         self.actual['act_step_embed_span'] = ET.SubElement(step_el, 'span')
         self.actual['act_step_embed_span'].set('class', 'embed')
 
         self.actual['step_el'] = step_el
+
+        self.actual['step_duration_el'] = step_duration
 
         if match.arguments:
             text_start = 0
@@ -375,6 +379,8 @@ class HTMLFormatter(Formatter):
     def result(self, result):
 
         self.actual['step_el'].set('class', 'step %s' % result.status.name)
+
+        self.actual['step_duration_el'].text = '(%0.3fs)' % result.duration
 
         if result.text:
             message = ET.SubElement(self.actual['step_el'], 'div', {'class': 'message'})
