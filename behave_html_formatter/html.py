@@ -504,7 +504,8 @@ class HTMLFormatter(Formatter):
 
 
     def embedding(self, mime_type, data, caption=None):
-        self._doEmbed(self.actual['act_step_embed_span'], mime_type, data, caption)
+        if self.actual is not None:
+            self._doEmbed(self.actual['act_step_embed_span'], mime_type, data, caption)
 
     def close(self):
         if not hasattr(self, "all_features"):
