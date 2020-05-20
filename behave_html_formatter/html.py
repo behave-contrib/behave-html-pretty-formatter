@@ -251,6 +251,7 @@ class HTMLFormatter(Formatter):
         self.embed_in_this_step = None
         self.embed_data = None
         self.embed_mime_type = None
+        self.last_scenario = None
         self.scenario_id = 0
 
     def feature(self, feature):
@@ -278,7 +279,20 @@ class HTMLFormatter(Formatter):
 
         self.steps = ET.SubElement(self.current_background, 'ol')
 
+    def _check_last_scenario_status(self):
+        if self.last_scenario is not None:
+            if self.last_scenario.status == 'failed':
+                self.scenario_name.set('class', 'failed')
+                self.header.set('class', 'failed')
+
+            if self.last_scenario.status == 'undefined':
+                self.scenario_name.set('class', 'undefined')
+                self.header.set('class', 'undefined')
+
     def scenario(self, scenario):
+        # check if self.last_scenario is failed
+        self._check_last_scenario_status()
+
         if scenario.feature not in self.all_features:
             self.all_features.append(scenario.feature)
         self.scenario_el = ET.SubElement(self.suite, 'div', {'class': 'scenario'})
@@ -306,6 +320,7 @@ class HTMLFormatter(Formatter):
                 "Collapsible_toggle('scenario_%s')" % self.scenario_id)
         self.scenario_id += 1
 
+        self.last_scenario = scenario
         self.first_step = None
         self.current = None
         self.actual = None
@@ -489,7 +504,8 @@ class HTMLFormatter(Formatter):
 
 
     def embedding(self, mime_type, data, caption=None):
-        self._doEmbed(self.actual['act_step_embed_span'], mime_type, data, caption)
+        if self.actual is not None:
+            self._doEmbed(self.actual['act_step_embed_span'], mime_type, data, caption)
 
     def close(self):
         if not hasattr(self, "all_features"):
@@ -497,6 +513,9 @@ class HTMLFormatter(Formatter):
         self.duration.text =\
             u"Finished in %0.1f seconds" %\
             sum([x.duration for x in self.all_features])
+
+        # check if self.last_scenario is failed
+        self._check_last_scenario_status()
 
         # Filling in summary details
         result = []
