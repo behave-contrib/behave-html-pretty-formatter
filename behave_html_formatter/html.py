@@ -21,6 +21,7 @@ IMPROVEMENTS:
   * steps: text, table parts are no so easily detectable
   * CSS: stylesheet should contain logical "style" classes.
     => AVOID using combination of style attributes where style is better.
+  * Set custom title
 
 TODO:
   * Embedding only works with one part ?!?
@@ -219,7 +220,8 @@ class HTMLFormatter(Formatter):
         #Summary
         self.header = ET.SubElement(self.suite, 'div', id='behave-header')
         label = ET.SubElement(self.header, 'div', id='label')
-        ET.SubElement(label, 'h1').text = self.title
+        self.title_el = ET.SubElement(label, 'h1')
+        self.title_el.text = self.title
 
         summary = ET.SubElement(self.header, 'div', id='summary')
 
@@ -506,6 +508,13 @@ class HTMLFormatter(Formatter):
     def embedding(self, mime_type, data, caption=None):
         if self.actual is not None:
             self._doEmbed(self.actual['act_step_embed_span'], mime_type, data, caption)
+
+
+    def set_title(self, title, append=False, tag="span", **kwargs):
+        if not append:
+            self.title_el.clear()
+        ET.SubElement(self.title_el, tag, kwargs).text = title
+
 
     def close(self):
         if not hasattr(self, "all_features"):
