@@ -31,6 +31,15 @@ setup(
         "Topic :: Software Development :: Testing",
         "Topic :: Software Development :: Testing :: BDD",
     ],
+    data_files=[
+        (
+            "",
+            [
+                "behave_html_formatter/behave.min.css",
+                "behave_html_formatter/behave.min.js",
+            ],
+        ),
+    ],
     packages=find_packages(),
     python_requires=">=3.6",
     install_requires=["behave"],

@@ -41,3 +41,10 @@ you can run using our Tox setup, e.g.
 ```console
 tox -e black
 ```
+
+If you need to change CSS or JavaScript code: First edit the regular files,
+then generate the minified versions like so:
+
+```console
+tox -e minify
+```
