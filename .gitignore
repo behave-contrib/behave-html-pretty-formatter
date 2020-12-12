@@ -3,9 +3,10 @@ __*.txt
 *.egg-info/
 build/
 dist/
-.vscode/
 .settings/
+.tox/
 .idea/
+.vscode/
 
 *.pyc
 *.pyo

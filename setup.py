@@ -13,11 +13,11 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/schidlo/behave-html-formatter",
     packages=setuptools.find_packages(),
-    install_requires=['behave'],
+    install_requires=["behave"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
 )
