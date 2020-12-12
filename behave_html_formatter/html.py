@@ -68,11 +68,13 @@ def ET_tostring(elem, pretty_print=False):
 
 
 class JavascriptLibrary:
-    collapsible = open(Path(__file__).parent / "behave.min.js").read()
+    collapsible = "\n" + open(Path(__file__).parent / "behave.min.js").read() + "\n"
 
 
 class BasicTheme:
-    stylesheet_text = open(Path(__file__).parent / "behave.min.css").read()
+    stylesheet_text = (
+        "\n" + open(Path(__file__).parent / "behave.min.css").read() + "\n"
+    )
 
 
 class Page:
