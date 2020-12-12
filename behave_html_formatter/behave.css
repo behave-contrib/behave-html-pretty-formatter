@@ -1,6 +1,8 @@
-// SOURCE: https://raw.githubusercontent.com/vrutkovs/behave/html_with_coveralls/behave/formatter/report.css
+/*
+SOURCE: https://raw.githubusercontent.com/vrutkovs/behave/html_with_coveralls/behave/formatter/report.css
+*/
 
-// -- RESULT-STATUS RELATED STYLES:
+/* -- RESULT-STATUS RELATED STYLES: */
 .passed {
 }
 
@@ -16,7 +18,7 @@
 .undefined {
 }
 
-// -- CONTENT-RELATED STYLES:
+/* -- CONTENT-RELATED STYLES: */
 .summary {
 }
 
@@ -26,7 +28,7 @@
 .footer {
 }
 
-// -- ORIGINAL-STARTS-HERE
+/* -- ORIGINAL-STARTS-HERE */
 body {
   font-size: 0px;
   color: white;
@@ -132,7 +134,15 @@ body {
 .behave table td, td table td, th table td {
   padding: 3px 3px 3px 5px;
 }
-.behave table td.failed, .behave table td.passed, .behave table td.skipped, .behave table td.pending, .behave table td.undefined, td table td.failed, td table td.passed, td table td.skipped, td table td.pending
+.behave table td.failed,
+.behave table td.passed,
+.behave table td.skipped,
+.behave table td.pending,
+.behave table td.undefined,
+td table td.failed,
+td table td.passed,
+td table td.skipped,
+td table td.pending {
   padding-left: 18px;
   padding-right: 10px;
 }
