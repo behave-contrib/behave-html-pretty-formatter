@@ -210,7 +210,10 @@ class HTMLFormatter(Formatter):
         ET.SubElement(
             head,
             "meta",
-            {"http-equiv": "Content-Type", "content": "text/html;charset=utf-8"},
+            {
+                "http-equiv": "Content-Type",
+                "content": "text/html;charset=utf-8",
+            },
         )
         style = ET.SubElement(head, "style", type=u"text/css")
         style.append(ET.Comment(Page.theme.stylesheet_text))
