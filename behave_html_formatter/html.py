@@ -28,16 +28,15 @@ TODO:
   * Even empty embed elements are contained ?!?
 """
 
-from behave.formatter.base import Formatter
-from collections import Counter
-
-# XXX-JE-OLD: import lxml.etree as ET
-from sys import version
-from os.path import abspath
 import xml.etree.ElementTree as ET
+
+from collections import Counter
+from os.path import abspath
+from sys import version
+
 import six
 
-# XXX-JE-NOT-USED: import os.path
+from behave.formatter.base import Formatter
 
 
 def _valid_XML_char_ordinal(i):
@@ -47,14 +46,6 @@ def _valid_XML_char_ordinal(i):
         or 0xE000 <= i <= 0xFFFD
         or 0x10000 <= i <= 0x10FFFF
     )
-
-
-# XXX-JE-FIRST-IDEA:
-# def html_prettify(elem):
-#     """Return a pretty-printed XML string for the Element."""
-#     rough_string = ET.tostring(elem, "utf-8") # XXX, method="html")
-#     reparsed = minidom.parseString(rough_string)
-#     return reparsed.toprettyxml(indent="  ")
 
 
 def ET_tostring(elem, pretty_print=False):
@@ -75,7 +66,7 @@ def ET_tostring(elem, pretty_print=False):
     return text
 
 
-class JavascriptLibrary(object):
+class JavascriptLibrary:
     collapsible = """
 function Collapsible_toggle(id)
 {
@@ -113,7 +104,7 @@ function Collapsible_expandAllFailed()
 """
 
 
-class BasicTheme(object):
+class BasicTheme:
     stylesheet_text = """
 body{font-size:0;color:#fff;margin:0;
 padding:0}.behave,td,th{font:400 11px "Lucida Grande",Helvetica,sans-serif;
@@ -179,7 +170,7 @@ p{margin:0 0 0 2px}.behave #summary #totals,td #summary #totals,th
 """
 
 
-class Page(object):
+class Page:
     """
     Provides a HTML page construct (as technological layer).
     XXX
@@ -201,7 +192,7 @@ class HTMLFormatter(Formatter):
     title = u"Behave Test Report"
 
     def __init__(self, stream, config):
-        super(HTMLFormatter, self).__init__(stream, config)
+        super().__init__(stream, config)
 
         # -- XXX-JE-PREPARED-BUT-DISABLED:
         # XXX Seldom changed value.
@@ -528,7 +519,7 @@ class HTMLFormatter(Formatter):
             embed.text = six.u(cleaned_data)
             embed.tail = u"    "
 
-        if "link" == mime_type:
+        if mime_type == "link":
             if not caption:
                 caption = u"Link"
             link.text = six.u(caption)
