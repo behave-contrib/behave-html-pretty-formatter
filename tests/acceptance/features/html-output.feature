@@ -1,10 +1,10 @@
-Feature: HTML output
+Feature: Make behave generate HTML as output
 
   As a package maintainer
   I want to execute the HTML formatter and verify its output
   So that I can ensure integration and basic functionality.
 
-  Scenario:
+  Scenario: Run behave with HTML formatter
     Given a file named "behave.ini" with:
       """
       [behave.formatters]

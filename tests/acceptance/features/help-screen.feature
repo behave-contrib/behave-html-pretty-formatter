@@ -1,10 +1,10 @@
-Feature: Help screen
+Feature: List HTML formatter among the available formatters
 
   As a tester
   I want to know whether the HTML formatter is configured
-  So that I can verify I have integrated the formatter correctly.
+  So that I can verify I have integrated it correctly.
 
-  Scenario:
+  Scenario: List available formatters
     Given a file named "behave.ini" with:
       """
       [behave.formatters]
