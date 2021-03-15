@@ -127,9 +127,9 @@ color:#999}.behave .step_file a,td .step_file a,th .step_file a{color:#999}.beha
 .scenario_file,td .scenario_file,th .scenario_file{float:right;color:#999}.behave
 .tag,td .tag,th .tag{font-weight:700;color:#246ac1}.behave .backtrace,td
 .backtrace,th .backtrace{margin-top:0;margin-bottom:0;margin-left:1em;color:#000}
-.behave a,td a,th a{text-decoration:none;color:#be5c00}.behave a:hover,
-td a:hover,th a:hover{text-decoration:underline}.behave a:visited,td a:visited,
-th a:visited{font-weight:400}.behave a div.examples,td a div.examples,
+.behave a,td a,th a{text-decoration:underline;color:#be5c00;margin-right:0.5em}
+.behave a:hover,td a:hover,th a:hover{text-decoration:none}.behave a:visited,td
+a:visited,th a:visited{font-weight:400}.behave a div.examples,td a div.examples,
 th a div.examples{margin:5px 0 5px 15px;color:#000}.behave .outline table,
 td .outline table,th .outline table{margin:0 0 5px 10px}.behave table,
 td table,th table{border-collapse:collapse}.behave table td,td table td,
