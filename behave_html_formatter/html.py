@@ -277,6 +277,8 @@ class HTMLFormatter(Formatter):
                 self.current_feature, "pre", {"class": "message"}
             )
             description_element.text = "\n".join(feature.description)
+        self.actual = {}
+        self.actual["act_step_embed_span"] = ET.SubElement(self.current_feature, "span")
 
     def background(self, background):
         self.current_background = ET.SubElement(
@@ -290,12 +292,20 @@ class HTMLFormatter(Formatter):
         )
 
         self.steps = ET.SubElement(self.current_background, "ol")
+        self.actual = {}
+        self.actual["act_step_embed_span"] = ET.SubElement(
+            self.current_background, "span"
+        )
 
     def _check_last_scenario_status(self):
         if self.last_scenario is not None:
             if self.last_scenario.status == "failed":
                 self.scenario_name.set("class", "failed")
                 self.header.set("class", "failed")
+                if self.last_scenario.error_message:
+                    self.embedding(
+                        "text/plain", self.last_scenario.error_message, "Error Message"
+                    )
 
             if self.last_scenario.status == "undefined":
                 self.scenario_name.set("class", "undefined")
@@ -345,7 +355,10 @@ class HTMLFormatter(Formatter):
         self.last_scenario = scenario
         self.first_step = None
         self.current = None
-        self.actual = None
+        self.actual = {}
+        self.actual["act_step_embed_span"] = ET.SubElement(self.scenario_el, "span")
+        if scenario.error_message:
+            self.embedding("text/plain", scenario.error_message, "Error Message")
 
     def scenario_outline(self, outline):
         self.scenario(self, outline)
@@ -367,7 +380,7 @@ class HTMLFormatter(Formatter):
         self.current = cur
 
     def match(self, match):
-        if self.actual is None:
+        if self.actual is None or self.actual.get("next_step", None) is None:
             self.actual = self.first_step
         else:
             self.actual = self.actual["next_step"]
@@ -436,21 +449,7 @@ class HTMLFormatter(Formatter):
                     ET.SubElement(tr, "td").text = cell
 
         if result.error_message:
-            self.embed_id += 1
-            link = ET.SubElement(self.actual["step_el"], "a", {"class": "message"})
-            link.set("onclick", "Collapsible_toggle('embed_%s')" % self.embed_id)
-            link.text = u"Error message"
-
-            embed = ET.SubElement(
-                self.actual["step_el"],
-                "pre",
-                {"id": "embed_%s" % self.embed_id, "style": "display: none"},
-            )
-            cleaned_error_message = "".join(
-                c for c in result.error_message if _valid_XML_char_ordinal(ord(c))
-            )
-            embed.text = cleaned_error_message
-            embed.tail = u"    "
+            self.embedding("text/plain", result.error_message, "Error Message")
 
         if result.status == "failed":
             self.scenario_name.set("class", "failed")
@@ -538,8 +537,7 @@ class HTMLFormatter(Formatter):
             breakline = ET.SubElement(embed_div, "br")
 
     def embedding(self, mime_type, data, caption=None):
-        if self.actual is not None:
-            self._doEmbed(self.actual["act_step_embed_span"], mime_type, data, caption)
+        self._doEmbed(self.actual["act_step_embed_span"], mime_type, data, caption)
 
     def set_title(self, title, append=False, tag="span", **kwargs):
         if not append:

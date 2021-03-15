@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="behave-html-formatter",
-    version="0.9.6",
+    version="0.9.7",
     author="Petr Schindler",
     author_email="pschindl@redhat.com",
     description="HTML formatter for Behave",
