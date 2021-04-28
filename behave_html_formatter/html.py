@@ -477,7 +477,7 @@ class HTMLFormatter(Formatter):
                 {
                     "id": "embed_%s" % self.embed_id,
                     "style": "display: none",
-                    "width": "320",
+                    "width": "1024",
                     "controls": "",
                 },
             )
