@@ -211,8 +211,8 @@ class HTMLFormatter(Formatter):
             head,
             "meta",
             {
-                "http-equiv": "content-type",
                 "content": "text/html;charset=utf-8",
+                "http-equiv": "content-type",
             },
         )
         style = ET.SubElement(head, "style", type=u"text/css")

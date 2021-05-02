@@ -3,6 +3,8 @@
 Provide a behave shell to simplify creation of feature files
 and running features, etc.
 
+.. sourcecode:: python
+
     context.command_result = behave_shell.behave(cmdline, cwd=context.workdir)
     behave_shell.create_scenario(scenario_text, cwd=context.workdir)
     behave_shell.create_step_definition(context.text, cwd=context.workdir)
@@ -14,8 +16,6 @@ import os.path
 import shlex
 import subprocess
 import sys
-
-from .__setup import TOP
 
 
 class CommandResult(object):
