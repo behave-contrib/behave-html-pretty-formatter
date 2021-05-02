@@ -61,9 +61,6 @@ class Command(object):
     collect their output and subprocess returncode.
     """
     DEBUG = False
-    COMMAND_MAP = {
-        "behave": os.path.normpath("{0}/bin/behave".format(TOP))
-    }
     PREPROCESSOR_MAP = {}
     POSTPROCESSOR_MAP = {}
     USE_SHELL = sys.platform.startswith("win")
@@ -100,10 +97,6 @@ class Command(object):
         cmdargs = shlex.split(command)
 
         command0 = cmdargs[0]
-        real_command = cls.COMMAND_MAP.get(command0, None)
-        if real_command:
-            cmdargs0 = real_command.split()
-            cmdargs = cmdargs0 + cmdargs[1:]
         preprocessors = cls.PREPROCESSOR_MAP.get(command0)
         if preprocessors:
             cmdargs = cls.preprocess_command(preprocessors, cmdargs, command, cwd)

@@ -10,7 +10,7 @@ Feature: Make behave generate HTML as output
       [behave.formatters]
       html = behave_html_formatter:HTMLFormatter
       """
-    When I run "behave --format html"
+    When I run "behave --format html --dry-run"
     Then it should pass
     And the command output should contain:
       """
