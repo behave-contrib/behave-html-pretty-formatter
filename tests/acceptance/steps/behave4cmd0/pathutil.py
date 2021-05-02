@@ -111,4 +111,4 @@ def ensure_directory_exists(dirname, context=None):
         ensure_makedirs(real_dirname, mas_iterations)
 
     assert os.path.exists(real_dirname), "ENSURE dir exists: %s" % dirname
-    assert os.path.isdir(real_dirname),  "ENSURE isa dir: %s" % dirname
+    assert os.path.isdir(real_dirname), "ENSURE is directory: %s" % dirname

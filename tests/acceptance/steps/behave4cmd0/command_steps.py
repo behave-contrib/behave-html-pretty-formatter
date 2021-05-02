@@ -11,13 +11,12 @@ import difflib
 import os
 import shutil
 
-from hamcrest import assert_that, equal_to, is_not
+from hamcrest import assert_that, equal_to, is_not  # UNUSED: contains_string
 from behave import given, when, then, step, matchers
-from behave4cmd0 import command_shell, command_util, pathutil, textutil
-from behave4cmd0.pathutil import posixpath_normpath
-from behave4cmd0.command_shell_proc import \
-    TextProcessor, BehaveWinCommandOutputProcessor
-# NOT-USED: from hamcrest import contains_string
+
+from . import command_shell, command_util, pathutil, textutil
+from .command_shell_proc import TextProcessor, BehaveWinCommandOutputProcessor
+from .pathutil import posixpath_normpath
 
 
 matchers.register_type(int=int)

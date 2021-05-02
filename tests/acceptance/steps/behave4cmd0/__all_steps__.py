@@ -3,6 +3,6 @@ Import all step definitions of this step-library.
 Step definitions are automatically registered in "behave.step_registry".
 """
 
-import behave4cmd0.command_steps
-import behave4cmd0.note_steps
-import behave4cmd0.log.steps  # noqa
+from . import command_steps  # noqa
+from . import note_steps  # noqa
+from .log import steps  # noqa

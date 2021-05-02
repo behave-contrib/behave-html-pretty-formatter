@@ -15,7 +15,7 @@ import shlex
 import subprocess
 import sys
 
-from behave4cmd0.__setup import TOP
+from .__setup import TOP
 
 
 class CommandResult(object):
