@@ -54,21 +54,23 @@ def text_normalize(text):
 
 
 class StringContainsMultipleTimes(SubstringMatcher):
-
     def __init__(self, substring, expected_count):
         super(StringContainsMultipleTimes, self).__init__(substring)
         self.expected_count = expected_count
         self.actual_count = 0
 
     def describe_to(self, description):
-        description.append_text('a string ') \
-            .append_text(self.relationship()) \
-            .append_text(" ") \
-            .append_description_of(self.substring) \
-            .append_text(" ") \
-            .append_description_of(self.expected_count) \
-            .append_text(" times instead of ") \
-            .append_description_of(self.actual_count)
+        description.append_text("a string ").append_text(
+            self.relationship()
+        ).append_text(" ").append_description_of(self.substring).append_text(
+            " "
+        ).append_description_of(
+            self.expected_count
+        ).append_text(
+            " times instead of "
+        ).append_description_of(
+            self.actual_count
+        )
 
     def _matches(self, item):
         if not hasmethod(item, "count"):
@@ -144,4 +146,5 @@ def assert_normtext_should_not_contain(text, unexpected_part):
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

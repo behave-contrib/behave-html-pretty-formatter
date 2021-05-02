@@ -34,10 +34,10 @@ def posixpath_normpath(pathname):
     :param pathname: Pathname (as string)
     :return: Normalized POSIX path.
     """
-    backslash = '\\'
+    backslash = "\\"
     pathname2 = os.path.normpath(pathname) or "."
     if backslash in pathname2:
-        pathname2 = pathname2.replace(backslash, '/')
+        pathname2 = pathname2.replace(backslash, "/")
     return pathname2
 
 
@@ -57,9 +57,13 @@ def ensure_makedirs(directory, max_iterations=3):
         if os.path.isdir(directory):
             return
 
-    assert os.path.isdir(directory), \
-        "FAILED: ensure_makedirs(%r) (after %s iterations):\n%s" % \
-        (directory, max_iterations, exception_text)
+    assert os.path.isdir(
+        directory
+    ), "FAILED: ensure_makedirs(%r) (after %s iterations):\n%s" % (
+        directory,
+        max_iterations,
+        exception_text,
+    )
 
 
 def read_file_contents(filename, context=None, encoding=None):
@@ -70,7 +74,7 @@ def read_file_contents(filename, context=None, encoding=None):
     return file_contents
 
 
-def create_textfile_with_contents(filename, contents, encoding='utf-8'):
+def create_textfile_with_contents(filename, contents, encoding="utf-8"):
     """
     Creates a textual file with the provided contents in the workdir.
     Overwrites an existing file.

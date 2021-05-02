@@ -16,7 +16,7 @@ EXAMPLES:
 from behave import step, then
 
 
-@step(u'{word:w} step fails')
+@step(u"{word:w} step fails")
 def step_fails(context, word):
     """Step that always fails, mostly needed in examples."""
     assert False, "EXPECT: Failing step"
@@ -28,7 +28,7 @@ def step_fails_with_message(context, word, message):
     assert False, "FAILED: %s" % message
 
 
-@step(u'{word:w} step fails with')
+@step(u"{word:w} step fails with")
 def step_fails_with_text(context, word):
     """Step that always fails, mostly needed in examples."""
     assert context.text is not None, "REQUIRE: text"

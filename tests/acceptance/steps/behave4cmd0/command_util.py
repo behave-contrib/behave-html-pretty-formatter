@@ -60,7 +60,8 @@ def ensure_workdir_not_exists(context):
             renamed_dirname = tempfile.mktemp(
                 prefix=os.path.basename(real_dirname),
                 suffix="_DEAD",
-                dir=os.path.dirname(real_dirname) or ".")
+                dir=os.path.dirname(real_dirname) or ".",
+            )
             os.rename(real_dirname, renamed_dirname)
             real_dirname = renamed_dirname
         max_iterations = 2
@@ -70,13 +71,12 @@ def ensure_workdir_not_exists(context):
         for iteration in range(max_iterations):
             if not os.path.exists(real_dirname):
                 if iteration > 1:
-                    print("REMOVE-WORKDIR after %s iterations" % (iteration+1))
+                    print("REMOVE-WORKDIR after %s iterations" % (iteration + 1))
                 break
             shutil.rmtree(real_dirname, ignore_errors=True)
             time.sleep(0.5)
-        assert not os.path.isdir(real_dirname), \
-            "ENSURE not-isa dir: %s" % real_dirname
-        assert not os.path.exists(real_dirname), \
+        assert not os.path.isdir(real_dirname), "ENSURE not-isa dir: %s" % real_dirname
+        assert not os.path.exists(real_dirname), (
             "ENSURE dir not-exists: %s" % real_dirname
-        assert not os.path.isdir(orig_dirname), \
-            "ENSURE not-isa dir: %s" % orig_dirname
+        )
+        assert not os.path.isdir(orig_dirname), "ENSURE not-isa dir: %s" % orig_dirname

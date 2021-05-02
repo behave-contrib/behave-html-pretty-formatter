@@ -16,7 +16,7 @@ EXAMPLES:
 from behave import step, then
 
 
-@step('{word:w} step passes')
+@step("{word:w} step passes")
 def step_passes(context, word):
     """
     Step that always fails, mostly needed in examples.

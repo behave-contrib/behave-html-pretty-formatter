@@ -15,6 +15,7 @@ def posixpath_normpath(filename):
 
 class LineProcessor(object):
     """Function-like object that may perform text-line transformations."""
+
     def __init__(self, marker=None):
         self.marker = marker
 
@@ -27,6 +28,7 @@ class LineProcessor(object):
 
 class TracebackLineNormalizer(LineProcessor):
     """Line processor that tries to normalize path lines in a traceback dump."""
+
     marker = "Traceback (most recent call last):"
     file_pattern = re.compile(r'\s\s+File "(?P<path>.*)", line .*')
 
@@ -67,6 +69,7 @@ class TracebackLineNormalizer(LineProcessor):
 
 class ExceptionWithPathNormalizer(LineProcessor):
     """Normalize filename path in Exception line (for Windows)."""
+
     # http://myregexp.com/examples.html
     # Windows File Name Regexp
     # (?i) ^ (?! ^ (PRN | AUX | CLOCK\$ | NUL | CON | COM\d | LPT\d |\..* )(\..+)?$)
@@ -101,6 +104,7 @@ class CommandOutputProcessor(CommandPostProcessor):
     """Abstract base class functionality for a CommandPostProcessor that
     post-processes the output of a command.
     """
+
     enabled = True
     output_parts = ("stderr", "stdout")
 
@@ -118,7 +122,7 @@ class CommandOutputProcessor(CommandPostProcessor):
         # pylint: disable=no-self-use, unused-argument
         return False
 
-    def process_output(self, text):   # pylint: disable=no-self-use
+    def process_output(self, text):  # pylint: disable=no-self-use
         """Abstract method that should be overwritten."""
         changed = False
         return changed, text
@@ -153,6 +157,7 @@ class LineCommandOutputProcessor(CommandOutputProcessor):
     a number of line processors. The line processors perform the actual work
     for transforming/normalizing the text.
     """
+
     enabled = True
     line_processors = [TracebackLineNormalizer()]
 
@@ -222,20 +227,25 @@ class BehaveWinCommandOutputProcessor(LineCommandOutputProcessor):
     Mostly, normalizes windows paths in output and exceptions to conform to
     POSIX path conventions.
     """
+
     enabled = sys.platform.startswith("win") or True
     line_processors = [
         TracebackLineNormalizer(),
         ExceptionWithPathNormalizer(
             "ConfigError: No steps directory in '(?P<path>.*)'",
-            "ConfigError: No steps directory in"),
+            "ConfigError: No steps directory in",
+        ),
         ExceptionWithPathNormalizer(
             'ParserError: Failed to parse "(?P<path>.*)"',
-            "ParserError: Failed to parse"),
+            "ParserError: Failed to parse",
+        ),
         ExceptionWithPathNormalizer(
             "No such file or directory: '(?P<path>.*)'",
-            "[Errno 2] No such file or directory:"),  # IOError
+            "[Errno 2] No such file or directory:",
+        ),  # IOError
         ExceptionWithPathNormalizer(
             # WAS: '^\s*File "(?P<path>.*)", line \d+, in ',
             r'^\s*File "(?P<path>.*)", line \d+, in ',
-            'File "'),
+            'File "',
+        ),
     ]

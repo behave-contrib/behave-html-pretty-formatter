@@ -72,7 +72,7 @@ def on_error_print_details(actual, expected):
         raise
 
 
-@given(u'a new working directory')
+@given(u"a new working directory")
 def step_a_new_working_directory(context):
     """Creates a new, empty working directory."""
     command_util.ensure_context_attribute_exists(context, "workdir", None)
@@ -83,7 +83,7 @@ def step_a_new_working_directory(context):
     command_util.ensure_workdir_exists(context)
 
 
-@given(u'I use the current directory as working directory')
+@given(u"I use the current directory as working directory")
 def step_use_curdir_as_working_directory(context):
     """
     Uses the current directory as working directory
@@ -151,7 +151,7 @@ def step_an_empty_file_named_filename(context, filename):
 
 
 @when(u'I run "{command}"')
-@when(u'I run `{command}`')
+@when(u"I run `{command}`")
 def step_i_run_command(context, command):
     """
     Run a command as subprocess, collect its output and returncode.
@@ -165,7 +165,7 @@ def step_i_run_command(context, command):
 
 
 @when(u'I successfully run "{command}"')
-@when(u'I successfully run `{command}`')
+@when(u"I successfully run `{command}`")
 def step_i_successfully_run_command(context, command):
     step_i_run_command(context, command)
     step_it_should_pass(context)
@@ -188,24 +188,28 @@ def step_the_command_returncode_is(context, result):
     assert_that(context.command_result.returncode, equal_to(result))
 
 
-@then(u'the command returncode is non-zero')
+@then(u"the command returncode is non-zero")
 def step_the_command_returncode_is_nonzero(context):
     assert_that(context.command_result.returncode, is_not(equal_to(0)))
 
 
-@then(u'it should pass')
+@then(u"it should pass")
 def step_it_should_pass(context):
-    assert_that(context.command_result.returncode, equal_to(0),
-                context.command_result.output)
+    assert_that(
+        context.command_result.returncode, equal_to(0), context.command_result.output
+    )
 
 
-@then(u'it should fail')
+@then(u"it should fail")
 def step_it_should_fail(context):
-    assert_that(context.command_result.returncode, is_not(equal_to(0)),
-                context.command_result.output)
+    assert_that(
+        context.command_result.returncode,
+        is_not(equal_to(0)),
+        context.command_result.output,
+    )
 
 
-@then(u'it should pass with')
+@then(u"it should pass with")
 def step_it_should_pass_with(context):
     '''
     EXAMPLE:
@@ -218,11 +222,12 @@ def step_it_should_pass_with(context):
     '''
     assert context.text is not None, "ENSURE: multiline text is provided."
     step_command_output_should_contain(context)
-    assert_that(context.command_result.returncode, equal_to(0),
-                context.command_result.output)
+    assert_that(
+        context.command_result.returncode, equal_to(0), context.command_result.output
+    )
 
 
-@then(u'it should fail with')
+@then(u"it should fail with")
 def step_it_should_fail_with(context):
     '''
     EXAMPLE:
@@ -240,17 +245,17 @@ def step_it_should_fail_with(context):
 
 @then(u'the command output should contain "{text}"')
 def step_command_output_should_contain_text(context, text):
-    '''
+    """
     EXAMPLE:
         ...
         Then the command output should contain "TEXT"
-    '''
+    """
     expected_text = text
     if "{__WORKDIR__}" in expected_text or "{__CWD__}" in expected_text:
         expected_text = textutil.template_substitute(
             text,
             __WORKDIR__=posixpath_normpath(context.workdir),
-            __CWD__=posixpath_normpath(os.getcwd())
+            __CWD__=posixpath_normpath(os.getcwd()),
         )
     actual_output = context.command_result.output
     with on_assert_failed_print_details(actual_output, expected_text):
@@ -259,17 +264,17 @@ def step_command_output_should_contain_text(context, text):
 
 @then(u'the command output should not contain "{text}"')
 def step_command_output_should_not_contain_text(context, text):
-    '''
+    """
     EXAMPLE:
         ...
         then the command output should not contain "TEXT"
-    '''
+    """
     expected_text = text
     if "{__WORKDIR__}" in text or "{__CWD__}" in text:
         expected_text = textutil.template_substitute(
             text,
             __WORKDIR__=posixpath_normpath(context.workdir),
-            __CWD__=posixpath_normpath(os.getcwd())
+            __CWD__=posixpath_normpath(os.getcwd()),
         )
     actual_output = context.command_result.output
     with on_assert_failed_print_details(actual_output, expected_text):
@@ -278,24 +283,24 @@ def step_command_output_should_not_contain_text(context, text):
 
 @then(u'the command output should contain "{text}" {count:d} times')
 def step_command_output_should_contain_text_multiple_times(context, text, count):
-    '''
+    """
     EXAMPLE:
         ...
         Then the command output should contain "TEXT" 3 times
-    '''
+    """
     assert count >= 0
     expected_text = text
     if "{__WORKDIR__}" in expected_text or "{__CWD__}" in expected_text:
         expected_text = textutil.template_substitute(
             text,
             __WORKDIR__=posixpath_normpath(context.workdir),
-            __CWD__=posixpath_normpath(os.getcwd())
+            __CWD__=posixpath_normpath(os.getcwd()),
         )
     actual_output = context.command_result.output
     with on_assert_failed_print_details(actual_output, expected_text):
-        textutil.assert_normtext_should_contain_multiple_times(actual_output,
-                                                               expected_text,
-                                                               count)
+        textutil.assert_normtext_should_contain_multiple_times(
+            actual_output, expected_text, count
+        )
 
 
 @then(u'the command output should contain exactly "{text}"')
@@ -314,7 +319,7 @@ def step_command_output_should_contain_exactly_text(context, text):
         expected_text = textutil.template_substitute(
             text,
             __WORKDIR__=posixpath_normpath(context.workdir),
-            __CWD__=posixpath_normpath(os.getcwd())
+            __CWD__=posixpath_normpath(os.getcwd()),
         )
     actual_output = context.command_result.output
     textutil.assert_text_should_contain_exactly(actual_output, expected_text)
@@ -327,13 +332,13 @@ def step_command_output_should_not_contain_exactly_text(context, text):
         expected_text = textutil.template_substitute(
             text,
             __WORKDIR__=posixpath_normpath(context.workdir),
-            __CWD__=posixpath_normpath(os.getcwd())
+            __CWD__=posixpath_normpath(os.getcwd()),
         )
     actual_output = context.command_result.output
     textutil.assert_text_should_not_contain_exactly(actual_output, expected_text)
 
 
-@then(u'the command output should contain')
+@then(u"the command output should contain")
 def step_command_output_should_contain(context):
     '''
     EXAMPLE:
@@ -349,7 +354,7 @@ def step_command_output_should_contain(context):
     step_command_output_should_contain_text(context, context.text)
 
 
-@then(u'the command output should not contain')
+@then(u"the command output should not contain")
 def step_command_output_should_not_contain(context):
     '''
     EXAMPLE:
@@ -365,7 +370,7 @@ def step_command_output_should_not_contain(context):
     step_command_output_should_not_contain_text(context, context.text.strip())
 
 
-@then(u'the command output should contain {count:d} times')
+@then(u"the command output should contain {count:d} times")
 def step_command_output_should_contain_multiple_times(context, count):
     '''
     EXAMPLE:
@@ -378,17 +383,16 @@ def step_command_output_should_contain_multiple_times(context, count):
             """
     '''
     assert context.text is not None, "REQUIRE: multi-line text"
-    step_command_output_should_contain_text_multiple_times(context,
-                                                           context.text, count)
+    step_command_output_should_contain_text_multiple_times(context, context.text, count)
 
 
-@then(u'the command output should contain exactly')
+@then(u"the command output should contain exactly")
 def step_command_output_should_contain_exactly_with_multiline_text(context):
     assert context.text is not None, "REQUIRE: multi-line text"
     step_command_output_should_contain_exactly_text(context, context.text)
 
 
-@then(u'the command output should not contain exactly')
+@then(u"the command output should not contain exactly")
 def step_command_output_should_contain_not_exactly_with_multiline_text(context):
     assert context.text is not None, "REQUIRE: multi-line text"
     step_command_output_should_not_contain_exactly_text(context, context.text)
@@ -528,7 +532,7 @@ def step_file_should_contain_text(context, filename, text):
         expected_text = textutil.template_substitute(
             text,
             __WORKDIR__=posixpath_normpath(context.workdir),
-            __CWD__=posixpath_normpath(os.getcwd())
+            __CWD__=posixpath_normpath(os.getcwd()),
         )
     file_contents = pathutil.read_file_contents(filename, context=context)
     file_contents = file_contents.rstrip()

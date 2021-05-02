@@ -6,9 +6,10 @@ import logging
 
 from behave import step, then
 from behave.configuration import LogLevel
-from behave4cmd0.command_steps import \
-    step_file_should_contain_multiline_text, \
-    step_file_should_not_contain_multiline_text
+from behave4cmd0.command_steps import (
+    step_file_should_contain_multiline_text,
+    step_file_should_not_contain_multiline_text,
+)
 
 
 def make_log_record(category, level, message):
@@ -18,8 +19,9 @@ def make_log_record(category, level, message):
     logger.log(level, message)
 
 
-def make_log_record_output(category, level, message,
-                           format=None, datefmt=None, **kwargs):
+def make_log_record_output(
+    category, level, message, format=None, datefmt=None, **kwargs
+):
     """
     Create the output for a log record, like performed by :mod:`logging` module.
 
@@ -39,14 +41,14 @@ def make_log_record_output(category, level, message,
 
 
 class LogRecordTable(object):
-
     @classmethod
     def make_output_for_row(cls, row, format=None, datefmt=None, **kwargs):
         category = row.get("category", None)
         level = LogLevel.parse_type(row.get("level", "INFO"))
         message = row.get("message", "__UNDEFINED__")
-        return make_log_record_output(category, level, message,
-                                      format, datefmt, **kwargs)
+        return make_log_record_output(
+            category, level, message, format, datefmt, **kwargs
+        )
 
     @staticmethod
     def annotate_with_row_schema(table, row_schema):
@@ -62,7 +64,7 @@ class LogRecordTable(object):
                 table.add_column(column, default_value=value)
 
 
-@step('I create log records with')
+@step("I create log records with")
 def step_I_create_logrecords_with_table(context):
     """
     Step definition that creates one more log records by using a table.
@@ -102,7 +104,7 @@ def step_I_create_logrecords_with_table(context):
         make_log_record(category, level, message)
 
 
-@step('I create a log record with')
+@step("I create a log record with")
 def step_I_create_logrecord_with_table(context):
     """
     Create an log record by using a table to provide the parts.
@@ -114,23 +116,24 @@ def step_I_create_logrecord_with_table(context):
     step_I_create_logrecords_with_table(context)
 
 
-@step('I define the log record schema')
+@step("I define the log record schema")
 def step_I_define_logrecord_schema_with_table(context):
     assert context.table, "REQUIRE: context.table"
     context.table.require_columns(["category", "level", "message"])
-    assert len(context.table.rows) == 1, \
-        "REQUIRE: context.table.rows.size(%s) == 1" % (len(context.table.rows))
+    assert len(context.table.rows) == 1, "REQUIRE: context.table.rows.size(%s) == 1" % (
+        len(context.table.rows)
+    )
 
     row = context.table.rows[0]
     row_schema = {
-        'category': row["category"],
-        'level': row["level"],
-        'message': row["message"],
+        "category": row["category"],
+        "level": row["level"],
+        "message": row["message"],
     }
     context.log_record_row_schema = row_schema
 
 
-@then('the command output should contain the following log records')
+@then("the command output should contain the following log records")
 def step_command_output_should_contain_log_records(context):
     """
     Verifies that the command output contains the specified log records
@@ -147,15 +150,19 @@ def step_command_output_should_contain_log_records(context):
     format = getattr(context, "log_record_format", context.config.logging_format)
     for row in context.table.rows:
         output = LogRecordTable.make_output_for_row(row, format)
-        context.execute_steps(u'''
+        context.execute_steps(
+            u'''
             Then the command output should contain:
                 """
                 {expected_output}
                 """
-            '''.format(expected_output=output))
+            '''.format(
+                expected_output=output
+            )
+        )
 
 
-@then('the command output should not contain the following log records')
+@then("the command output should not contain the following log records")
 def step_command_output_should_not_contain_log_records(context):
     """
     Verifies that the command output contains the specified log records
@@ -172,29 +179,33 @@ def step_command_output_should_not_contain_log_records(context):
     format = getattr(context, "log_record_format", context.config.logging_format)
     for row in context.table.rows:
         output = LogRecordTable.make_output_for_row(row, format)
-        context.execute_steps(u'''
+        context.execute_steps(
+            u'''
             Then the command output should not contain:
                 """
                 {expected_output}
                 """
-            '''.format(expected_output=output))
+            '''.format(
+                expected_output=output
+            )
+        )
 
 
-@then('the command output should contain the following log record')
+@then("the command output should contain the following log record")
 def step_command_output_should_contain_log_record(context):
     assert context.table, "REQUIRE: context.table"
     assert len(context.table.rows) == 1, "REQUIRE: table.row.size == 1"
     step_command_output_should_contain_log_records(context)
 
 
-@then('the command output should not contain the following log record')
+@then("the command output should not contain the following log record")
 def step_command_output_should_not_contain_log_record(context):
     assert context.table, "REQUIRE: context.table"
     assert len(context.table.rows) == 1, "REQUIRE: table.row.size == 1"
     step_command_output_should_not_contain_log_records(context)
 
 
-@then('the command output should contain log records from categories')
+@then("the command output should contain log records from categories")
 def step_command_output_should_contain_log_records_from_categories(context):
     """
     Verifies that the command output contains the specified log records
@@ -217,7 +228,7 @@ def step_command_output_should_contain_log_records_from_categories(context):
     context.table.remove_columns(["level", "message"])
 
 
-@then('the command output should not contain log records from categories')
+@then("the command output should not contain log records from categories")
 def step_command_output_should_not_contain_log_records_from_categories(context):
     """
     Verifies that the command output contains not log records from
@@ -287,7 +298,7 @@ def step_use_log_record_format_text(context, log_record_format):
     context.log_record_format = log_record_format
 
 
-@step('I use the log record configuration')
+@step("I use the log record configuration")
 def step_use_log_record_configuration(context):
     """
     Define log record configuration parameters.

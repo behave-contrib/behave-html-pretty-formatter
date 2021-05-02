@@ -22,6 +22,7 @@ class CommandResult(object):
     """
     ValueObject to store the results of a subprocess command call.
     """
+
     def __init__(self, **kwargs):
         self.command = kwargs.pop("command", None)
         self.returncode = kwargs.pop("returncode", 0)
@@ -60,6 +61,7 @@ class Command(object):
     Helper class to run commands as subprocess,
     collect their output and subprocess returncode.
     """
+
     DEBUG = False
     PREPROCESSOR_MAP = {}
     POSTPROCESSOR_MAP = {}
@@ -102,13 +104,15 @@ class Command(object):
             cmdargs = cls.preprocess_command(preprocessors, cmdargs, command, cwd)
 
         try:
-            process = subprocess.Popen(cmdargs,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE,
-                                       universal_newlines=True,
-                                       shell=use_shell,
-                                       cwd=cwd,
-                                       **kwargs)
+            process = subprocess.Popen(
+                cmdargs,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True,
+                shell=use_shell,
+                cwd=cwd,
+                **kwargs
+            )
             out, err = process.communicate()
             process.poll()
             assert process.returncode is not None
@@ -132,6 +136,7 @@ class Command(object):
 
 def path_glob(command, cmdargs, cwd="."):
     import glob
+
     if not glob.has_magic(command):
         return cmdargs
 
