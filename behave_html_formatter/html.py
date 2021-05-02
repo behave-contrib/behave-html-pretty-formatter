@@ -211,7 +211,7 @@ class HTMLFormatter(Formatter):
             head,
             "meta",
             {
-                "http-equiv": "Content-Type",
+                "http-equiv": "content-type",
                 "content": "text/html;charset=utf-8",
             },
         )
@@ -591,5 +591,5 @@ class HTMLFormatter(Formatter):
 
         # Sending the report to stream
         if len(self.all_features) > 0:
-            self.stream.write(u"<!DOCTYPE HTML>\n")
+            self.stream.write(u"<!DOCTYPE HTML>")
             self.stream.write(ET_tostring(self.html, pretty_print=True))

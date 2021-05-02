@@ -21,7 +21,7 @@ Feature: Make behave generate HTML as output
       """
         <head>
           <title>Behave Test Report</title>
-          <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+          <meta content="text/html;charset=utf-8" http-equiv="content-type"/>
           <style type="text/css">
       """
     And the command output should contain:
@@ -37,7 +37,7 @@ Feature: Make behave generate HTML as output
       """
     And the command output should contain:
       """
-          </h1>Behave Test Report</h1>
+                <h1>Behave Test Report</h1>
       """
     And the command output should contain:
       """
