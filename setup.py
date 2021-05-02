@@ -3,8 +3,12 @@ Packaging setup for behave-html-formatter.
 """
 from setuptools import find_packages, setup
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+
+def read_file(filename):
+    """Return the content of a file."""
+    with open(filename, "r") as file:
+        return file.read()
+
 
 setup(
     name="behave-html-formatter",
@@ -12,7 +16,7 @@ setup(
     author="Petr Schindler",
     author_email="pschindl@redhat.com",
     description="HTML formatter for Behave",
-    long_description=long_description,
+    long_description=read_file("README.md"),
     long_description_content_type="text/markdown",
     url="https://github.com/behave-contrib/behave-html-formatter",
     classifiers=[
@@ -31,16 +35,8 @@ setup(
         "Topic :: Software Development :: Testing",
         "Topic :: Software Development :: Testing :: BDD",
     ],
-    data_files=[
-        (
-            "",
-            [
-                "behave_html_formatter/behave.min.css",
-                "behave_html_formatter/behave.min.js",
-            ],
-        ),
-    ],
-    packages=find_packages(),
+    include_package_data=True,
+    packages=find_packages(exclude="tests"),
     python_requires=">=3.6",
     install_requires=["behave"],
 )
