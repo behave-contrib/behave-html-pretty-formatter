@@ -35,6 +35,9 @@ from os.path import abspath
 from pathlib import Path
 from sys import version
 
+from xml.dom import minidom
+import re
+
 import six
 
 from behave.formatter.base import Formatter
@@ -56,8 +59,6 @@ def ET_tostring(elem, pretty_print=False):
     if pretty_print:
         # -- RECIPE: For pretty-printing w/ xml.etree.ElementTree.
         # SEE: http://pymotw.com/2/xml/etree/ElementTree/create.html
-        from xml.dom import minidom
-        import re
 
         declaration_len = len(minidom.Document().toxml())
         reparsed = minidom.parseString(text)
@@ -68,13 +69,23 @@ def ET_tostring(elem, pretty_print=False):
 
 
 class JavascriptLibrary:
-    collapsible = "\n" + open(Path(__file__).parent / "behave.min.js").read() + "\n"
+    """
+    Load minified javascript
+    XXX
+    """
+
+    with open(Path(__file__).parent / "behave.min.js", encoding="utf-8") as js_file:
+        collapsible = "\n" + js_file.read() + "\n"
 
 
 class BasicTheme:
-    stylesheet_text = (
-        "\n" + open(Path(__file__).parent / "behave.min.css").read() + "\n"
-    )
+    """
+    Load minified CSS
+    XXX
+    """
+
+    with open(Path(__file__).parent / "behave.min.css", encoding="utf-8") as css_file:
+        stylesheet_text = "\n" + css_file.read() + "\n"
 
 
 class Page:
@@ -181,7 +192,7 @@ class HTMLFormatter(Formatter):
             tags_element.text = "@" + ", @".join(feature.tags)
         h2 = ET.SubElement(self.current_feature, "h2")
         feature_element = ET.SubElement(h2, "span", {"class": "val"})
-        feature_element.text = "%s: %s" % (feature.keyword, feature.name)
+        feature_element.text = f"{feature.keyword}: {feature.name}"
         if feature.description:
             description_element = ET.SubElement(
                 self.current_feature, "pre", {"class": "message"}
@@ -196,10 +207,9 @@ class HTMLFormatter(Formatter):
         )
 
         h3 = ET.SubElement(self.current_background, "h3")
-        ET.SubElement(h3, "span", {"class": "val"}).text = "%s: %s" % (
-            background.keyword,
-            background.name,
-        )
+        ET.SubElement(
+            h3, "span", {"class": "val"}
+        ).text = f"{background.keyword}: {background.name}"
 
         self.steps = ET.SubElement(self.current_background, "ol")
         self.actual = {}
@@ -234,10 +244,7 @@ class HTMLFormatter(Formatter):
         scenario_file = ET.SubElement(
             self.scenario_el, "span", {"class": "scenario_file"}
         )
-        scenario_file.text = "%s:%s" % (
-            scenario.location.filename,
-            scenario.location.line,
-        )
+        scenario_file.text = f"{scenario.location.filename}:{scenario.location.line}"
 
         if scenario.tags:
             tags = ET.SubElement(self.scenario_el, "span", {"class": "tag"})
@@ -245,7 +252,7 @@ class HTMLFormatter(Formatter):
 
         self.scenario_name = ET.SubElement(self.scenario_el, "h3")
         span = ET.SubElement(self.scenario_name, "span", {"class": "val"})
-        span.text = "%s: %s" % (scenario.keyword, scenario.name)
+        span.text = f"{scenario.keyword}: {scenario.name}"
 
         if scenario.description:
             description_element = ET.SubElement(
@@ -256,11 +263,11 @@ class HTMLFormatter(Formatter):
         self.steps = ET.SubElement(
             self.scenario_el,
             "ol",
-            {"class": "scenario_steps", "id": "scenario_%s" % self.scenario_id},
+            {"class": "scenario_steps", "id": f"scenario_{self.scenario_id}"},
         )
 
         self.scenario_name.set(
-            "onclick", "Collapsible_toggle('scenario_%s')" % self.scenario_id
+            "onclick", f"Collapsible_toggle('scenario_{self.scenario_id}')"
         )
         self.scenario_id += 1
 
@@ -273,7 +280,9 @@ class HTMLFormatter(Formatter):
             self.embedding("text/plain", scenario.error_message, "Error Message")
 
     def scenario_outline(self, outline):
-        self.scenario(self, outline)
+        """Scenario Outline formatter"""
+
+        self.scenario(outline)
         self.scenario_el.set("class", "scenario outline")
 
     def step(self, step):
@@ -333,43 +342,43 @@ class HTMLFormatter(Formatter):
                 fname = abspath(match.location.filename)
             else:
                 fname = match.location.filename
-            location = "%s:%s" % (fname, match.location.line)
+            location = f"{fname}:{match.location.line}"
         else:
             location = "<unknown>"
         ET.SubElement(step_file, "span").text = location
 
-    def result(self, result):
+    def result(self, step):
 
-        self.actual["step_el"].set("class", "step %s" % result.status.name)
+        self.actual["step_el"].set("class", f"step {step.status.name}")
 
-        self.actual["step_duration_el"].text = "(%0.3fs)" % result.duration
+        self.actual["step_duration_el"].text = f"({step.duration:0.3f}s)"
 
-        if result.text:
+        if step.text:
             message = ET.Element("div", {"class": "message"})
             self.actual["step_el"].insert(2, message)
             pre = ET.SubElement(message, "pre")
-            pre.text = result.text
+            pre.text = step.text
 
-        if result.table:
+        if step.table:
             table = ET.Element("table")
             self.actual["step_el"].insert(2, table)
             tr = ET.SubElement(table, "tr")
-            for heading in result.table.headings:
+            for heading in step.table.headings:
                 ET.SubElement(tr, "th").text = heading
 
-            for row in result.table.rows:
+            for row in step.table.rows:
                 tr = ET.SubElement(table, "tr")
                 for cell in row.cells:
                     ET.SubElement(tr, "td").text = cell
 
-        if result.error_message:
-            self.embedding("text/plain", result.error_message, "Error Message")
+        if step.error_message:
+            self.embedding("text/plain", step.error_message, "Error Message")
 
-        if result.status == "failed":
+        if step.status == "failed":
             self.scenario_name.set("class", "failed")
             self.header.set("class", "failed")
 
-        if result.status == "undefined":
+        if step.status == "undefined":
             self.scenario_name.set("class", "undefined")
             self.header.set("class", "undefined")
 
@@ -377,7 +386,7 @@ class HTMLFormatter(Formatter):
         self.embed_id += 1
 
         link = ET.SubElement(span, "a")
-        link.set("onclick", "Collapsible_toggle('embed_%s')" % self.embed_id)
+        link.set("onclick", f"Collapsible_toggle('embed_{self.embed_id}')")
 
         if "video/" in mime_type:
             if not caption:
@@ -388,7 +397,7 @@ class HTMLFormatter(Formatter):
                 span,
                 "video",
                 {
-                    "id": "embed_%s" % self.embed_id,
+                    "id": f"embed_{self.embed_id}",
                     "style": "display: none",
                     "width": "1024",
                     "controls": "",
@@ -398,7 +407,7 @@ class HTMLFormatter(Formatter):
             ET.SubElement(
                 embed,
                 "source",
-                {"src": "data:%s;base64,%s" % (mime_type, data), "type": mime_type},
+                {"src": f"data:{mime_type};base64,{data}", "type": mime_type},
             )
 
         if "image/" in mime_type:
@@ -410,9 +419,9 @@ class HTMLFormatter(Formatter):
                 span,
                 "img",
                 {
-                    "id": "embed_%s" % self.embed_id,
+                    "id": f"embed_{self.embed_id}",
                     "style": "display: none",
-                    "src": "data:%s;base64,%s" % (mime_type, data),
+                    "src": f"data:{mime_type};base64,{data}",
                 },
             )
             embed.tail = "    "
@@ -428,7 +437,7 @@ class HTMLFormatter(Formatter):
                 span,
                 "pre",
                 {
-                    "id": "embed_%s" % self.embed_id,
+                    "id": f"embed_{self.embed_id}",
                     "style": "display: none",
                 },
             )
@@ -444,22 +453,26 @@ class HTMLFormatter(Formatter):
                 span,
                 "div",
                 {
-                    "id": "embed_%s" % self.embed_id,
+                    "id": f"embed_{self.embed_id}",
                     "style": "display: none",
                 },
             )
             for single_link in data:
-                breakline = ET.SubElement(embed_div, "br")
+                ET.SubElement(embed_div, "br")
                 embed_string = ET.SubElement(embed_div, "a")
                 embed_string.set("href", single_link[0])
                 embed_string.text = single_link[1]
-            breakline = ET.SubElement(embed_div, "br")
-            breakline = ET.SubElement(embed_div, "br")
+            ET.SubElement(embed_div, "br")
+            ET.SubElement(embed_div, "br")
 
     def embedding(self, mime_type, data, caption=None):
+        """Append data to current step"""
+
         self._doEmbed(self.actual["act_step_embed_span"], mime_type, data, caption)
 
     def set_title(self, title, append=False, tag="span", **kwargs):
+        """Set title of HTML file"""
+
         if not append:
             self.title_el.clear()
         ET.SubElement(self.title_el, tag, kwargs).text = title
@@ -467,8 +480,8 @@ class HTMLFormatter(Formatter):
     def close(self):
         if not hasattr(self, "all_features"):
             self.all_features = []
-        self.duration.text = "Finished in %0.1f seconds" % sum(
-            [x.duration for x in self.all_features]
+        self.duration.text = (
+            f"Finished in {sum(x.duration for x in self.all_features):0.1f} seconds"
         )
 
         # check if self.last_scenario is failed
@@ -479,8 +492,8 @@ class HTMLFormatter(Formatter):
         statuses = [x.status.name for x in self.all_features]
         status_counter = Counter(statuses)
         for k in status_counter:
-            result.append("%s: %s" % (k, status_counter[k]))
-        self.current_feature_totals.text = "Features: %s" % ", ".join(result)
+            result.append(f"{k}: {status_counter[k]}")
+        self.current_feature_totals.text = "Features: " + ", ".join(result)
 
         result = []
         scenarios_list = [x.scenarios for x in self.all_features]
@@ -490,8 +503,8 @@ class HTMLFormatter(Formatter):
         statuses = [x.status.name for x in scenarios]
         status_counter = Counter(statuses)
         for k in status_counter:
-            result.append("%s: %s" % (k, status_counter[k]))
-        self.scenario_totals.text = "Scenarios: %s" % ", ".join(result)
+            result.append(f"{k}: {status_counter[k]}")
+        self.scenario_totals.text = "Scenarios: " + ", ".join(result)
 
         result = []
         step_list = [x.steps for x in scenarios]
@@ -501,8 +514,8 @@ class HTMLFormatter(Formatter):
         statuses = [x.status.name for x in steps]
         status_counter = Counter(statuses)
         for k in status_counter:
-            result.append("%s: %s" % (k, status_counter[k]))
-        self.step_totals.text = "Steps: %s" % ", ".join(result)
+            result.append(f"{k}: {status_counter[k]}")
+        self.step_totals.text = "Steps: " + ", ".join(result)
 
         # Sending the report to stream
         if len(self.all_features) > 0:

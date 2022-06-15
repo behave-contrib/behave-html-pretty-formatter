@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 def read_file(filename):
     """Return the content of a file."""
-    with open(filename, "r") as file:
+    with open(filename, "r", encoding="utf-8") as file:
         return file.read()
 
 
