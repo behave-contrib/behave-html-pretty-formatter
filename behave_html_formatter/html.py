@@ -345,12 +345,14 @@ class HTMLFormatter(Formatter):
         self.actual["step_duration_el"].text = "(%0.3fs)" % result.duration
 
         if result.text:
-            message = ET.SubElement(self.actual["step_el"], "div", {"class": "message"})
+            message = ET.Element("div", {"class": "message"})
+            self.actual["step_el"].insert(2, message)
             pre = ET.SubElement(message, "pre")
             pre.text = result.text
 
         if result.table:
-            table = ET.SubElement(self.actual["step_el"], "table")
+            table = ET.Element("table")
+            self.actual["step_el"].insert(2, table)
             tr = ET.SubElement(table, "tr")
             for heading in result.table.headings:
                 ET.SubElement(tr, "th").text = heading
