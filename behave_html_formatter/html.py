@@ -507,4 +507,4 @@ class HTMLFormatter(Formatter):
         # Sending the report to stream
         if len(self.all_features) > 0:
             self.stream.write(u"<!DOCTYPE HTML>")
-            self.stream.write(ET_tostring(self.html, pretty_print=True))
+            self.stream.write(ET_tostring(self.html, pretty_print=False))
