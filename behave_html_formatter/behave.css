@@ -101,6 +101,9 @@ body {
   float: right;
   color: #999999;
 }
+.behave .step_duration {
+  padding-left: 1em;
+}
 .behave .tag, td .tag, th .tag {
   font-weight: bold;
   color: #246ac1;
