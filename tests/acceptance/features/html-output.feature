@@ -14,33 +14,33 @@ Feature: Make behave generate HTML as output
     Then it should pass
     And the command output should contain:
       """
-      <!DOCTYPE HTML>
-      <html>
+      <!DOCTYPE HTML><html>
       """
     And the command output should contain:
       """
-        <head>
-          <title>Behave Test Report</title>
-          <meta content="text/html;charset=utf-8" http-equiv="content-type"/>
-          <style type="text/css">
+      <head><title>Behave Test Report</title>
       """
     And the command output should contain:
       """
-          </style>
-          <script type="text/javascript">
+      <meta content="text/html;charset=utf-8" http-equiv="content-type" />
       """
     And the command output should contain:
       """
-          </script>
-        </head>
-        <body>
+      <style type="text/css">
       """
     And the command output should contain:
       """
-                <h1>Behave Test Report</h1>
+      </style><script type="text/javascript">
       """
     And the command output should contain:
       """
-        </body>
-      </html>
+      </script></head><body>
+      """
+    And the command output should contain:
+      """
+      <h1>Behave Test Report</h1>
+      """
+    And the command output should contain:
+      """
+      </body></html>
       """
