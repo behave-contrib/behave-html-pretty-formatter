@@ -7,7 +7,7 @@ this scenario (for a test reader).
 from behave import step
 
 
-@step(u'note that "{remark}"')
+@step('note that "{remark}"')
 def step_note_that(context, remark):
     """
     Used as generic step that provides an additional remark/hint
@@ -20,4 +20,4 @@ def step_note_that(context, remark):
     """
     log = getattr(context, "log", None)
     if log:
-        log.info(u"NOTE: %s;" % remark)
+        log.info("NOTE: %s;" % remark)

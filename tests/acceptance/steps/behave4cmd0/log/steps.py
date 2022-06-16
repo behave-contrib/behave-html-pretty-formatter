@@ -151,7 +151,7 @@ def step_command_output_should_contain_log_records(context):
     for row in context.table.rows:
         output = LogRecordTable.make_output_for_row(row, format)
         context.execute_steps(
-            u'''
+            '''
             Then the command output should contain:
                 """
                 {expected_output}
@@ -180,7 +180,7 @@ def step_command_output_should_not_contain_log_records(context):
     for row in context.table.rows:
         output = LogRecordTable.make_output_for_row(row, format)
         context.execute_steps(
-            u'''
+            '''
             Then the command output should not contain:
                 """
                 {expected_output}

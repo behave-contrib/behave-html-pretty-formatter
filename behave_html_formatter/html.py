@@ -96,7 +96,7 @@ class HTMLFormatter(Formatter):
 
     name = "html"
     description = "Very basic HTML formatter"
-    title = u"Behave Test Report"
+    title = "Behave Test Report"
 
     def __init__(self, stream, config):
         super().__init__(stream, config)
@@ -122,9 +122,9 @@ class HTMLFormatter(Formatter):
                 "http-equiv": "content-type",
             },
         )
-        style = ET.SubElement(head, "style", type=u"text/css")
+        style = ET.SubElement(head, "style", type="text/css")
         style.append(ET.Comment(Page.theme.stylesheet_text))
-        script = ET.SubElement(head, "script", type=u"text/javascript")
+        script = ET.SubElement(head, "script", type="text/javascript")
         script_text = ET.Comment(JavascriptLibrary.collapsible)
         script.append(script_text)
 
@@ -151,17 +151,17 @@ class HTMLFormatter(Formatter):
         expand_collapse = ET.SubElement(summary, "div", id="expand-collapse")
         expander = ET.SubElement(expand_collapse, "a", id="expander", href="#")
         expander.set("onclick", "Collapsible_expandAll('scenario_steps')")
-        expander.text = u"Expand All"
+        expander.text = "Expand All"
         cea_spacer = ET.SubElement(expand_collapse, "span")
-        cea_spacer.text = u" | "
+        cea_spacer.text = " | "
         collapser = ET.SubElement(expand_collapse, "a", id="collapser", href="#")
         collapser.set("onclick", "Collapsible_collapseAll('scenario_steps')")
-        collapser.text = u"Collapse All"
+        collapser.text = "Collapse All"
         cea_spacer = ET.SubElement(expand_collapse, "span")
-        cea_spacer.text = u" | "
+        cea_spacer.text = " | "
         expander = ET.SubElement(expand_collapse, "a", id="failed_expander", href="#")
         expander.set("onclick", "Collapsible_expandAllFailed()")
-        expander.text = u"Expand All Failed"
+        expander.text = "Expand All Failed"
 
         self.embed_id = 0
         self.embed_in_this_step = None
@@ -178,10 +178,10 @@ class HTMLFormatter(Formatter):
         self.current_feature = ET.SubElement(self.suite, "div", {"class": "feature"})
         if feature.tags:
             tags_element = ET.SubElement(self.current_feature, "span", {"class": "tag"})
-            tags_element.text = u"@" + ", @".join(feature.tags)
+            tags_element.text = "@" + ", @".join(feature.tags)
         h2 = ET.SubElement(self.current_feature, "h2")
         feature_element = ET.SubElement(h2, "span", {"class": "val"})
-        feature_element.text = u"%s: %s" % (feature.keyword, feature.name)
+        feature_element.text = "%s: %s" % (feature.keyword, feature.name)
         if feature.description:
             description_element = ET.SubElement(
                 self.current_feature, "pre", {"class": "message"}
@@ -196,7 +196,7 @@ class HTMLFormatter(Formatter):
         )
 
         h3 = ET.SubElement(self.current_background, "h3")
-        ET.SubElement(h3, "span", {"class": "val"}).text = u"%s: %s" % (
+        ET.SubElement(h3, "span", {"class": "val"}).text = "%s: %s" % (
             background.keyword,
             background.name,
         )
@@ -241,11 +241,11 @@ class HTMLFormatter(Formatter):
 
         if scenario.tags:
             tags = ET.SubElement(self.scenario_el, "span", {"class": "tag"})
-            tags.text = u"@" + ", @".join(scenario.tags)
+            tags.text = "@" + ", @".join(scenario.tags)
 
         self.scenario_name = ET.SubElement(self.scenario_el, "h3")
         span = ET.SubElement(self.scenario_name, "span", {"class": "val"})
-        span.text = u"%s: %s" % (scenario.keyword, scenario.name)
+        span.text = "%s: %s" % (scenario.keyword, scenario.name)
 
         if scenario.description:
             description_element = ET.SubElement(
@@ -301,7 +301,7 @@ class HTMLFormatter(Formatter):
         step_name = ET.SubElement(step_el, "div", {"class": "step_name"})
 
         keyword = ET.SubElement(step_name, "span", {"class": "keyword"})
-        keyword.text = self.actual["keyword"] + u" "
+        keyword.text = self.actual["keyword"] + " "
 
         step_text = ET.SubElement(step_name, "span", {"class": "step val"})
 
@@ -381,7 +381,7 @@ class HTMLFormatter(Formatter):
 
         if "video/" in mime_type:
             if not caption:
-                caption = u"Video"
+                caption = "Video"
             link.text = six.u(caption)
 
             embed = ET.SubElement(
@@ -394,16 +394,16 @@ class HTMLFormatter(Formatter):
                     "controls": "",
                 },
             )
-            embed.tail = u"    "
+            embed.tail = "    "
             ET.SubElement(
                 embed,
                 "source",
-                {"src": u"data:%s;base64,%s" % (mime_type, data), "type": mime_type},
+                {"src": "data:%s;base64,%s" % (mime_type, data), "type": mime_type},
             )
 
         if "image/" in mime_type:
             if not caption:
-                caption = u"Screenshot"
+                caption = "Screenshot"
             link.text = six.u(caption)
 
             embed = ET.SubElement(
@@ -412,14 +412,14 @@ class HTMLFormatter(Formatter):
                 {
                     "id": "embed_%s" % self.embed_id,
                     "style": "display: none",
-                    "src": u"data:%s;base64,%s" % (mime_type, data),
+                    "src": "data:%s;base64,%s" % (mime_type, data),
                 },
             )
-            embed.tail = u"    "
+            embed.tail = "    "
 
         if "text/" in mime_type:
             if not caption:
-                caption = u"Data"
+                caption = "Data"
             link.text = six.u(caption)
 
             cleaned_data = "".join(c for c in data if _valid_XML_char_ordinal(ord(c)))
@@ -433,11 +433,11 @@ class HTMLFormatter(Formatter):
                 },
             )
             embed.text = six.u(cleaned_data)
-            embed.tail = u"    "
+            embed.tail = "    "
 
         if mime_type == "link":
             if not caption:
-                caption = u"Link"
+                caption = "Link"
             link.text = six.u(caption)
 
             embed_div = ET.SubElement(
@@ -467,7 +467,7 @@ class HTMLFormatter(Formatter):
     def close(self):
         if not hasattr(self, "all_features"):
             self.all_features = []
-        self.duration.text = u"Finished in %0.1f seconds" % sum(
+        self.duration.text = "Finished in %0.1f seconds" % sum(
             [x.duration for x in self.all_features]
         )
 
@@ -480,7 +480,7 @@ class HTMLFormatter(Formatter):
         status_counter = Counter(statuses)
         for k in status_counter:
             result.append("%s: %s" % (k, status_counter[k]))
-        self.current_feature_totals.text = u"Features: %s" % ", ".join(result)
+        self.current_feature_totals.text = "Features: %s" % ", ".join(result)
 
         result = []
         scenarios_list = [x.scenarios for x in self.all_features]
@@ -491,7 +491,7 @@ class HTMLFormatter(Formatter):
         status_counter = Counter(statuses)
         for k in status_counter:
             result.append("%s: %s" % (k, status_counter[k]))
-        self.scenario_totals.text = u"Scenarios: %s" % ", ".join(result)
+        self.scenario_totals.text = "Scenarios: %s" % ", ".join(result)
 
         result = []
         step_list = [x.steps for x in scenarios]
@@ -502,9 +502,9 @@ class HTMLFormatter(Formatter):
         status_counter = Counter(statuses)
         for k in status_counter:
             result.append("%s: %s" % (k, status_counter[k]))
-        self.step_totals.text = u"Steps: %s" % ", ".join(result)
+        self.step_totals.text = "Steps: %s" % ", ".join(result)
 
         # Sending the report to stream
         if len(self.all_features) > 0:
-            self.stream.write(u"<!DOCTYPE HTML>")
+            self.stream.write("<!DOCTYPE HTML>")
             self.stream.write(ET_tostring(self.html, pretty_print=False))
