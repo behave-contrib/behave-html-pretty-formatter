@@ -115,11 +115,11 @@ body {
   color: black;
 }
 .behave a, td a, th a {
-  text-decoration: none;
   color: #be5c00;
+  margin-right: 0.5em;
 }
 .behave a:hover, td a:hover, th a:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 .behave a:visited, td a:visited, th a:visited {
   font-weight: normal;
@@ -251,4 +251,24 @@ td table td.pending {
 }
 .behave #summary #totals, td #summary #totals, th #summary #totals {
   font-size: 1.2em;
+}
+.behave .scenario h3.failed, td .scenario h3.failed, th .scenario h3.failed, .background h3.failed {
+  background: #c20000;
+}
+.behave #behave-header.failed, td #behave-header.failed, th #behave-header.failed {
+  background: #c20000;
+}
+.behave .scenario h3.undefined, td .scenario h3.undefined, th .scenario h3.undefined, .background h3.undefined {
+  background: #faf834;
+  color: black;
+}
+.behave #behave-header.undefined, td #behave-header.undefined, th #behave-header.undefined {
+  background: #faf834;
+  color: black;
+}
+#behave-header.failed a {
+  color: white;
+}
+pre {
+  white-space: pre-wrap;
 }
