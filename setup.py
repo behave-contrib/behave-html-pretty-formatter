@@ -28,7 +28,6 @@ setuptools.setup(
     ],
     long_description=read_file("README.md"),
     long_description_content_type="text/markdown",
-    url="https://github.com/behave-contrib/behave-html-formatter",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
