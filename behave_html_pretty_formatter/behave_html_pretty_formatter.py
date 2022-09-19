@@ -5,6 +5,7 @@ import sys
 import traceback
 from curses import raw
 from posixpath import abspath
+from pathlib import Path
 from datetime import datetime
 
 import dominate
@@ -375,13 +376,13 @@ class PrettyHTMLFormatter(Formatter):
             # Iterate over the data and generate the page.
             with self.document.head:
                 # Load and insert css theme.
-                with open("/usr/local/lib/python3.9/site-packages/formatter_html_pretty/improved.css", "r") as _css_file:
+                with open(Path(__file__).parent / "theme.css", "r", encoding="utf-8") as _css_file:
                     css_theme = _css_file.read()
                 with style(rel="stylesheet"):
                     raw(css_theme)
 
                 # Load and insert javascript - important for embed toggles and high contrast switch.
-                with open("/usr/local/lib/python3.9/site-packages/formatter_html_pretty/script.js", "r") as _script_file:
+                with open(Path(__file__).parent / "script.js", "r", encoding="utf-8") as _script_file:
                     js_script = _script_file.read()
                 with script(type="text/javascript"):
                     raw(js_script)
