@@ -18,7 +18,10 @@ setuptools.setup(
     description="HTML Pretty formatter for Behave",
     url="https://github.com/behave-contrib/behave-html-pretty-formatter",
     packages=setuptools.find_packages(),
-    install_requires=["behave"],
+    install_requires=[
+        "behave",
+        "dominate",
+    ],
     include_package_data=True,
     python_requires=">=3.6",
     classifiers=[
