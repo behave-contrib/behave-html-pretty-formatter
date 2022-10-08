@@ -30,6 +30,110 @@ DEFAULT_CAPTION_FOR_MIME_TYPE = {
 }
 
 
+class Feature:
+    def __init__(self, feature):
+        self._feature = feature
+        self.name = feature.name
+        self.tags = feature.tags
+        self.keyword = feature.keyword
+        self.description = feature.description
+        self.location = feature.location
+        self.status = None
+        
+        self.scenarios = []
+
+    def add_scenario(self, scenario):
+        s = Scenario(scenario, self)
+        self.scenarios.append(s)
+        return s
+
+
+class Scenario:
+    def __init__(self, scenario, feature):
+        self._scenario = scenario
+        self.feature = feature
+        self.keyword = scenario.keyword
+        self.name = scenario.name
+        self.description = scenario.description
+        self.tags = scenario.tags
+        self.location = scenario.location
+        self.steps = {}
+        self.status = None
+        self.duration = 0.0
+        self.result_id = 0
+        self.steps = []
+    
+    def add_step(self, step):
+        s = Step(step, self)
+        self.steps.append(s)
+        return s
+
+    def add_result(self, result):
+        step = self.steps[self.result_id]
+        step.add_result(result)
+        if self.result_id == len(self.steps) or\
+                result.status == Status.passed or\
+                result.status == Status.failed or\
+                result.status == Status.undefined:
+            self.status = result.status.name
+            self.duration = self._scenario.duration
+        # so after_scenario embeds are not in the next step
+        if result.status != Status.failed:
+            self.result_id += 1
+        return step
+
+    def embed(self, embed_data):
+        if len(self.steps) <= self.result_id:
+            step = self.steps[-1]
+        else:
+            step = self.steps[self.result_id]
+        step.embed(embed_data)
+
+
+class Step:
+    def __init__(self, step, scenario):
+        self.status = None
+        self.duration = 0.0
+        self.scenario = scenario
+        self.keyword = step.keyword
+        self.step_type = step.step_type
+        self.name = step.name
+        self.text = step.text
+        self.table = step.table
+        self.location = f"{abspath(step.location.filename)}:{step.location.line}"
+        self.embeds = []
+    
+    def add_result(self, result):
+        self.status = result.status.name
+        self.duration = result.duration
+        
+        # If the step has error message and step failed, set the error message to the data structure.
+        if result.error_message and result.status == Status.failed:
+            self.error_message = result.error_message
+            self.embed(Embed(mime_type="text", data=self.error_message, caption="Error Message"))
+            
+        # If the step is undefined use the behave function to provide information and save it to data structure.
+        if result.status == Status.undefined:
+            undefined_step_message = u"\nYou can implement step definitions for undefined steps with "
+            undefined_step_message += u"these snippets:\n\n"
+            undefined_step_message += u"\n".join(make_undefined_step_snippets(undefined_steps=[step]))
+
+            self.error_message = undefined_step_message
+            self.embed(Embed(mime_type="text", data=self.error_message, caption="Error Message"))
+            
+        
+    def embed(self, embed_data):
+        self.embeds.append(embed_data)
+
+
+class Embed:
+    def __init__(self, mime_type, data, caption=None, fail_only=False):
+        self.mime_type = mime_type
+        self.data = data
+        self.caption = caption
+        self.fail_only = fail_only
+
+
 # Heavily based on behave.formatter.json:JSONFormatter
 # Since we need some form of structure from where we will pull all data upon close.
 # Modifications based on our needs and experimentation.
@@ -40,24 +144,7 @@ class PrettyHTMLFormatter(Formatter):
     def __init__(self, stream, config):
         super(PrettyHTMLFormatter, self).__init__(stream, config)
 
-        self.feature_count = 0
-        self.current_feature = None
-        self.current_feature_id = self.feature_count
-        self.current_feature_data = None
-
-        self.scenario_count = 0
-        self.current_scenario = None
-        self.current_scenario_id = 0
-        self.current_scenario_data = None
-
-        self.step_count = 0
-        self.current_step = None
-        self.current_step_id = 0
-        self.current_step_data = None
-
-        self.step_result_count = 0
-
-        self.data_structure = {}
+        self.features = []
 
         self.high_contrast_button = False
         self.embed_number = 0
@@ -69,142 +156,25 @@ class PrettyHTMLFormatter(Formatter):
         self.stream = self.open()
 
 
-    def reset_scenario(self):
-        self.current_scenario = None
-        self.current_scenario_id = 0
-        self.current_scenario_data = None
-
-        self.step_count = 0
-        self.current_step = None
-        self.current_step_id = 0
-        self.current_step_data = None
-
-        self.step_result_count = 0
-
-
     def feature(self, feature):
         print("DEBUG, executing feature")
-        self.current_feature = feature
-        self.current_feature_id = self.feature_count
-        self.current_feature_data = {
-            "keyword": feature.keyword,
-            "name": feature.name,
-            "description": feature.description,
-            "tags": feature.name,
-            "location": feature.location, # TODO format
-            "status": None,
-            "scenarios": {},
-        }
-
-        self.data_structure[self.current_feature_id] = self.current_feature_data
-        self.feature_count += 1
+        self.current_feature = Feature(feature)
+        self.features.append(self.current_feature)
 
 
     def scenario(self, scenario):
         print("DEBUG, executing scenario")
-        self.reset_scenario()
-
-        self.current_scenario = scenario
-        self.current_scenario_id = self.scenario_count
-
-        scenario_to_add = {
-            "keyword": scenario.keyword,
-            "name": scenario.name,
-            "description": scenario.description,
-            "tags": scenario.tags,
-            "location": scenario.location, # TODO format
-            "steps": {},
-            "status": None,
-            "duration": 0.0
-        }
-
-
-        current_feature = self.data_structure[self.current_feature_id]["scenarios"]
-        current_feature[self.current_scenario_id] = scenario_to_add
-        self.scenario_count += 1
+        self.current_scenario = self.current_feature.add_scenario(scenario)
 
 
     def step(self, step):
         print("DEBUG, executing step")
-        self.current_step = step
-        self.current_step_id = self.step_count
-
-        new_step_add = {
-            "keyword": step.keyword,
-            "step_type": step.step_type,
-            "name": step.name,
-            "location": f"{abspath(step.location.filename)}:{step.location.line}",
-            "embed": {},
-        }
-
-        if step.table:
-            data = {
-                "headings": step.table.headings,
-                "rows": [list(row) for row in step.table.rows]
-            }
-            new_step_add["table"] = data
-
-        scenarios = self.data_structure[self.current_feature_id]["scenarios"]
-        steps = scenarios[self.current_scenario_id]["steps"]
-        steps[self.current_step_id] = new_step_add
-        self.step_count += 1
+        self.current_scenario.add_step(step)
 
 
     def result(self, step):
         print("DEBUG, executing result")
-        # Try block to be removed - debugging purposes only.
-        try:
-            # Update the step based on its result.
-            scenarios = self.data_structure[self.current_feature_id]["scenarios"]
-            steps = scenarios[self.current_scenario_id]["steps"]
-            steps[self.step_result_count]["result"] = {
-                "status": step.status.name,
-                "duration": step.duration,
-            }
-
-            # If the step has error message and step failed, set the error message to the data structure.
-            if step.error_message and step.status == Status.failed:
-                error_message = step.error_message
-                result = steps[self.step_result_count]["result"]
-                result["error_message"] = error_message
-
-            # If the step is undefined use the behave function to provide information and save it to data structure.
-            if step.status == Status.undefined:
-                undefined_step_message = u"\nYou can implement step definitions for undefined steps with "
-                undefined_step_message += u"these snippets:\n\n"
-                undefined_step_message += u"\n".join(make_undefined_step_snippets(undefined_steps=[step]))
-
-                error_message = undefined_step_message
-                result = steps[self.step_result_count]["result"]
-                result["error_message"] = error_message
-
-            # If the last step was set.
-            # If the step status is passed, failed or undefined.
-            # Set the Scenario status as Step Status.
-            scenario = self.data_structure[self.current_feature_id]["scenarios"][self.current_scenario_id]
-            if self.step_result_count == self.step_count or\
-                step.status == Status.passed or\
-                step.status == Status.failed or\
-                step.status == Status.undefined:
-                scenario["status"] = step.status.name
-                scenario["duration"] = self.current_scenario.duration
-
-            # If the step has result and error message is in result, make sure to embed the error message.
-            if "result" in steps[self.step_result_count] and\
-                "error_message" in steps[self.step_result_count]["result"]:
-                self.embedding(mime_type="text",
-                               data=steps[self.step_result_count]["result"]["error_message"],
-                               caption="Error Message")
-
-            # If the step status is failed, undefined or skipped do not increase the counter.
-            if not (step.status == Status.failed or\
-                step.status == Status.skipped or\
-                step.status == Status.undefined):
-                self.step_result_count += 1
-
-        except Exception:
-            traceback.print_exc(file=sys.stdout)
-
+        self.current_scenario.add_result(step)
 
     def reset(self, reset):
         #print("debug, running reset function - currently unknown if needed")
@@ -295,7 +265,7 @@ class PrettyHTMLFormatter(Formatter):
                 with div(cls="embed"):
                     with div(cls="link"):
                         # Label to be shown.
-                        with a(onclick=f"collapsible_toggle('embed_{self.embed_number}')"):
+                        with a(href="#", onclick=f"collapsible_toggle('embed_{self.embed_number}')"):
                             span(use_caption)
 
                 # Actual Embed.
@@ -314,41 +284,19 @@ class PrettyHTMLFormatter(Formatter):
 
                 if "link" in mime_type:
                     with pre(cls="message-content", id=f"embed_{self.embed_number}", style="display: none"):
-                        with a(href="http://google.com"):
+                        with a(href=data):
                             span(data)
 
 
     def embedding(self, mime_type, data, caption=None, fail_only=False):
         # Find correct scenario.
-        scenario = self.data_structure[self.current_feature_id]["scenarios"]
-
-        # Find correct step to embed data to.
-        if self.step_result_count in scenario[self.current_scenario_id]["steps"]:
-            step = scenario[self.current_scenario_id]["steps"][self.step_result_count]
-        else:
-            step = scenario[self.current_scenario_id]["steps"][self.step_result_count - 1]
-
-        # Actual embed structure.
-        step_embed = step["embed"]
-
-        # Enter the data.
-        step_embed[self.embed_number] = {}
-        step_embed[self.embed_number]["mime_type"] = mime_type
-        step_embed[self.embed_number]["data"] = data
-        step_embed[self.embed_number]["caption"] = caption
-        step_embed[self.embed_number]["last"] = True
-
-        # Since current step is alway 'last' set the previous 'last' to False.
-        if (self.embed_number - 1) in step_embed:
-            step_embed[self.embed_number - 1]["last"] = False
-
-        # The current embed number is used, bump the counter.
-        self.embed_number += 1
+        embed_data = Embed(mime_type, data, caption, fail_only)
+        self.current_scenario.embed(embed_data)
 
 
     def generate_table(self, given_table):
-        table_headings = given_table["headings"]
-        table_rows = given_table["rows"]
+        table_headings = given_table.headings
+        table_rows = given_table.rows
 
         # Generate Table.
         with table():
@@ -390,22 +338,27 @@ class PrettyHTMLFormatter(Formatter):
 
                 ########## FEATURE FILE ITERATION ##########
                 # Base structure for iterating over Features.
-                for feature_id, feature_data in self.data_structure.items():
+                for feature_id, feature in enumerate(self.features):
                     # Feature Panel
                     with div(cls="suite-info"):
                         with div(cls="suite-path"):
 
-                            feature_name = feature_data["name"]
+                            for tag in feature.tags:
+                                with div(cls="test-tags"):
+                                    with div(cls="link"):
+                                        # TODO LINK
+                                        with a(href="#"):
+                                            span("@"+tag)
 
                             # Generate first button.
                             if not self.high_contrast_button:
                                 with a(onclick=f"toggle_contrast('embed')"):
-                                    span(f"Feature: {feature_name} [click for High Contrast]")
+                                    span(f"Feature: {feature.name} [click for High Contrast]")
                                     self.high_contrast_button = True
 
                             # On another feature do not generate.
                             else:
-                                span(f"Feature: {feature_name}")
+                                span(f"Feature: {feature.name}")
 
                         # Suite started information.
                         with div(cls="timestamp"):
@@ -417,46 +370,31 @@ class PrettyHTMLFormatter(Formatter):
 
                             ########## SCENARIOS ITERATION ##########
                             # Base structure for iterating over Scenarios in Features.
-                            for scenario_id, scenario_data in feature_data["scenarios"].items():
-                                # Scenario container.
-                                print(scenario_data["status"])
-                                scenario_status = scenario_data["status"] # passed/failed/undefined/skipped
-
-                                with div(cls=f"scenario-capsule scenario-capsule-{scenario_status}"):
-
-                                    for tag in scenario_data["tags"]:
+                            for scenario_id, scenario in enumerate(feature.scenarios):
+                                # Scenario container.                                
+                                with div(cls=f"scenario-capsule scenario-capsule-{scenario.status}"):
+                                    for tag in scenario.tags:
                                         with div(cls="test-tags"):
                                             with div(cls="link"):
                                                 # TODO LINK
-                                                with a(href="http://google.com"):
+                                                with a(href="#"):
                                                     span("@"+tag)
-
-                                    scenario_name = scenario_data["name"]
-                                    scenario_duration = "{:.2f}s".format(scenario_data["duration"])
 
                                     with div(cls="test-info"):
                                         with div(cls="test-suitename"):
-                                            span(f"Scenario: {scenario_name}")
+                                            span(f"Scenario: {scenario.name}")
 
                                         with div(cls="test-duration"):
-                                            span(f"Scenario duration: {scenario_duration}")
+                                            span(f"Scenario duration: {scenario.duration:.2f}s")
 
                                     ########## STEP ITERATION ##########
                                     # Base structure for iterating over Steps in Scenarios.
-                                    for step_id, step in scenario_data["steps"].items():
+                                    for step_id, step in enumerate(scenario.steps):
 
-                                        # The step has some result saved.
-                                        if "result" in step:
-                                            step_result = step["result"]["status"]
-                                            step_decorator = step["keyword"] + " " + step["name"]
-                                            step_duration = step["result"]["duration"]
-                                            step_link = step["location"]
-                                        # The step has no result therefore it was not executed and was skipped.
-                                        else:
-                                            step_result = "skipped"
-                                            step_decorator = step["keyword"] + " " + step["name"]
-                                            step_duration = float(0)
-                                            step_link = step["location"]
+                                        step_decorator = step.keyword + " " + step.name
+                                        step_duration = step.duration
+                                        step_link = step.location
+                                        step_result = step.status
 
                                         # Define result based on data, we have values for these because of high contrast.
                                         # There should be a more elegant solution to this, this works for now.
@@ -469,7 +407,7 @@ class PrettyHTMLFormatter(Formatter):
                                         elif step_result == "skipped":
                                             result_to_pass = SKIP_NOT_STARTED
                                         else:
-                                            result_to_pass = None
+                                            result_to_pass = SKIP_NOT_STARTED
 
                                         # Generate the step.
                                         self.generate_step(
@@ -477,23 +415,28 @@ class PrettyHTMLFormatter(Formatter):
                                             step_decorator=step_decorator,
                                             step_duration=step_duration,
                                             step_link_label=step_link,
-                                            step_link_location="http://google.com" # TODO dynamic
+                                            step_link_location="#" # TODO dynamic
                                         )
 
                                         # Generate table for a step if present.
-                                        if "table" in step:
-                                            self.generate_table(step["table"])
+                                        if step.table is not None:
+                                            self.generate_table(step.table)
+
+                                        if step.text is not None:
+                                            self.generate_text(step.text)
 
                                         # Generate all embeds that are in the data structure.
-                                        for embed_id, embed_data in step["embed"].items():
-                                            if "embed" in step and step["embed"] != {}:
-                                                self.data_embeding_function(
-                                                    mime_type=embed_data["mime_type"],
-                                                    data=embed_data["data"],
-                                                    caption=embed_data["caption"],
-                                                    last=embed_data["last"],
-                                                    scenario_result=step_result
-                                                )
+                                        last_embed_id = len(step.embeds) - 1
+                                        for embed_id, embed_data in enumerate(step.embeds):
+                                            if embed_data.fail_only and result_to_pass != FAIL:
+                                                continue
+                                            self.data_embeding_function(
+                                                mime_type=embed_data.mime_type,
+                                                data=embed_data.data,
+                                                caption=embed_data.caption,
+                                                last=embed_id == last_embed_id,
+                                                scenario_result=step_result
+                                            )
 
             # Write everything to the stream which should corelate to the -o <file> behave option.
             self.stream.write(self.document.render())
