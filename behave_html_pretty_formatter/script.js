@@ -1,6 +1,10 @@
 function collapsible_toggle(id) {
     var elem = document.getElementById(id);
-    elem.style.display = (elem.style.display == "none" ? "block" : "none");
+    var visible_display = "block";
+    if (id.indexOf("table") >= 0) {
+        visible_display = "contents";
+    } 
+    elem.style.display = (elem.style.display == "none" ? visible_display : "none");
     return false;
 };
 

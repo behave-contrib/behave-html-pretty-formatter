@@ -324,6 +324,7 @@ th, td {
 thead {
 	background-color: #333;
 	color: white;
+  cursor: pointer;
 }
 
 table {

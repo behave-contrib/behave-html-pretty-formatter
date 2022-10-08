@@ -148,6 +148,7 @@ class PrettyHTMLFormatter(Formatter):
 
         self.high_contrast_button = False
         self.embed_number = 0
+        self.table_number = 0
 
         self.suite_start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
@@ -265,7 +266,7 @@ class PrettyHTMLFormatter(Formatter):
                 with div(cls="embed"):
                     with div(cls="link"):
                         # Label to be shown.
-                        with a(href="#", onclick=f"collapsible_toggle('embed_{self.embed_number}')"):
+                        with a(href="#/", onclick=f"collapsible_toggle('embed_{self.embed_number}')"):
                             span(use_caption)
 
                 # Actual Embed.
@@ -292,6 +293,7 @@ class PrettyHTMLFormatter(Formatter):
         # Find correct scenario.
         embed_data = Embed(mime_type, data, caption, fail_only)
         self.current_scenario.embed(embed_data)
+        return embed_data
 
 
     def generate_table(self, given_table):
@@ -302,17 +304,19 @@ class PrettyHTMLFormatter(Formatter):
         with table():
 
             # Make a heading.
-            with thead():
+            with thead(onclick=f"collapsible_toggle('table_{self.table_number}')"):
                 line = tr()
                 for heading in table_headings:
                     line += th(heading)
 
             # Make the body.
-            with tbody():
+            with tbody(id=f"table_{self.table_number}"):
                 for row in table_rows:
                     with tr() as line:
                         for cell in row:
                             line += td(cell)
+
+        self.table_number += 1
 
 
     def close(self):
@@ -347,7 +351,7 @@ class PrettyHTMLFormatter(Formatter):
                                 with div(cls="test-tags"):
                                     with div(cls="link"):
                                         # TODO LINK
-                                        with a(href="#"):
+                                        with a(href="#/"):
                                             span("@"+tag)
 
                             # Generate first button.
@@ -377,7 +381,7 @@ class PrettyHTMLFormatter(Formatter):
                                         with div(cls="test-tags"):
                                             with div(cls="link"):
                                                 # TODO LINK
-                                                with a(href="#"):
+                                                with a(href="#/"):
                                                     span("@"+tag)
 
                                     with div(cls="test-info"):
