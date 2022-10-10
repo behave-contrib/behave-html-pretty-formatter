@@ -375,7 +375,6 @@ class PrettyHTMLFormatter(Formatter):
                             # Scenario container.
                             with div(cls=f"scenario-capsule scenario-capsule-{scenario.status}"):
 
-                                # TODO use the effective tags here, which will pull it from the feature also.
                                 for tag in scenario.tags:
                                     with div(cls="scenario-tags"):
                                         with div(cls="link"):
