@@ -39,13 +39,13 @@ class Feature:
         self.description = feature.description
         self.location = feature.location
         self.status = None
-        
+
         self.scenarios = []
 
     def add_scenario(self, scenario):
-        s = Scenario(scenario, self)
-        self.scenarios.append(s)
-        return s
+        _scenario = Scenario(scenario, self)
+        self.scenarios.append(_scenario)
+        return _scenario
 
 
 class Scenario:
@@ -62,11 +62,11 @@ class Scenario:
         self.duration = 0.0
         self.result_id = 0
         self.steps = []
-    
+
     def add_step(self, step):
-        s = Step(step, self)
-        self.steps.append(s)
-        return s
+        _step = Step(step, self)
+        self.steps.append(_step)
+        return _step
 
     def add_result(self, result):
         step = self.steps[self.result_id]
@@ -102,26 +102,25 @@ class Step:
         self.table = step.table
         self.location = f"{abspath(step.location.filename)}:{step.location.line}"
         self.embeds = []
-    
+
     def add_result(self, result):
         self.status = result.status.name
         self.duration = result.duration
-        
+
         # If the step has error message and step failed, set the error message to the data structure.
         if result.error_message and result.status == Status.failed:
             self.error_message = result.error_message
             self.embed(Embed(mime_type="text", data=self.error_message, caption="Error Message"))
-            
+
         # If the step is undefined use the behave function to provide information and save it to data structure.
         if result.status == Status.undefined:
             undefined_step_message = u"\nYou can implement step definitions for undefined steps with "
             undefined_step_message += u"these snippets:\n\n"
-            undefined_step_message += u"\n".join(make_undefined_step_snippets(undefined_steps=[step]))
+            undefined_step_message += u"\n".join(make_undefined_step_snippets(undefined_steps=[result]))
 
             self.error_message = undefined_step_message
             self.embed(Embed(mime_type="text", data=self.error_message, caption="Error Message"))
-            
-        
+
     def embed(self, embed_data):
         self.embeds.append(embed_data)
 
@@ -375,7 +374,7 @@ class PrettyHTMLFormatter(Formatter):
                             ########## SCENARIOS ITERATION ##########
                             # Base structure for iterating over Scenarios in Features.
                             for scenario_id, scenario in enumerate(feature.scenarios):
-                                # Scenario container.                                
+                                # Scenario container.
                                 with div(cls=f"scenario-capsule scenario-capsule-{scenario.status}"):
                                     for tag in scenario.tags:
                                         with div(cls="test-tags"):
