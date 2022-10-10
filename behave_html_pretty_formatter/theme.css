@@ -228,7 +228,7 @@ header {
 /*EMBED CONTENT*/
 .messages {
   padding: 0 1rem;
-  margin: 0.5rem 0 0.5rem 1rem;
+  margin: 0.5rem;
 }
 .messages.contrast {
   border-bottom: 1px dashed #fff;
