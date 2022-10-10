@@ -401,6 +401,9 @@ class PrettyHTMLFormatter(Formatter):
                                     step_link = step.location
                                     step_result = step.status
 
+                                    # Treat None step_result as skipped.
+                                    step_result = step_result if step_result else "skipped"
+
                                     # Generate the step.
                                     self.generate_step(
                                         step_result=step_result,
