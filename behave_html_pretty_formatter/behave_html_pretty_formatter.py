@@ -17,11 +17,6 @@ from behave.model_core import Status
 from behave.runner_util import make_undefined_step_snippets
 
 
-PASS = "PASS"
-FAIL = "FAIL"
-UNDEFINED = "UNDEFINED"
-SKIP_NOT_STARTED = "SKIP-NOT-STARTED"
-
 DEFAULT_CAPTION_FOR_MIME_TYPE = {
     "video/webm": "Video",
     "image/png": "Screenshot",
@@ -55,7 +50,7 @@ class Scenario:
         self.keyword = scenario.keyword
         self.name = scenario.name
         self.description = scenario.description
-        self.tags = scenario.tags
+        self.tags = scenario.effective_tags
         self.location = scenario.location
         self.steps = {}
         self.status = None
@@ -77,7 +72,7 @@ class Scenario:
                 result.status == Status.undefined:
             self.status = result.status.name
             self.duration = self._scenario.duration
-        # so after_scenario embeds are not in the next step
+        # So after_scenario embeds are not in the next step.
         if result.status != Status.failed:
             self.result_id += 1
         return step
@@ -218,27 +213,36 @@ class PrettyHTMLFormatter(Formatter):
                       step_duration="None",
                       step_link_label="None",
                       step_link_location="None"):
-        with div(cls="step-info"):
-            with div(cls=f"step-capsule step-capsule-{step_result.lower()}"):
 
-                with div(cls="step-status-decorator-duration"):
-                    with div(cls="step-status"):
-                        # Step status for high contrast.
-                        span("SKIP" if step_result in (UNDEFINED, SKIP_NOT_STARTED) else step_result)
+        with div(cls=f"step-capsule step-capsule-{step_result}"):
 
-                    with div(cls="step-decorator"):
-                        # Step decorator.
-                        self.make_bold_text(step_decorator)
+            with div(cls="step-status-decorator-duration-capsule"):
+                with div(cls="step-status"):
 
-                    with div(cls="step-duration"):
-                        short_duration = "{:.2f}s".format(step_duration)
-                        # Step duration
-                        span(f"({short_duration})")
+                    # Behave defined status strings are "passed" "failed" "undefined" "skipped".
+                    # Modify these values for high contrast usage.
+                    high_contrast_status = {
+                        "passed": "PASS",
+                        "failed": "FAIL",
+                        "undefined": "SKIP",
+                        "skipped": "SKIP"
+                    }
+                    # Step status for high contrast - "PASS" "FAIL" "SKIP".
+                    span(high_contrast_status[step_result])
 
-                with div(cls="link"):
-                    with a(href=step_link_location):
-                        # Step link.
-                        span(step_link_label)
+                with div(cls="step-decorator"):
+                    # Step decorator.
+                    self.make_bold_text(step_decorator)
+
+                with div(cls="step-duration"):
+                    short_duration = "{:.2f}s".format(step_duration)
+                    # Step duration.
+                    span(f"({short_duration})")
+
+            with div(cls="link"):
+                with a(href=step_link_location):
+                    # Step link.
+                    span(step_link_label)
 
 
     def data_embeding_function(self, mime_type, data, caption=None, last=True, scenario_result="passed"):
@@ -255,14 +259,14 @@ class PrettyHTMLFormatter(Formatter):
             use_caption = "uknown-mime-type"
             data = "data removed"
 
-        # Serves for css embed purpose for te dotted line after the last embed.
-        last_embed = f"-last" if last else ""
+        # Serves for css embed purpose for the dotted line after the last embed.
+        dashed_line = f"messages-{scenario_result}-dashed" if last else ""
 
-        with div(cls=f"messages-{scenario_result}{last_embed}"):
-            with div(cls="embed-info"):
+        with div(cls=f"messages {dashed_line}"):
+            with div(cls="embed-capsule"):
 
                 # Embed Caption.
-                with div(cls="embed"):
+                with div(cls="embed_button"):
                     with div(cls="link"):
                         # Label to be shown.
                         with a(href="#/", onclick=f"collapsible_toggle('embed_{self.embed_number}')"):
@@ -270,20 +274,20 @@ class PrettyHTMLFormatter(Formatter):
 
                 # Actual Embed.
                 if "video/webm" in mime_type:
-                    with pre(cls="message-content"):
+                    with pre(cls="embed_content"):
                         with video(id=f"embed_{self.embed_number}", style="display: none", width="1024", controls=""):
                             source(src=f"data:{mime_type};base64,{data}    ", type=mime_type)
 
                 if "image/png" in mime_type:
-                    with pre(cls="message-content", id=f"embed_{self.embed_number}", style="display: none"):
+                    with pre(cls="embed_content", id=f"embed_{self.embed_number}", style="display: none"):
                         img(src=f"data:{mime_type};base64,{data}    ")
 
                 if "text" in mime_type:
-                    with pre(cls="message-content", id=f"embed_{self.embed_number}", style="display: none"):
+                    with pre(cls="embed_content", id=f"embed_{self.embed_number}", style="display: none"):
                         span(data)
 
                 if "link" in mime_type:
-                    with pre(cls="message-content", id=f"embed_{self.embed_number}", style="display: none"):
+                    with pre(cls="embed_content", id=f"embed_{self.embed_number}", style="display: none"):
                         with a(href=data):
                             span(data)
 
@@ -343,103 +347,88 @@ class PrettyHTMLFormatter(Formatter):
                 # Base structure for iterating over Features.
                 for feature_id, feature in enumerate(self.features):
                     # Feature Panel
-                    with div(cls="suite-info"):
-                        with div(cls="suite-path"):
+                    with div(cls="feature-panel"):
 
-                            for tag in feature.tags:
-                                with div(cls="test-tags"):
-                                    with div(cls="link"):
-                                        # TODO LINK
-                                        with a(href="#/"):
-                                            span("@"+tag)
+                        # Generate content of the panel.
+                        if not self.high_contrast_button:
+                            # Making sure there is a functioning button.
+                            with a(onclick=f"toggle_contrast('embed')"):
+                                # Creating the actual text content which is clickable.
+                                span(f"Feature: {feature.name} [High Contrast toggle]")
+                                # Set the flag to be sure there is not another one created.
+                                self.high_contrast_button = True
 
-                            # Generate first button.
-                            if not self.high_contrast_button:
-                                with a(onclick=f"toggle_contrast('embed')"):
-                                    span(f"Feature: {feature.name} [click for High Contrast]")
-                                    self.high_contrast_button = True
-
-                            # On another feature do not generate.
-                            else:
-                                span(f"Feature: {feature.name}")
+                        # On another feature do not generate the button.
+                        else:
+                            span(f"Feature: {feature.name}")
 
                         # Suite started information.
-                        with div(cls="timestamp"):
+                        with div(cls="feature-timestamp"):
                             span("Started: " + self.suite_start_time)
 
                     # Feature data container.
                     with div(cls="feature-container"):
-                        with div(cls="suite-tests"):
 
-                            ########## SCENARIOS ITERATION ##########
-                            # Base structure for iterating over Scenarios in Features.
-                            for scenario_id, scenario in enumerate(feature.scenarios):
-                                # Scenario container.
-                                with div(cls=f"scenario-capsule scenario-capsule-{scenario.status}"):
-                                    for tag in scenario.tags:
-                                        with div(cls="test-tags"):
-                                            with div(cls="link"):
-                                                # TODO LINK
-                                                with a(href="#/"):
-                                                    span("@"+tag)
+                        ########## SCENARIOS ITERATION ##########
+                        # Base structure for iterating over Scenarios in Features.
+                        for scenario_id, scenario in enumerate(feature.scenarios):
+                            # Scenario container.
+                            with div(cls=f"scenario-capsule scenario-capsule-{scenario.status}"):
 
-                                    with div(cls="test-info"):
-                                        with div(cls="test-suitename"):
-                                            span(f"Scenario: {scenario.name}")
+                                # TODO use the effective tags here, which will pull it from the feature also.
+                                for tag in scenario.tags:
+                                    with div(cls="scenario-tags"):
+                                        with div(cls="link"):
+                                            # TODO LINK
+                                            with a(href="#/"):
+                                                span("@"+tag)
 
-                                        with div(cls="test-duration"):
-                                            span(f"Scenario duration: {scenario.duration:.2f}s")
+                                # Simple container for name + duration
+                                with div(cls="scenario-info"):
 
-                                    ########## STEP ITERATION ##########
-                                    # Base structure for iterating over Steps in Scenarios.
-                                    for step_id, step in enumerate(scenario.steps):
+                                    with div(cls="scenario-name"):
+                                        span(f"Scenario: {scenario.name}")
 
-                                        step_decorator = step.keyword + " " + step.name
-                                        step_duration = step.duration
-                                        step_link = step.location
-                                        step_result = step.status
+                                    with div(cls="scenario-duration"):
+                                        span(f"Scenario duration: {scenario.duration:.2f}s")
 
-                                        # Define result based on data, we have values for these because of high contrast.
-                                        # There should be a more elegant solution to this, this works for now.
-                                        if step_result == "passed":
-                                            result_to_pass = PASS
-                                        elif step_result == "failed":
-                                            result_to_pass = FAIL
-                                        elif step_result == "undefined":
-                                            result_to_pass = UNDEFINED
-                                        elif step_result == "skipped":
-                                            result_to_pass = SKIP_NOT_STARTED
-                                        else:
-                                            result_to_pass = SKIP_NOT_STARTED
+                                ########## STEP ITERATION ##########
+                                # Base structure for iterating over Steps in Scenarios.
+                                for step_id, step in enumerate(scenario.steps):
 
-                                        # Generate the step.
-                                        self.generate_step(
-                                            step_result=result_to_pass,
-                                            step_decorator=step_decorator,
-                                            step_duration=step_duration,
-                                            step_link_label=step_link,
-                                            step_link_location="#" # TODO dynamic
+                                    step_decorator = step.keyword + " " + step.name
+                                    step_duration = step.duration
+                                    step_link = step.location
+                                    step_result = step.status
+
+                                    # Generate the step.
+                                    self.generate_step(
+                                        step_result=step_result,
+                                        step_decorator=step_decorator,
+                                        step_duration=step_duration,
+                                        step_link_label=step_link,
+                                        step_link_location="#" # TODO dynamic
+                                    )
+
+                                    # Generate table for a step if present.
+                                    if step.table is not None:
+                                        self.generate_table(step.table)
+
+                                    if step.text is not None:
+                                        self.generate_text(step.text)
+
+                                    # Generate all embeds that are in the data structure.
+                                    last_embed_id = len(step.embeds) - 1
+                                    for embed_id, embed_data in enumerate(step.embeds):
+                                        if embed_data.fail_only and step_result != "failed":
+                                            continue
+                                        self.data_embeding_function(
+                                            mime_type=embed_data.mime_type,
+                                            data=embed_data.data,
+                                            caption=embed_data.caption,
+                                            last=embed_id == last_embed_id,
+                                            scenario_result=step_result
                                         )
-
-                                        # Generate table for a step if present.
-                                        if step.table is not None:
-                                            self.generate_table(step.table)
-
-                                        if step.text is not None:
-                                            self.generate_text(step.text)
-
-                                        # Generate all embeds that are in the data structure.
-                                        last_embed_id = len(step.embeds) - 1
-                                        for embed_id, embed_data in enumerate(step.embeds):
-                                            if embed_data.fail_only and result_to_pass != FAIL:
-                                                continue
-                                            self.data_embeding_function(
-                                                mime_type=embed_data.mime_type,
-                                                data=embed_data.data,
-                                                caption=embed_data.caption,
-                                                last=embed_id == last_embed_id,
-                                                scenario_result=step_result
-                                            )
 
             # Write everything to the stream which should corelate to the -o <file> behave option.
             self.stream.write(self.document.render())

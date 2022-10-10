@@ -12,10 +12,6 @@ body {
   padding: 1rem 1rem;
   font-size: 0.85rem;
 }
-#jesthtml-content {
-  margin: 0 auto;
-  max-width: 70rem;
-}
 header {
   display: flex;
   align-items: center;
@@ -24,15 +20,8 @@ header {
   margin: 0;
   flex-grow: 1;
 }
-#logo {
-  height: 4rem;
-}
-#timestamp {
-  color: #777;
-  margin-top: 0.5rem;
-}
 
-/** SUMMARY */
+/* Summary not used, but prepared if needed/requested.*/
 #summary {
   color: #333;
   margin: 2rem 0;
@@ -60,7 +49,6 @@ header {
     margin-top: 0;
   }
 }
-
 .summary-total {
   font-weight: bold;
   margin-bottom: 0.5rem;
@@ -70,8 +58,7 @@ header {
   border-left: 0.4rem solid #4f8a10;
   padding-left: 0.5rem;
 }
-.summary-failed,
-.summary-obsolete-snapshots {
+.summary-failed {
   color: #d8000c;
   border-left: 0.4rem solid #d8000c;
   padding-left: 0.5rem;
@@ -86,42 +73,9 @@ header {
   border-left: 0.4rem solid #999;
 }
 
-.test-info {
-  display: flex;
-  justify-content: space-between;
-  font-size: 1.25rem;
-}
 
-.test-suitename {
-  width: 50%;
-  text-align: left;
-  font-weight: bold;
-  word-break: break-word;
-  padding-bottom: 0.5rem;
-}
-.test-title {
-  width: 40%;
-  text-align: left;
-  font-style: italic;
-}
-.test-status {
-  width: 20%;
-  text-align: right;
-}
-.test-duration {
-  text-align: right;
-  font-size: 0.75rem;
-  font-style: italic;
-  padding: 0 0.5rem 0 0;
-}
-.test-duration.contrast {
-  font-size: 1.25rem;
-  color: rgb(248, 248, 248);
-}
-.suite-container {
-  margin-bottom: 2rem;
-}
-.suite-info {
+/*FEATURE CONTENT*/
+.feature-panel {
   padding: 1rem;
   background-color: #eee;
   color: #777;
@@ -129,28 +83,27 @@ header {
   align-items: center;
   margin-bottom: 0.25rem;
   justify-content: space-between;
-}
-.suite-info .suite-path {
   word-break: break-all;
   flex-grow: 0.5;
   font-size: 1rem;
 }
-.suite-info .suite-time {
-  text-align: right;
-  margin-left: 0.5rem;
-  padding: 0.2rem 0.3rem;
-  font-size: 0.75rem;
-}
-.suite-info .suite-time.warn {
-  background-color: #d8000c;
+.feature-panel.contrast {
+  font-weight: bold;
+  font-size: 1.25rem;
+  background-color: #000;
   color: #fff;
 }
-
-/* Specific rules for qecore */
+.feature-timestamp {
+  padding-left: 1rem;
+  color: #777;
+  display: flex;
+}
 .feature-container {
   margin-bottom: 2rem;
 }
 
+
+/*SCENARIO CONTENT*/
 .scenario-capsule {
   padding: 1rem;
   margin-bottom: 0.5rem;
@@ -172,20 +125,91 @@ header {
 .scenario-capsule-undefined {
   background-color: #ffdf61;
 }
-
-.step-info {
+.scenario-info {
   display: flex;
-  padding: 0.1rem 0 0.1rem 1rem;
   justify-content: space-between;
+  font-size: 1.25rem;
+}
+.scenario-name {
+  width: 50%;
+  text-align: left;
+  font-weight: bold;
+  word-break: break-word;
+  padding-bottom: 0.5rem;
+}
+.scenario-duration {
+  text-align: right;
+  font-size: 0.75rem;
+  font-style: italic;
+  padding: 0 0.5rem 0 0;
+}
+.scenario-duration.contrast {
+  font-size: 1.25rem;
+  color: #fff;
+}
+.scenario-tags {
+  color: #333;
+  font-weight: bold;
+  font-size: 0.75rem;
+  margin: 0.1rem 0 0.5rem 0;
+}
+.scenario-tags.contrast {
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  margin: 0.1rem 0 0.5rem 0;
 }
 
+
 /*STEP CONTENT*/
-.step-status-decorator-duration {
+.step-capsule {
+  margin: 0.1rem 0 0.1rem 0.1rem;
+  padding: 0.5rem;
+  color: #000;
+  display: flex;
+  flex-flow: wrap;
+  font-size: 0.75rem;
+  justify-content: space-between;
+}
+.step-capsule.contrast {
+  background-color: rgb(36, 35, 35);
+  color: #fff;
+  font-size: 1.25rem;
+  border: none;
+}
+.step-capsule-passed{
+  background-color: #c6dba3;
+  border: 1px solid #b4cc8c;
+}
+.step-capsule-failed{
+  background-color: #ea868f;;
+  border: 1px solid #dd7a82;
+}
+.step-capsule-undefined {
+  background-color: #f1cb32;
+  border: 1px solid #f1cb32;
+}
+.step-capsule-skipped {
+  background-color: #cfe2ff;
+  border: 1px solid #b8c9e4;
+}
+.step-capsule-commentary {
+  background-color: #d1d0cb;
+  padding: 0.5rem;
+  margin: 0.5rem 0 0.5rem 1rem;
+}
+.step-status-decorator-duration-capsule {
   display: flex;
 }
 .step-status {
   text-align: left;
   display: none;
+}
+.step-status.contrast {
+  width: 3rem;
+  padding: 0 1rem 0 0;
+  font-weight: bold;
+  font-size: 1.25rem;
 }
 .step-decorator {
   padding: 0 1.5rem 0 0;
@@ -196,123 +220,45 @@ header {
   text-align: left;
   padding: 0 0.5rem 0 0;
 }
-
-.step-capsule {
-  width: 100%;
-  margin: 0.1rem 0 0.1rem 0.1rem;
-  padding: 0.5rem;
-  color: #000;
-  display: flex;
-  flex-flow: wrap;
-  font-size: 0.75rem;
-  justify-content: space-between;
-}
-/*PASS*/
-.step-capsule-pass{
-  background-color: #c6dba3;
-  border: 1px solid #b4cc8c;
-}
-.step-capsule-pass.contrast{
-  background-color: rgb(36, 35, 35);
-  color: #fff;
-  font-size: 1.25rem;
-  border: none;
-}
-/*FAIL*/
-.step-capsule-fail{
-  background-color: #ea868f;;
-  border: 1px solid #dd7a82;
-}
-.step-capsule-fail.contrast{
-  background-color: rgb(36, 35, 35);
-  color: #fff;
-  font-size: 1.25rem;
-  border: none;
-}
-/*SKIP*/
-.step-capsule-undefined {
-  background-color: #f1cb32;
-  border: 1px solid #f1cb32;
-}
-.step-capsule-undefined.contrast{
-  background-color: rgb(36, 35, 35);
-  color: #fff;
-  font-size: 1.25rem;
-  border: none;
-}
-/*SKIP NOT STARTED*/
-.step-capsule-skip-not-started {
-  background-color: #cfe2ff;
-  border: 1px solid #b8c9e4;
-}
-.step-capsule-skip-not-started.contrast {
-  background-color: rgb(36, 35, 35);
-  color: #fff;
-  font-size: 1.25rem;
-  border: none;
-}
-/*COMMENTARY*/
-.step-capsule-commentary {
-  background-color: #d1d0cb;
-  padding: 0.5rem;
-  margin: 0.5rem 0 0.5rem 1rem;
+.step-duration.contrast {
+  color: rgb(248, 248, 248);
 }
 
-.embed-info {
-  margin-top: 1rem;
-}
 
-.embed-links {
-  margin-top: 1rem;
-  display: flex;
-  text-decoration: none;
-}
-
-.embed {
-  margin: 0 1rem 1rem 0;
-  font-weight: bold;
-  color: #000;
-  text-decoration: underline;
-}
-
-.embed.contrast {
-  padding: 0 1rem 0 0;
-  font-weight: bold;
-  font-size: 1.25rem;
-  color: white;
-  text-decoration: underline;
-}
-
-.messages-failed {
+/*EMBED CONTENT*/
+.messages {
   padding: 0 1rem;
   margin: 0.5rem 0 0.5rem 1rem;
 }
-.messages-failed-last {
-  padding: 0 1rem;
-  margin: 0.5rem 0 0.5rem 1rem;
-  border-bottom: 1px dashed #d8000c;
+.messages.contrast {
+  border-bottom: 1px dashed #fff;
 }
-
-.messages-passed {
-  padding: 0 1rem;
-  margin: 0.5rem 0 0.5rem 1rem;
-}
-
-.messages-passed-last {
-  padding: 0 1rem;
-  margin: 0.5rem 0 0.5rem 1rem;
+.messages-passed-dashed {
   border-bottom: 1px dashed #4f8a10;
 }
-
-.messages-undefined {
-  padding: 0 1rem;
-  margin: 0.5rem 0 0.5rem 1rem;
+.messages-failed-dashed {
+  border-bottom: 1px dashed #d8000c;
 }
-
-.messages-undefined-last {
-  padding: 0 1rem;
-  margin: 0.5rem 0 0.5rem 1rem;
+.messages-undefined-dashed {
   border-bottom: 1px dashed #9f6000;
+}
+.embed-capsule {
+  margin-top: 1rem;
+}
+.embed_content{
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.embed_button {
+  margin: 0 1rem 1rem 0;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #000;
+  font-size: 1rem;
+}
+.embed_button.contrast {
+  color: #fff;
+  font-size: 1.25rem;
 }
 
 
@@ -320,13 +266,11 @@ header {
 th, td {
   padding: 6px;
 }
-
 thead {
 	background-color: #333;
 	color: white;
   cursor: pointer;
 }
-
 table {
   color: #333;
   margin: 0.1rem 0 0.2rem 2rem;
@@ -335,146 +279,15 @@ table {
 	text-align: left;
 	vertical-align: middle;
 }
-
-
 tbody tr:nth-child(odd) {
   background-color: #fff;
 }
-
 tbody tr:nth-child(even) {
   background-color: #eee;
 }
 
 
-.page-title {
-  display: flex;
-  color: #000;
-  background-color: #eee;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-  font-weight: bold;
-  justify-content: space-between;
-}
-
-
-/*TEST TAGS*/
-.test-tags {
-  color: #333;
-  font-weight: bold;
-  font-size: 0.75rem;
-  margin: 0.1rem 0 0.5rem 0;
-}
-.test-tags.contrast {
-  color: white;
-  font-weight: bold;
-  font-size: 1rem;
-  margin: 0.1rem 0 0.5rem 0;
-}
-
-
-
-.timestamp {
-  padding-left: 1rem;
-  color: #777;
-  display: flex;
-}
-
-/* HIGH CONTRAST */
-
-
-.suite-info.contrast {
-  font-weight: bold;
-  font-size: 1.25rem;
-  padding: 1rem;
-  background-color: #000;
-  color: #fff;
-  display: flex;
-  margin-bottom: 0.25rem;
-  justify-content: space-between;
-}
-
-.suite-status-plus-name {
-  display: flex;
-}
-
-.suite-status.contrast {
-  padding: 0 1rem 0 0;
-  font-weight: bold;
-  font-size: 1.25rem;
-  background-color: #000;
-  color: #fff;
-}
-
-.suite-name.contrast {
-  text-align: left;
-  font-weight: bold;
-  font-size: 1.25rem;
-}
-
-.suite-time.contrast {
-  text-align: right;
-  font-weight: bold;
-  font-size: 1.25rem;
-}
-
-
-
-.scenario-time.contrast {
-  text-align: right;
-  font-weight: bold;
-  font-size: 1.25rem;
-}
-
-
-.step-status-decorator-capsule-pass.contrast{
-  width: 100%;
-  background-color: rgb(36, 35, 35);
-  padding: 0.5rem;
-  color: #fff;
-  display: flex;
-  font-size: 1.25rem;
-  justify-content: space-between;
-}
-
-.step-decorator-plus-duration{
-  display: flex;
-}
-
-.step-decorator-plus-duration.contrast{
-  display: flex;
-}
-
-.step-status.contrast {
-  width: 3rem;
-  padding: 0 1rem 0 0;
-  font-weight: bold;
-  font-size: 1.25rem;
-}
-
-.step-decorator.contrast{
-  padding: 0 1.5rem 0 0;
-}
-
-.step-duration.contrast {
-  font-style: italic;
-  text-align: left;
-  padding: 0 0.5rem 0 0;
-  color: rgb(248, 248, 248);
-}
-
-.step-link.contrast {
-  text-align: right;
-  text-decoration: none;
-}
-
-
-
-.message-content{
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
+/*IMAGE AND LINK FORMATTING*/
 img {
   max-width: 100%;
   max-height: 100%;
@@ -494,39 +307,4 @@ a {
   color: grey;
   text-decoration: underline;
   text-decoration-color: grey;
-}
-
-.messages-failed.contrast {
-  padding: 0 1rem;
-  margin: 0.5rem 0 0.5rem 1rem;
-  font-size: 1rem;
-}
-
-.messages-failed-last.contrast {
-  padding: 0 1rem;
-  margin: 1rem 0 0.5rem 1rem;
-  border-bottom: 1px dashed white;
-  font-size: 1rem;
-}
-
-.messages-passed.contrast {
-  padding: 0 1rem;
-  margin: 0.5rem 0 0.5rem 1rem;
-}
-
-.messages-passed-last.contrast {
-  padding: 0 1rem;
-  margin: 0.5rem 0 0.5rem 1rem;
-  border-bottom: 1px dashed white;
-}
-
-.messages-undefined.contrast {
-  padding: 0 1rem;
-  margin: 0.5rem 0 0.5rem 1rem;
-}
-
-.messages-undefined-last.contrast {
-  padding: 0 1rem;
-  margin: 0.5rem 0 0.5rem 1rem;
-  border-bottom: 1px dashed white;
 }

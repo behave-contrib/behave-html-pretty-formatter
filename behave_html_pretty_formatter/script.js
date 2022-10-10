@@ -3,7 +3,7 @@ function collapsible_toggle(id) {
     var visible_display = "block";
     if (id.indexOf("table") >= 0) {
         visible_display = "contents";
-    } 
+    }
     elem.style.display = (elem.style.display == "none" ? visible_display : "none");
     return false;
 };
@@ -27,34 +27,28 @@ function toggle_contrast(id) {
     };
 
     const contrast_classes = [
-        "embed",
-        "test-tags",
-        "suite-info",
-        "suite-status",
-        "suite-name",
-        "suite-time",
+        "feature-panel",
+
         "scenario-capsule scenario-capsule-passed",
         "scenario-capsule scenario-capsule-failed",
         "scenario-capsule scenario-capsule-undefined",
-        "scenario-time",
-        "messages-passed",
-        "messages-passed-last",
-        "messages-failed",
-        "messages-failed-last",
-        "messages-undefined",
-        "messages-undefined-last",
-        "step-capsule step-capsule-pass",
-        "step-capsule step-capsule-fail",
+        "scenario-tags",
+        "scenario-duration",
+
+        "step-capsule step-capsule-passed",
+        "step-capsule step-capsule-failed",
         "step-capsule step-capsule-undefined",
-        "step-capsule step-capsule-skip-not-started",
+        "step-capsule step-capsule-skipped",
         "step-capsule step-capsule-commentary",
-        "step-decorator-plus-duration",
         "step-status",
-        "step-decorator",
-        "test-duration",
         "step-duration",
-        "step-link",
+
+        "messages messages-passed-dashed",
+        "messages messages-failed-dashed",
+        "messages messages-undefined-dashed",
+        "embed_button",
         "link",
+
     ];
     contrast_classes.forEach(toggle_contrast_for);
 };
