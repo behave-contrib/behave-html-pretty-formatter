@@ -1,8 +1,10 @@
 # Inspired by https://github.com/Hargne/jest-html-reporter
 
 from __future__ import absolute_import
+import os
 import sys
 import traceback
+import base64
 from curses import raw
 from posixpath import abspath
 from pathlib import Path
@@ -72,9 +74,11 @@ class Scenario:
                 result.status == Status.undefined:
             self.status = result.status.name
             self.duration = self._scenario.duration
-        # So after_scenario embeds are not in the next step.
-        if result.status != Status.failed:
+
+        # The result_id needs to be bumped on Status.passed only.
+        if result.status == Status.passed:
             self.result_id += 1
+
         return step
 
     def embed(self, embed_data):
@@ -261,6 +265,11 @@ class PrettyHTMLFormatter(Formatter):
 
         # Serves for css embed purpose for the dotted line after the last embed.
         dashed_line = f"messages-{scenario_result}-dashed" if last else ""
+
+        # Check if the content of the data is a valid file - if so encode it to base64.
+        if os.path.isfile(data):
+            data_base64 = base64.b64encode(open(data, "rb").read())
+            data = data_base64.decode("utf-8").replace("\n", "")
 
         with div(cls=f"messages {dashed_line}"):
             with div(cls="embed-capsule"):
