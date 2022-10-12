@@ -52,22 +52,32 @@ class Scenario:
         self.keyword = scenario.keyword
         self.name = scenario.name
         self.description = scenario.description
-        self.tags = scenario.effective_tags
+
+        # We need another information about a tag, to recognize if it should act as a link or span.
+        self.tags = list(map(lambda x: [x, None], scenario.effective_tags))
+
         self.location = scenario.location
-        self.steps = {}
         self.status = None
         self.duration = 0.0
         self.result_id = 0
         self.steps = []
+
+        self.saved_matched_filename = None
+        self.saved_matched_line = None
 
     def add_step(self, step):
         _step = Step(step, self)
         self.steps.append(_step)
         return _step
 
+    def add_match(self, filename, line):
+        self.saved_matched_filename = filename
+        self.saved_matched_line = line
+
     def add_result(self, result):
         step = self.steps[self.result_id]
-        step.add_result(result)
+        step.add_result(result, self.saved_matched_filename, self.saved_matched_line)
+
         if self.result_id == len(self.steps) or\
                 result.status == Status.passed or\
                 result.status == Status.failed or\
@@ -78,7 +88,6 @@ class Scenario:
         # The result_id needs to be bumped on Status.passed only.
         if result.status == Status.passed:
             self.result_id += 1
-
         return step
 
     def embed(self, embed_data):
@@ -99,19 +108,24 @@ class Step:
         self.name = step.name
         self.text = step.text
         self.table = step.table
-        self.location = f"{abspath(step.location.filename)}:{step.location.line}"
+        self.location = "None:None"
+        self.location_link = None
         self.embeds = []
 
-    def add_result(self, result):
+    def add_result(self, result, matched_filename, matched_line):
         self.status = result.status.name
         self.duration = result.duration
 
-        # If the step has error message and step failed, set the error message to the data structure.
+        self.saved_matched_filename = matched_filename
+        self.saved_matched_line = matched_line
+        self.location = str(self.saved_matched_filename) + ":" + str(self.saved_matched_line)
+
+        # If the step has error message and step failed, set the error message.
         if result.error_message and result.status == Status.failed:
             self.error_message = result.error_message
             self.embed(Embed(mime_type="text", data=self.error_message, caption="Error Message"))
 
-        # If the step is undefined use the behave function to provide information and save it to data structure.
+        # If the step is undefined use the behave function to provide information about it.
         if result.status == Status.undefined:
             undefined_step_message = u"\nYou can implement step definitions for undefined steps with "
             undefined_step_message += u"these snippets:\n\n"
@@ -138,6 +152,7 @@ class Embed:
 class PrettyHTMLFormatter(Formatter):
     name = "html-pretty"
     description = "Pretty HTML formatter"
+    title_string = "Test Suite Reporter"
 
     def __init__(self, stream, config):
         super(PrettyHTMLFormatter, self).__init__(stream, config)
@@ -150,30 +165,29 @@ class PrettyHTMLFormatter(Formatter):
 
         self.suite_start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
-        # Theory of what this will do:
-        # This will return a stream given in behave call -o report.html.
+        # This will return a stream given in behave call -o <file_name>.html.
         self.stream = self.open()
 
-
     def feature(self, feature):
-        print("DEBUG, executing feature")
         self.current_feature = Feature(feature)
         self.features.append(self.current_feature)
 
-
     def scenario(self, scenario):
-        print("DEBUG, executing scenario")
         self.current_scenario = self.current_feature.add_scenario(scenario)
 
-
     def step(self, step):
-        print("DEBUG, executing step")
         self.current_scenario.add_step(step)
 
-
     def result(self, step):
-        print("DEBUG, executing result")
         self.current_scenario.add_result(step)
+
+    def match(self, match):
+        print(f"Matching: '{match}'")
+        # Executed before result.
+        # Needed for knowing from where the code is coming from, instead of just location in the feature file.
+        if match.location:
+            self.current_scenario.add_match(match.location.filename, match.location.line)
+
 
     def reset(self, reset):
         #print("debug, running reset function - currently unknown if needed")
@@ -183,15 +197,9 @@ class PrettyHTMLFormatter(Formatter):
         #print("debug, running uri function - currently unknown if needed")
         pass
 
-    def match(self, match):
-        #print(f"debug, running match function - currently unknown if needed: {match}")
-        #print(f"match location {match.location}")
-        pass
-
     def background(self, background):
         #print("debug, running background function - currently unknown if needed")
         pass
-
 
     # Making bold text in between quotes.
     def make_bold_text(self, given_string):
@@ -203,20 +211,17 @@ class PrettyHTMLFormatter(Formatter):
             first_part, bold_text, the_rest = the_rest.split("\"", 2)
 
             span(first_part)
-            span(" \"")
-            b(bold_text)
-            span("\" ")
+            b(f"\"{bold_text}\"")
 
         span(the_rest)
 
-
     # Used to generate a steps.
     def generate_step(self,
-                      step_result="None",
-                      step_decorator="None",
-                      step_duration="None",
-                      step_link_label="None",
-                      step_link_location="None"):
+                      step_result,
+                      step_decorator,
+                      step_duration,
+                      step_link_label,
+                      step_link_location):
 
         with div(cls=f"step-capsule step-capsule-{step_result}"):
 
@@ -243,10 +248,13 @@ class PrettyHTMLFormatter(Formatter):
                     # Step duration.
                     span(f"({short_duration})")
 
-            with div(cls="link"):
-                with a(href=step_link_location):
-                    # Step link.
-                    span(step_link_label)
+            # Make the link only when the link is provided
+            if step_link_location:
+                with div(cls="link"):
+                    with a(href=step_link_location):
+                        span(step_link_label)
+            else:
+                span(step_link_label)
 
 
     def data_embeding_function(self, mime_type, data, caption=None, last=True, scenario_result="passed"):
@@ -308,6 +316,10 @@ class PrettyHTMLFormatter(Formatter):
         return embed_data
 
 
+    def set_title(self, title):
+        self.title_string = title
+
+
     def generate_table(self, given_table):
         table_headings = given_table.headings
         table_rows = given_table.rows
@@ -335,7 +347,7 @@ class PrettyHTMLFormatter(Formatter):
         # Try block to be removed - debugging purposes only.
         try:
             # Generate everything.
-            self.document = dominate.document(title="Test Suite Reporter", pretty_flags=False)
+            self.document = dominate.document(title=self.title_string, pretty_flags=False)
 
             # Iterate over the data and generate the page.
             with self.document.head:
@@ -386,10 +398,14 @@ class PrettyHTMLFormatter(Formatter):
 
                                 for tag in scenario.tags:
                                     with div(cls="scenario-tags"):
-                                        with div(cls="link"):
-                                            # TODO LINK
-                                            with a(href="#/"):
-                                                span("@"+tag)
+                                        # Do not make links by default, this is handled on qecore side for links to bugzilla.
+                                        # Tags come with structure [<tag>, None] or [<tag>, <bugzilla_link/git_link>]
+                                        if tag[1] is not None:
+                                            with div(cls="link"):
+                                                with a(href=tag[1]):
+                                                    span("@" + tag[0])
+                                        else:
+                                            span("@" + tag[0])
 
                                 # Simple container for name + duration
                                 with div(cls="scenario-info"):
@@ -403,22 +419,14 @@ class PrettyHTMLFormatter(Formatter):
                                 ########## STEP ITERATION ##########
                                 # Base structure for iterating over Steps in Scenarios.
                                 for step_id, step in enumerate(scenario.steps):
-
-                                    step_decorator = step.keyword + " " + step.name
-                                    step_duration = step.duration
-                                    step_link = step.location
-                                    step_result = step.status
-
-                                    # Treat None step_result as skipped.
-                                    step_result = step_result if step_result else "skipped"
-
                                     # Generate the step.
+                                    step_result = step.status if step.status else "skipped"
                                     self.generate_step(
-                                        step_result=step_result,
-                                        step_decorator=step_decorator,
-                                        step_duration=step_duration,
-                                        step_link_label=step_link,
-                                        step_link_location="#" # TODO dynamic
+                                        step_result = step_result,
+                                        step_decorator = step.keyword + " " + step.name,
+                                        step_duration = step.duration,
+                                        step_link_label = step.location,
+                                        step_link_location = step.location_link
                                     )
 
                                     # Generate table for a step if present.
