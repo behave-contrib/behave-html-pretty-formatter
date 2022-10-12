@@ -18,6 +18,12 @@ from behave.model_core import Status
 from behave.runner_util import make_undefined_step_snippets
 
 
+#TODO
+# Timestamp next to the human-readable time.
+# Experiment with collapsible substeps.
+# Maybe put tags on one line instead under each other, it takes too much space I think.
+
+
 DEFAULT_CAPTION_FOR_MIME_TYPE = {
     "video/webm": "Video",
     "image/png": "Screenshot",
