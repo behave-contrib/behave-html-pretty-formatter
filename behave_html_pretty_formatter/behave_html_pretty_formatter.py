@@ -310,8 +310,15 @@ class PrettyHTMLFormatter(Formatter):
 
                 if "link" in mime_type:
                     with pre(cls="embed_content", id=f"embed_{self.embed_number}", style="display: none"):
-                        with a(href=data):
-                            span(data)
+                        # FAF reports are coming in format set( [link, label], ... )
+                        if type(data) is set:
+                            for single_link in data:
+                                with a(href=single_link[0]):
+                                    span(single_link[1])
+                        # If not 'set' lets assume the data is type list
+                        else:
+                            with a(href=data[0]):
+                                span(data[1])
 
 
     def embedding(self, mime_type, data, caption=None, fail_only=False):
