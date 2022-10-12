@@ -194,9 +194,8 @@ header {
   border: 1px solid #b8c9e4;
 }
 .step-capsule-commentary {
-  background-color: #d1d0cb;
-  padding: 0.5rem;
-  margin: 0.5rem 0 0.5rem 1rem;
+  background-color: #b9b9b9;
+  margin: 0.2rem 0 0.2rem 1rem;
 }
 .step-status-decorator-duration-capsule {
   display: flex;
