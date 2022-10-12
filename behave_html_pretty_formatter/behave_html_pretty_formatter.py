@@ -70,13 +70,13 @@ class Scenario:
         self.steps.append(_step)
         return _step
 
-    def add_match(self, filename, line):
-        self.saved_matched_filename = filename
-        self.saved_matched_line = line
+    def add_match(self, match):
+        step = self.steps[self.result_id]
+        step.location = str(match.location.filename) + ":" + str(match.location.line)
 
     def add_result(self, result):
         step = self.steps[self.result_id]
-        step.add_result(result, self.saved_matched_filename, self.saved_matched_line)
+        step.add_result(result)
 
         if self.result_id == len(self.steps) or\
                 result.status == Status.passed or\
@@ -108,17 +108,13 @@ class Step:
         self.name = step.name
         self.text = step.text
         self.table = step.table
-        self.location = "None:None"
+        self.location = ""
         self.location_link = None
         self.embeds = []
 
-    def add_result(self, result, matched_filename, matched_line):
+    def add_result(self, result):
         self.status = result.status.name
         self.duration = result.duration
-
-        self.saved_matched_filename = matched_filename
-        self.saved_matched_line = matched_line
-        self.location = str(self.saved_matched_filename) + ":" + str(self.saved_matched_line)
 
         # If the step has error message and step failed, set the error message.
         if result.error_message and result.status == Status.failed:
@@ -182,11 +178,10 @@ class PrettyHTMLFormatter(Formatter):
         self.current_scenario.add_result(step)
 
     def match(self, match):
-        print(f"Matching: '{match}'")
         # Executed before result.
         # Needed for knowing from where the code is coming from, instead of just location in the feature file.
         if match.location:
-            self.current_scenario.add_match(match.location.filename, match.location.line)
+            self.current_scenario.add_match(match)
 
 
     def reset(self, reset):
