@@ -87,6 +87,16 @@ header {
   flex-grow: 0.5;
   font-size: 1rem;
 }
+.feature-icon-name-container {
+  display: flex;
+}
+.feature-panel-icon {
+  height:1.2rem;
+  margin: 0 0.3rem 0 0;
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
+}
 .feature-panel.contrast {
   font-weight: bold;
   font-size: 1.25rem;
@@ -95,7 +105,6 @@ header {
 }
 .feature-timestamp {
   padding-left: 1rem;
-  color: #777;
   display: flex;
 }
 .feature-container {

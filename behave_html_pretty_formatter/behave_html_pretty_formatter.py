@@ -162,6 +162,9 @@ class PrettyHTMLFormatter(Formatter):
 
         self.suite_start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
+        # Some type of icon can be set.
+        self.icon = None
+
         # This will return a stream given in behave call -o <file_name>.html.
         self.stream = self.open()
 
@@ -316,6 +319,10 @@ class PrettyHTMLFormatter(Formatter):
         self.title_string = title
 
 
+    def set_icon(self, icon):
+        self.icon = icon
+
+
     def generate_table(self, given_table):
         table_headings = given_table.headings
         table_rows = given_table.rows
@@ -391,19 +398,23 @@ class PrettyHTMLFormatter(Formatter):
                 for feature_id, feature in enumerate(self.features):
                     # Feature Panel
                     with div(cls="feature-panel"):
+                        with div(cls="feature-icon-name-container"):
+                            if self.icon:
+                                with div(cls="feature-panel-icon"):
+                                    img(src=self.icon)
 
-                        # Generate content of the panel.
-                        if not self.high_contrast_button:
-                            # Making sure there is a functioning button.
-                            with a(onclick=f"toggle_contrast('embed')"):
-                                # Creating the actual text content which is clickable.
-                                span(f"Feature: {feature.name} [High Contrast toggle]")
-                                # Set the flag to be sure there is not another one created.
-                                self.high_contrast_button = True
+                            # Generate content of the panel.
+                            if not self.high_contrast_button:
+                                # Making sure there is a functioning button.
+                                with a(onclick=f"toggle_contrast('embed')"):
+                                    # Creating the actual text content which is clickable.
+                                    span(f"Feature: {feature.name} [High Contrast toggle]")
+                                    # Set the flag to be sure there is not another one created.
+                                    self.high_contrast_button = True
 
-                        # On another feature do not generate the button.
-                        else:
-                            span(f"Feature: {feature.name}")
+                            # On another feature do not generate the button.
+                            else:
+                                span(f"Feature: {feature.name}")
 
                         # Suite started information.
                         with div(cls="feature-timestamp"):
