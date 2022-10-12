@@ -112,6 +112,8 @@ class Step:
         self.location_link = None
         self.embeds = []
 
+        self.commentary_override = False
+
     def add_result(self, result):
         self.status = result.status.name
         self.duration = result.duration
@@ -358,6 +360,12 @@ class PrettyHTMLFormatter(Formatter):
         #    pre(f"{given_text}")
 
 
+    def generate_comment(self, commentary):
+        # Generate commentary step.
+        with div(cls=f"step-capsule step-capsule-commentary"):
+            pre(f"{commentary}")
+
+
     def close(self):
         # Try block to be removed - debugging purposes only.
         try:
@@ -434,6 +442,12 @@ class PrettyHTMLFormatter(Formatter):
                                 ########## STEP ITERATION ##########
                                 # Base structure for iterating over Steps in Scenarios.
                                 for step_id, step in enumerate(scenario.steps):
+                                    # There was a request for a commentary step.
+                                    # Such step would serve only as an information panel.
+                                    if step.commentary_override:
+                                        self.generate_comment(step.text)
+                                        continue
+
                                     # Generate the step.
                                     step_result = step.status if step.status else "skipped"
                                     self.generate_step(
