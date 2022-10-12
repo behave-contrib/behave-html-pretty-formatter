@@ -338,6 +338,26 @@ class PrettyHTMLFormatter(Formatter):
         self.table_number += 1
 
 
+    def generate_text(self, given_text):
+        with table():
+            # Do not make the table header.
+            with thead(onclick=f"collapsible_toggle('table_{self.table_number}')"):
+                line = tr()
+                line += th("Data")
+            # Make the body.
+            with tbody(id=f"table_{self.table_number}"):
+                # Make rows.
+                for row in given_text.split("\n"):
+                    with tr() as line:
+                        line += td(row)
+
+        self.table_number += 1
+
+        # To test just a commentary field, this does not look good, we can use the table^
+        with div(cls=f"step-capsule step-capsule-commentary"):
+            pre(f"{given_text}")
+
+
     def close(self):
         # Try block to be removed - debugging purposes only.
         try:
@@ -428,6 +448,7 @@ class PrettyHTMLFormatter(Formatter):
                                     if step.table is not None:
                                         self.generate_table(step.table)
 
+                                    # Generate text field for a step if present.
                                     if step.text is not None:
                                         self.generate_text(step.text)
 
