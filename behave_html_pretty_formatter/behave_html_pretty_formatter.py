@@ -354,8 +354,8 @@ class PrettyHTMLFormatter(Formatter):
         self.table_number += 1
 
         # To test just a commentary field, this does not look good, we can use the table^
-        with div(cls=f"step-capsule step-capsule-commentary"):
-            pre(f"{given_text}")
+        #with div(cls=f"step-capsule step-capsule-commentary"):
+        #    pre(f"{given_text}")
 
 
     def close(self):
