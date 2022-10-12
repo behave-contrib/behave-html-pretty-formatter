@@ -6,7 +6,6 @@ import sys
 import traceback
 import base64
 from curses import raw
-from posixpath import abspath
 from pathlib import Path
 from datetime import datetime
 
