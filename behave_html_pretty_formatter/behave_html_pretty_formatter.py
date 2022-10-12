@@ -280,7 +280,7 @@ class PrettyHTMLFormatter(Formatter):
         dashed_line = f"messages-{scenario_result}-dashed" if last else ""
 
         # Check if the content of the data is a valid file - if so encode it to base64.
-        if os.path.isfile(data):
+        if os.path.isfile(str(data)):
             data_base64 = base64.b64encode(open(data, "rb").read())
             data = data_base64.decode("utf-8").replace("\n", "")
 
