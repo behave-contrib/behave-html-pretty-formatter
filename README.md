@@ -6,7 +6,7 @@
 ## Installation - NOT LIVE YET - still much TODO
 
 ```shell
-$ sudo python3 -m pip install behave-html-pretty-formatter
+sudo python3 -m pip install behave-html-pretty-formatter
 ```
 
 ## Usage
@@ -28,6 +28,7 @@ behave -f help
 behave -f html-pretty
 behave -f html-pretty -o behave-report.html
 ```
+
 You can find information about behave and user-defined formatters in the
 [behave docs](https://behave.readthedocs.io/en/latest/formatters.html).
 
@@ -67,17 +68,11 @@ f"data:image/png;base64,{data_encoded}"
 
 ### Basic setup for using formatter functions
 
-
-
-
-
 ```python
 for formatter in context._runner.formatters:
     if formatter.name == "html-pretty":
         context.formatter = formatter
 ```
-
-
 
 ### Set Icon
 
@@ -126,7 +121,6 @@ Feature file example usage:
 
 ```
 
-
 And the result will look like this:
 
 ![Examples](src/commentary_example.png)
@@ -165,6 +159,7 @@ mime_type="image/png", data="/path/to/image.png" or data="<base64_encoded_image>
 mime_type="text/plain", data="<string>"
 mime_type="link", data="<set([<link>, <label>],...)>" or data="list(<link>, <label>)"
 ```
+
 You can simply set `data=data_encoded` generated as described in [Encoding to base64](#encoding-to-base64) section and the formatter will generate the proper [Format](#format-in-which-the-data-is-inserted-to-the-html) based on MIME type or you can just use the `data="/path/to/file"` and formatter will attempt to convert it.
 
 ## Static Examples
