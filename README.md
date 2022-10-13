@@ -31,7 +31,7 @@ behave -f html-pretty -o behave-report.html
 You can find information about behave and user-defined formatters in the
 [behave docs](https://behave.readthedocs.io/en/latest/formatters.html).
 
-## HTML Pretty comes with High Contrast option
+## HTML Pretty has High Contrast option
 
 - [Default Static Example](#html-pretty):
 - [High Contrast Static Example](#html-pretty-high-contrast):
