@@ -34,10 +34,7 @@ DEFAULT_CAPTION_FOR_MIME_TYPE = {
 
 class Feature:
     def __init__(self, feature):
-        self._feature = feature
         self.name = feature.name
-        self.tags = feature.tags
-        self.keyword = feature.keyword
         self.description = feature.description
         self.location = feature.location
         self.status = None
@@ -54,12 +51,11 @@ class Scenario:
     def __init__(self, scenario, feature):
         self._scenario = scenario
         self.feature = feature
-        self.keyword = scenario.keyword
         self.name = scenario.name
         self.description = scenario.description
 
         # We need another information about a tag, to recognize if it should act as a link or span.
-        self.tags = list(map(lambda x: [x, None], scenario.effective_tags))
+        self.tags = [Tag(tag) for tag in scenario.effective_tags]
 
         self.location = scenario.location
         self.status = None
@@ -70,17 +66,29 @@ class Scenario:
         self.saved_matched_filename = None
         self.saved_matched_line = None
 
-    def add_step(self, step):
-        _step = Step(step, self)
-        self.steps.append(_step)
+    def add_step(self, keyword, name, text=None, table=None, index=None):
+        _step = Step(keyword, name, text, table, self)
+        if index is None:
+            self.steps.append(_step)
+        else:
+            self.steps.insert(index, _step)
         return _step
 
+    @property
+    def actual_step(self):
+        if len(self.steps) <= self.result_id:
+            _step = self.steps[-1]
+        else:
+            _step = self.steps[self.result_id]
+        return _step
+
+
     def add_match(self, match):
-        step = self.steps[self.result_id]
+        step = self.actual_step
         step.location = str(match.location.filename) + ":" + str(match.location.line)
 
     def add_result(self, result):
-        step = self.steps[self.result_id]
+        step = self.actual_step
         step.add_result(result)
 
         if self.result_id == len(self.steps) or\
@@ -93,26 +101,24 @@ class Scenario:
         # The result_id needs to be bumped on Status.passed only.
         if result.status == Status.passed:
             self.result_id += 1
-        return step
+        return step        
 
     def embed(self, embed_data):
-        if len(self.steps) <= self.result_id:
-            step = self.steps[-1]
-        else:
-            step = self.steps[self.result_id]
-        step.embed(embed_data)
+        self.actual_step.embed(embed_data)
+
+    def commentary(self, value=True):
+        self.actual_step.commentary_override = value
 
 
 class Step:
-    def __init__(self, step, scenario):
+    def __init__(self, keyword, name, text, table, scenario):
         self.status = None
         self.duration = 0.0
         self.scenario = scenario
-        self.keyword = step.keyword
-        self.step_type = step.step_type
-        self.name = step.name
-        self.text = step.text
-        self.table = step.table
+        self.keyword = keyword
+        self.name = name
+        self.text = text
+        self.table = table
         self.location = ""
         self.location_link = None
         self.embeds = []
@@ -143,10 +149,24 @@ class Step:
 
 class Embed:
     def __init__(self, mime_type, data, caption=None, fail_only=False):
-        self.mime_type = mime_type
-        self.data = data
-        self.caption = caption
-        self.fail_only = fail_only
+        self._mime_type = mime_type
+        self._data = data
+        self._caption = caption
+        self._fail_only = fail_only
+    
+    def set_data(self, mime_type, data, caption=None):
+        self._mime_type = mime_type
+        self._data = data
+        self._caption = caption
+        
+    def set_fail_only(self, fail_only):
+        self._fail_only = fail_only
+
+
+class Tag:
+    def __init__(self, behave_tag, link=None):
+        self.behave_tag = behave_tag
+        self.link = link
 
 
 # Heavily based on behave.formatter.json:JSONFormatter
@@ -156,6 +176,7 @@ class PrettyHTMLFormatter(Formatter):
     name = "html-pretty"
     description = "Pretty HTML formatter"
     title_string = "Test Suite Reporter"
+    Embed = Embed
 
     def __init__(self, stream, config):
         super(PrettyHTMLFormatter, self).__init__(stream, config)
@@ -182,7 +203,7 @@ class PrettyHTMLFormatter(Formatter):
         self.current_scenario = self.current_feature.add_scenario(scenario)
 
     def step(self, step):
-        self.current_scenario.add_step(step)
+        self.current_scenario.add_step(step.keyword, step.name, step.text, step.table)
 
     def result(self, step):
         self.current_scenario.add_result(step)
@@ -262,8 +283,12 @@ class PrettyHTMLFormatter(Formatter):
                 span(step_link_label)
 
 
-    def data_embeding_function(self, mime_type, data, caption=None, last=True, scenario_result="passed"):
+    def data_embeding_function(self, embed_data):
         self.embed_number += 1
+
+        caption = embed_data._caption
+        mime_type = embed_data._mime_type
+        data = embed_data._data
 
         # If caption is user defined.
         if caption is not None:
@@ -276,15 +301,12 @@ class PrettyHTMLFormatter(Formatter):
             use_caption = "uknown-mime-type"
             data = "data removed"
 
-        # Serves for css embed purpose for the dotted line after the last embed.
-        dashed_line = f"messages-{scenario_result}-dashed" if last else ""
-
         # Check if the content of the data is a valid file - if so encode it to base64.
         if os.path.isfile(str(data)):
             data_base64 = base64.b64encode(open(data, "rb").read())
             data = data_base64.decode("utf-8").replace("\n", "")
 
-        with div(cls=f"messages {dashed_line}"):
+        with div(cls="messages"):
             with div(cls="embed-capsule"):
 
                 # Embed Caption.
@@ -389,7 +411,7 @@ class PrettyHTMLFormatter(Formatter):
         # Try block to be removed - debugging purposes only.
         try:
             # Generate everything.
-            self.document = dominate.document(title=self.title_string, pretty_flags=False)
+            self.document = dominate.document(title=self.title_string, pretty_flags=True)
 
             # Iterate over the data and generate the page.
             with self.document.head:
@@ -419,7 +441,7 @@ class PrettyHTMLFormatter(Formatter):
                             # Generate content of the panel.
                             if not self.high_contrast_button:
                                 # Making sure there is a functioning button.
-                                with a(onclick=f"toggle_contrast('embed')"):
+                                with a(onclick=f"toggle_contrast('embed')", href="#"):
                                     # Creating the actual text content which is clickable.
                                     span(f"Feature: {feature.name} [High Contrast toggle]")
                                     # Set the flag to be sure there is not another one created.
@@ -446,12 +468,12 @@ class PrettyHTMLFormatter(Formatter):
                                     with div(cls="scenario-tags"):
                                         # Do not make links by default, this is handled on qecore side for links to bugzilla.
                                         # Tags come with structure [<tag>, None] or [<tag>, <bugzilla_link/git_link>]
-                                        if tag[1] is not None:
+                                        if tag.link is not None:
                                             with div(cls="link"):
-                                                with a(href=tag[1]):
-                                                    span("@" + tag[0])
+                                                with a(href=tag.link):
+                                                    span("@" + tag.behave_tag)
                                         else:
-                                            span("@" + tag[0])
+                                            span("@" + tag.behave_tag)
 
                                 # Simple container for name + duration
                                 with div(cls="scenario-info"):
@@ -490,17 +512,13 @@ class PrettyHTMLFormatter(Formatter):
                                         self.generate_text(step.text)
 
                                     # Generate all embeds that are in the data structure.
-                                    last_embed_id = len(step.embeds) - 1
-                                    for embed_id, embed_data in enumerate(step.embeds):
-                                        if embed_data.fail_only and step_result != "failed":
-                                            continue
-                                        self.data_embeding_function(
-                                            mime_type=embed_data.mime_type,
-                                            data=embed_data.data,
-                                            caption=embed_data.caption,
-                                            last=embed_id == last_embed_id,
-                                            scenario_result=step_result
-                                        )
+                                    # Add div for dashed-line last-child CSS selector.
+                                    with div(cls="embeds"):
+                                        last_embed_id = len(step.embeds) - 1
+                                        for embed_id, embed_data in enumerate(step.embeds):
+                                            if embed_data._fail_only and step_result != "failed":
+                                                continue
+                                            self.data_embeding_function(embed_data=embed_data)
 
             # Write everything to the stream which should corelate to the -o <file> behave option.
             self.stream.write(self.document.render())

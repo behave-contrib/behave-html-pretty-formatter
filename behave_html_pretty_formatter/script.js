@@ -47,9 +47,7 @@ function toggle_contrast(id) {
         "step-status",
         "step-duration",
 
-        "messages messages-passed-dashed",
-        "messages messages-failed-dashed",
-        "messages messages-undefined-dashed",
+        "messages",
         "embed_button",
         "link",
 

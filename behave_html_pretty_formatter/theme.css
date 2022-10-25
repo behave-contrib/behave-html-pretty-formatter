@@ -172,7 +172,7 @@ header {
 
 /*STEP CONTENT*/
 .step-capsule {
-  margin: 0.1rem 0 0.1rem 0.1rem;
+  margin: 2px 0 2px 2px;
   padding: 0.5rem;
   color: #000;
   display: flex;
@@ -235,19 +235,19 @@ header {
 
 /*EMBED CONTENT*/
 .messages {
-  padding: 0 1rem;
-  margin: 0.5rem;
+  padding: 2px;
+  margin: 10px;
 }
-.messages.contrast {
+.scenario-capsule .messages.contrast:last-child {
   border-bottom: 1px dashed #fff;
 }
-.messages-passed-dashed {
+.scenario-capsule-passed .messages:last-child {
   border-bottom: 1px dashed #4f8a10;
 }
-.messages-failed-dashed {
+.scenario-capsule-failed .messages:last-child {
   border-bottom: 1px dashed #d8000c;
 }
-.messages-undefined-dashed {
+.scenario-capsule-undefined .messages:last-child {
   border-bottom: 1px dashed #9f6000;
 }
 .embed-capsule {
