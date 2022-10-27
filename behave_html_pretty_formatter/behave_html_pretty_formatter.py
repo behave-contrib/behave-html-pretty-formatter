@@ -56,11 +56,13 @@ class Feature:
 
         self.scenarios = []
         self.to_embed = []
+        self.scenario_finished = True
         self.scenario_begin_timestamp = time.time()
         self.before_scenario_duration = 0.0
         self.before_scenario_status = "skipped"
 
     def add_scenario(self, scenario, pseudo_steps=False):
+        self.scenario_finished = False
         _scenario = Scenario(scenario, self, pseudo_steps)
         for embed_data in self.to_embed:
             _scenario.embed(embed_data)
@@ -85,6 +87,7 @@ class Feature:
         self.before_scenario_status = status
 
     def after_scenario_finish(self, status):
+        self.scenario_finished = True
         _scenario = self.scenarios[-1]
         _step = _scenario.after_scenario_step
         if _step is not None:
@@ -311,23 +314,20 @@ class PrettyHTMLFormatter(Formatter):
 
     @property
     def current_scenario(self):
-        if self.current_feature is None:
+        _feature = self.current_feature
+        if not _feature or not _feature.scenarios or _feature.scenario_finished:
             return None
-        if len(self.current_feature.scenarios) == 0:
-            return None
-        if self.scenario_finished:
-            return None
-        return self.current_feature.scenarios[-1]
+        return _feature.scenarios[-1]
 
     def before_scenario_finish(self, status):
         # Call this on Feature, as Scenario is not created yet.
         self.current_feature.before_scenario_finish(status)
 
     def after_scenario_finish(self, status):
+        # Call this on Feature, to be consistent with before_scenario_finish.
         self.current_feature.after_scenario_finish(status)
 
     def scenario(self, scenario):
-        self.scenario_finished = False
         self.current_feature.add_scenario(scenario, self.pseudo_steps)
 
     def step(self, step):
