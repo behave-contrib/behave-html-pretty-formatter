@@ -74,9 +74,10 @@ class Feature:
         _scenario = self.scenarios[-1]
         _step = _scenario.after_scenario_step
         if _step is not None:
-            _step.duration = time.time() -_scenario.steps_finished_timestamp
+            _step.duration = time.time() - _scenario.steps_finished_timestamp
             _step.status = status
             self.scenario_begin_timestamp = time.time()
+
 
 class Scenario:
     def __init__(self, scenario, feature, pseudo_steps=False):
@@ -86,7 +87,9 @@ class Scenario:
         self.description = scenario.description
         self.pseudo_steps = []
         if pseudo_steps:
-            self.pseudo_steps = [Step(when, "scenario", None, None, self) for when in ("Before", "After")]
+            self.pseudo_steps = [
+                Step(when, "scenario", None, None, self) for when in ("Before", "After")
+            ]
 
         # We need another information about a tag, to recognize if it should act as a link or span.
         self.tags = [Tag(tag) for tag in scenario.effective_tags]
@@ -137,7 +140,7 @@ class Scenario:
 
     @property
     def is_last_step(self):
-        return self.match_id+1 >= len(self.steps)
+        return self.match_id + 1 >= len(self.steps)
 
     def add_step(self, keyword, name, text=None, table=None):
         _step = Step(keyword, name, text, table, self)
@@ -157,17 +160,18 @@ class Scenario:
         step = self.current_step
         step.add_result(result)
 
-        if self.is_last_step or\
-                result.status == Status.passed or\
-                result.status == Status.failed or\
-                result.status == Status.undefined:
+        if (
+            self.is_last_step
+            or result.status == Status.passed
+            or result.status == Status.failed
+            or result.status == Status.undefined
+        ):
             self.status = result.status.name
             self.duration = self._scenario.duration
 
         # check if step execution finished
         # ebed to after_scenario_step if pseudo_steps enabled
-        if self.is_last_step or \
-            result.status != Status.passed:
+        if self.is_last_step or result.status != Status.passed:
             self.steps_finished = True
             self.steps_finished_timestamp = time.time()
 
@@ -203,16 +207,28 @@ class Step:
         # If the step has error message and step failed, set the error message.
         if result.error_message and result.status == Status.failed:
             self.error_message = result.error_message
-            self.embed(Embed(mime_type="text", data=self.error_message, caption="Error Message"))
+            self.embed(
+                Embed(
+                    mime_type="text", data=self.error_message, caption="Error Message"
+                )
+            )
 
         # If the step is undefined use the behave function to provide information about it.
         if result.status == Status.undefined:
-            undefined_step_message = u"\nYou can implement step definitions for undefined steps with "
-            undefined_step_message += u"these snippets:\n\n"
-            undefined_step_message += u"\n".join(make_undefined_step_snippets(undefined_steps=[result]))
+            undefined_step_message = (
+                "\nYou can implement step definitions for undefined steps with "
+            )
+            undefined_step_message += "these snippets:\n\n"
+            undefined_step_message += "\n".join(
+                make_undefined_step_snippets(undefined_steps=[result])
+            )
 
             self.error_message = undefined_step_message
-            self.embed(Embed(mime_type="text", data=self.error_message, caption="Error Message"))
+            self.embed(
+                Embed(
+                    mime_type="text", data=self.error_message, caption="Error Message"
+                )
+            )
 
     def embed(self, embed_data):
         self.embeds.append(embed_data)
@@ -327,15 +343,15 @@ class PrettyHTMLFormatter(Formatter):
 
     # Making bold text in between quotes.
     def make_bold_text(self, given_string):
-        quote_count = given_string.count("\"")
+        quote_count = given_string.count('"')
 
         # Save string to iterate over.
         the_rest = given_string
-        for _ in range(int(quote_count/2)):
-            first_part, bold_text, the_rest = the_rest.split("\"", 2)
+        for _ in range(int(quote_count / 2)):
+            first_part, bold_text, the_rest = the_rest.split('"', 2)
 
             span(first_part)
-            b(f"\"{bold_text}\"")
+            b(f'"{bold_text}"')
 
         span(the_rest)
 
@@ -352,12 +368,14 @@ class PrettyHTMLFormatter(Formatter):
         self.icon = icon
 
     # Used to generate a steps.
-    def generate_step(self,
-                      step_result,
-                      step_decorator,
-                      step_duration,
-                      step_link_label,
-                      step_link_location):
+    def generate_step(
+        self,
+        step_result,
+        step_decorator,
+        step_duration,
+        step_link_label,
+        step_link_location,
+    ):
 
         with div(cls=f"step-capsule step-capsule-{step_result}"):
 
@@ -370,7 +388,7 @@ class PrettyHTMLFormatter(Formatter):
                         "passed": "PASS",
                         "failed": "FAIL",
                         "undefined": "SKIP",
-                        "skipped": "SKIP"
+                        "skipped": "SKIP",
                     }
                     # Step status for high contrast - "PASS" "FAIL" "SKIP".
                     span(high_contrast_status[step_result])
@@ -422,25 +440,47 @@ class PrettyHTMLFormatter(Formatter):
                 with div(cls="embed_button"):
                     with div(cls="link"):
                         # Label to be shown.
-                        with a(href="#/", onclick=f"collapsible_toggle('embed_{self.embed_number}')"):
+                        with a(
+                            href="#/",
+                            onclick=f"collapsible_toggle('embed_{self.embed_number}')",
+                        ):
                             span(use_caption)
 
                 # Actual Embed.
                 if "video/webm" in mime_type:
                     with pre(cls="embed_content"):
-                        with video(id=f"embed_{self.embed_number}", style="display: none", width="1024", controls=""):
-                            source(src=f"data:{mime_type};base64,{data}", type=mime_type)
+                        with video(
+                            id=f"embed_{self.embed_number}",
+                            style="display: none",
+                            width="1024",
+                            controls="",
+                        ):
+                            source(
+                                src=f"data:{mime_type};base64,{data}", type=mime_type
+                            )
 
                 if "image/png" in mime_type:
-                    with pre(cls="embed_content", id=f"embed_{self.embed_number}", style="display: none"):
+                    with pre(
+                        cls="embed_content",
+                        id=f"embed_{self.embed_number}",
+                        style="display: none",
+                    ):
                         img(src=f"data:{mime_type};base64,{data}")
 
                 if "text" in mime_type:
-                    with pre(cls="embed_content", id=f"embed_{self.embed_number}", style="display: none"):
+                    with pre(
+                        cls="embed_content",
+                        id=f"embed_{self.embed_number}",
+                        style="display: none",
+                    ):
                         span(data)
 
                 if "link" in mime_type:
-                    with pre(cls="embed_content", id=f"embed_{self.embed_number}", style="display: none"):
+                    with pre(
+                        cls="embed_content",
+                        id=f"embed_{self.embed_number}",
+                        style="display: none",
+                    ):
                         # FAF reports are coming in format set( [link, label], ... )
                         if type(data) is set:
                             for single_link in data:
@@ -497,22 +537,27 @@ class PrettyHTMLFormatter(Formatter):
         # Try block to be removed - debugging purposes only.
         try:
             # Generate everything.
-            self.document = dominate.document(title=self.title_string, pretty_flags=True)
+            self.document = dominate.document(
+                title=self.title_string, pretty_flags=True
+            )
 
             # Iterate over the data and generate the page.
             with self.document.head:
                 # Load and insert css theme.
-                with open(Path(__file__).parent / "theme.css", "r", encoding="utf-8") as _css_file:
+                with open(
+                    Path(__file__).parent / "theme.css", "r", encoding="utf-8"
+                ) as _css_file:
                     css_theme = _css_file.read()
                 with style(rel="stylesheet"):
                     raw(css_theme)
 
                 # Load and insert javascript - important for embed toggles and high contrast switch.
-                with open(Path(__file__).parent / "script.js", "r", encoding="utf-8") as _script_file:
+                with open(
+                    Path(__file__).parent / "script.js", "r", encoding="utf-8"
+                ) as _script_file:
                     js_script = _script_file.read()
                 with script(type="text/javascript"):
                     raw(js_script)
-
 
                 ########## FEATURE FILE ITERATION ##########
                 # Base structure for iterating over Features.
@@ -529,7 +574,9 @@ class PrettyHTMLFormatter(Formatter):
                                 # Making sure there is a functioning button.
                                 with a(onclick=f"toggle_contrast('embed')", href="#"):
                                     # Creating the actual text content which is clickable.
-                                    span(f"Feature: {feature.name} [High Contrast toggle]")
+                                    span(
+                                        f"Feature: {feature.name} [High Contrast toggle]"
+                                    )
                                     # Set the flag to be sure there is not another one created.
                                     self.high_contrast_button = True
 
@@ -548,7 +595,9 @@ class PrettyHTMLFormatter(Formatter):
                         # Base structure for iterating over Scenarios in Features.
                         for scenario_id, scenario in enumerate(feature.scenarios):
                             # Scenario container.
-                            with div(cls=f"scenario-capsule scenario-capsule-{scenario.status}"):
+                            with div(
+                                cls=f"scenario-capsule scenario-capsule-{scenario.status}"
+                            ):
 
                                 for tag in scenario.tags:
                                     with div(cls="scenario-tags"):
@@ -568,13 +617,19 @@ class PrettyHTMLFormatter(Formatter):
                                         span(f"Scenario: {scenario.name}")
 
                                     with div(cls="scenario-duration"):
-                                        span(f"Scenario duration: {scenario.duration:.2f}s")
+                                        span(
+                                            f"Scenario duration: {scenario.duration:.2f}s"
+                                        )
 
                                 ########## STEP ITERATION ##########
                                 # Base structure for iterating over Steps in Scenarios.
                                 steps = scenario.steps
                                 if scenario.pseudo_steps:
-                                    steps = [scenario.pseudo_steps[0]] + steps + [scenario.pseudo_steps[1]]
+                                    steps = (
+                                        [scenario.pseudo_steps[0]]
+                                        + steps
+                                        + [scenario.pseudo_steps[1]]
+                                    )
                                 for step_id, step in enumerate(steps):
                                     # There was a request for a commentary step.
                                     # Such step would serve only as an information panel.
@@ -583,13 +638,17 @@ class PrettyHTMLFormatter(Formatter):
                                     else:
 
                                         # Generate the step.
-                                        step_result = step.status if step.status else "skipped"
+                                        step_result = (
+                                            step.status if step.status else "skipped"
+                                        )
+
+                                        step_decorator = step.keyword + " " + step.name
                                         self.generate_step(
-                                            step_result = step_result,
-                                            step_decorator = step.keyword + " " + step.name,
-                                            step_duration = step.duration,
-                                            step_link_label = step.location,
-                                            step_link_location = step.location_link
+                                            step_result=step_result,
+                                            step_decorator=step_decorator,
+                                            step_duration=step.duration,
+                                            step_link_label=step.location,
+                                            step_link_location=step.location_link,
                                         )
 
                                         # Generate table for a step if present.
@@ -604,7 +663,10 @@ class PrettyHTMLFormatter(Formatter):
                                     # Add div for dashed-line last-child CSS selector.
                                     with div(cls="embeds"):
                                         for embed_data in step.embeds:
-                                            if embed_data._fail_only and scenario.status != "failed":
+                                            if (
+                                                embed_data._fail_only
+                                                and scenario.status != "failed"
+                                            ):
                                                 continue
                                             self.generate_embed(embed_data=embed_data)
 
