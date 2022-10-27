@@ -6,12 +6,28 @@ import sys
 import traceback
 import base64
 import time
-from curses import raw
 from pathlib import Path
 from datetime import datetime
 
 import dominate
-from dominate.tags import *
+from dominate.tags import (
+    div,
+    span,
+    a,
+    b,
+    table,
+    tbody,
+    thead,
+    tr,
+    th,
+    td,
+    pre,
+    video,
+    source,
+    script,
+    img,
+    style,
+)
 from dominate.util import raw
 
 from behave.formatter.base import Formatter
@@ -311,12 +327,8 @@ class PrettyHTMLFormatter(Formatter):
         self.current_feature.after_scenario_finish(status)
 
     def scenario(self, scenario):
-        try:
-            self.scenario_finished = False
-            self.current_feature.add_scenario(scenario, self.pseudo_steps)
-        except:
-            print(traceback.print_exc())
-            raise
+        self.scenario_finished = False
+        self.current_feature.add_scenario(scenario, self.pseudo_steps)
 
     def step(self, step):
         self.current_scenario.add_step(step.keyword, step.name, step.text, step.table)
