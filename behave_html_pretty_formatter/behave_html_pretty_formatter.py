@@ -5,6 +5,7 @@ import os
 import sys
 import traceback
 import base64
+import time
 from curses import raw
 from pathlib import Path
 from datetime import datetime
@@ -41,22 +42,42 @@ class Feature:
 
         self.scenarios = []
         self.to_embed = []
+        self.scenario_begin_timestamp = time.time()
+        self.before_scenario_duration = 0.0
+        self.before_scenario_status = "skipped"
 
-    def add_scenario(self, scenario):
-        _scenario = Scenario(scenario, self)
+    def add_scenario(self, scenario, pseudo_steps=False):
+        _scenario = Scenario(scenario, self, pseudo_steps)
         for embed_data in self.to_embed:
             _scenario.embed(embed_data)
-        self.embed = []
+        self.to_embed = []
+        if pseudo_steps:
+            _step = _scenario.before_scenario_step
+            _step.duration = self.before_scenario_duration
+            _step.status = self.before_scenario_status
         self.scenarios.append(_scenario)
         return _scenario
 
     def embed(self, embed_data):
         if not self.scenarios:
             self.to_embed.append(embed_data)
+        else:
+            self.scenarios[-1].embed(embed_data)
 
+    def before_scenario_finish(self, status):
+        self.before_scenario_duration = time.time() - self.scenario_begin_timestamp
+        self.before_scenario_status = status
+
+    def after_scenario_finish(self, status):
+        _scenario = self.scenarios[-1]
+        _step = _scenario.after_scenario_step
+        if _step is not None:
+            _step.duration = time.time() -_scenario.steps_finished_timestamp
+            _step.status = status
+            self.scenario_begin_timestamp = time.time()
 
 class Scenario:
-    def __init__(self, scenario, feature, pseudo_steos=False):
+    def __init__(self, scenario, feature, pseudo_steps=False):
         self._scenario = scenario
         self.feature = feature
         self.name = scenario.name
@@ -73,18 +94,12 @@ class Scenario:
         self.duration = 0.0
         self.match_id = -1
         self.steps_finished = False
+        self.steps_finished_timestamp = None
         self.steps = []
+        self.to_embed = []
 
         self.saved_matched_filename = None
         self.saved_matched_line = None
-
-    def add_step(self, keyword, name, text=None, table=None, index=None):
-        _step = Step(keyword, name, text, table, self)
-        if index is None:
-            self.steps.append(_step)
-        else:
-            self.steps.insert(index, _step)
-        return _step
 
     @property
     def before_scenario_step(self):
@@ -99,17 +114,17 @@ class Scenario:
         return None
         
     @property
-    def actual_step(self):
+    def current_step(self):
         _step = None
         if self.match_id < 0:
             if self.pseudo_steps:
                 _step = self.pseudo_steps[0]
-            else:
+            elif self.steps:
                 _step = self.steps[0]
         if self.steps_finished:
             if self.pseudo_steps:
                 _step = self.pseudo_steps[1]
-        if _step is None:
+        if _step is None and self.steps:
             _step = self.steps[self.match_id]
         return _step
 
@@ -117,13 +132,21 @@ class Scenario:
     def is_last_step(self):
         return self.match_id+1 >= len(self.steps)
 
+    def add_step(self, keyword, name, text=None, table=None):
+        _step = Step(keyword, name, text, table, self)
+        self.steps.append(_step)
+        for embed_data in self.to_embed:
+            _step.embed(embed_data)
+        self.to_embed = []
+        return _step
+
     def add_match(self, match):
         self.match_id += 1
-        step = self.actual_step
+        step = self.current_step
         step.location = str(match.location.filename) + ":" + str(match.location.line)
 
     def add_result(self, result):
-        step = self.actual_step
+        step = self.current_step
         step.add_result(result)
 
         if self.is_last_step or\
@@ -138,16 +161,16 @@ class Scenario:
         if self.is_last_step or \
             result.status != Status.passed:
             self.steps_finished = True
+            self.steps_finished_timestamp = time.time()
 
         return step        
 
     def embed(self, embed_data):
-        _step = self.actual_step
+        _step = self.current_step
         if _step is not None:
             _step.embed(embed_data)
-
-    def commentary(self, value=True):
-        self.actual_step.commentary_override = value
+        else:
+            self.to_embed.append(embed_data)
 
 
 class Step:
@@ -185,6 +208,9 @@ class Step:
 
     def embed(self, embed_data):
         self.embeds.append(embed_data)
+
+    def set_commentary(self, value=True):
+        self.commentary_override = value
 
 
 class Embed:
@@ -237,8 +263,7 @@ class PrettyHTMLFormatter(Formatter):
         self.stream = self.open()
 
     def feature(self, feature):
-        self.current_feature = Feature(feature)
-        self.features.append(self.current_feature)
+        self.features.append(Feature(feature))
 
     @property
     def current_feature(self):
@@ -256,9 +281,20 @@ class PrettyHTMLFormatter(Formatter):
             return None
         return self.current_feature.scenarios[-1]
 
+    def before_scenario_finish(self, status):
+        # call this on feature, as scenario is not created yet
+        self.current_feature.before_scenario_finish(status)
+
+    def after_scenario_finish(self, status):
+        self.current_feature.after_scenario_finish(status)
+
     def scenario(self, scenario):
-        self.scenario_finished = False
-        self.current_feature.add_scenario(scenario, self.pseudo_steps)
+        try:
+            self.scenario_finished = False
+            self.current_feature.add_scenario(scenario, self.pseudo_steps)
+        except:
+            print(traceback.print_exc())
+            raise
 
     def step(self, step):
         self.current_scenario.add_step(step.keyword, step.name, step.text, step.table)
@@ -535,37 +571,39 @@ class PrettyHTMLFormatter(Formatter):
 
                                 ########## STEP ITERATION ##########
                                 # Base structure for iterating over Steps in Scenarios.
-                                for step_id, step in enumerate(scenario.steps):
+                                steps = scenario.steps
+                                if scenario.pseudo_steps:
+                                    steps = [scenario.pseudo_steps[0]] + steps + [scenario.pseudo_steps[1]] 
+                                for step_id, step in enumerate(steps):
                                     # There was a request for a commentary step.
                                     # Such step would serve only as an information panel.
                                     if step.commentary_override:
                                         self.generate_comment(step.text)
-                                        continue
+                                    else:
 
-                                    # Generate the step.
-                                    step_result = step.status if step.status else "skipped"
-                                    self.generate_step(
-                                        step_result = step_result,
-                                        step_decorator = step.keyword + " " + step.name,
-                                        step_duration = step.duration,
-                                        step_link_label = step.location,
-                                        step_link_location = step.location_link
-                                    )
+                                        # Generate the step.
+                                        step_result = step.status if step.status else "skipped"
+                                        self.generate_step(
+                                            step_result = step_result,
+                                            step_decorator = step.keyword + " " + step.name,
+                                            step_duration = step.duration,
+                                            step_link_label = step.location,
+                                            step_link_location = step.location_link
+                                        )
 
-                                    # Generate table for a step if present.
-                                    if step.table is not None:
-                                        self.generate_table(step.table)
+                                        # Generate table for a step if present.
+                                        if step.table is not None:
+                                            self.generate_table(step.table)
 
-                                    # Generate text field for a step if present.
-                                    if step.text is not None:
-                                        self.generate_text(step.text)
+                                        # Generate text field for a step if present.
+                                        if step.text is not None:
+                                            self.generate_text(step.text)
 
                                     # Generate all embeds that are in the data structure.
                                     # Add div for dashed-line last-child CSS selector.
                                     with div(cls="embeds"):
-                                        last_embed_id = len(step.embeds) - 1
-                                        for embed_id, embed_data in enumerate(step.embeds):
-                                            if embed_data._fail_only and step_result != "failed":
+                                        for embed_data in step.embeds:
+                                            if embed_data._fail_only and scenario.status != "failed":
                                                 continue
                                             self.generate_embed(embed_data=embed_data)
 
