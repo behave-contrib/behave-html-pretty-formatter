@@ -40,27 +40,39 @@ class Feature:
         self.status = None
 
         self.scenarios = []
+        self.to_embed = []
 
     def add_scenario(self, scenario):
         _scenario = Scenario(scenario, self)
+        for embed_data in self.to_embed:
+            _scenario.embed(embed_data)
+        self.embed = []
         self.scenarios.append(_scenario)
         return _scenario
 
+    def embed(self, embed_data):
+        if not self.scenarios:
+            self.to_embed.append(embed_data)
+
 
 class Scenario:
-    def __init__(self, scenario, feature):
+    def __init__(self, scenario, feature, pseudo_steos=False):
         self._scenario = scenario
         self.feature = feature
         self.name = scenario.name
         self.description = scenario.description
-
+        self.pseudo_steps = []
+        if pseudo_steps:
+            self.pseudo_steps = [Step(when, "scenario", None, None, self) for when in ("Before", "After")]
+        
         # We need another information about a tag, to recognize if it should act as a link or span.
         self.tags = [Tag(tag) for tag in scenario.effective_tags]
 
         self.location = scenario.location
         self.status = None
         self.duration = 0.0
-        self.result_id = 0
+        self.match_id = -1
+        self.steps_finished = False
         self.steps = []
 
         self.saved_matched_filename = None
@@ -75,15 +87,38 @@ class Scenario:
         return _step
 
     @property
+    def before_scenario_step(self):
+        if self.pseudo_steps:
+            return self.pseudo_steps[0]
+        return None
+
+    @property
+    def after_scenario_step(self):
+        if self.pseudo_steps:
+            return self.pseudo_steps[1]
+        return None
+        
+    @property
     def actual_step(self):
-        if len(self.steps) <= self.result_id:
-            _step = self.steps[-1]
-        else:
-            _step = self.steps[self.result_id]
+        _step = None
+        if self.match_id < 0:
+            if self.pseudo_steps:
+                _step = self.pseudo_steps[0]
+            else:
+                _step = self.steps[0]
+        if self.steps_finished:
+            if self.pseudo_steps:
+                _step = self.pseudo_steps[1]
+        if _step is None:
+            _step = self.steps[self.match_id]
         return _step
 
+    @property
+    def is_last_step(self):
+        return self.match_id+1 >= len(self.steps)
 
     def add_match(self, match):
+        self.match_id += 1
         step = self.actual_step
         step.location = str(match.location.filename) + ":" + str(match.location.line)
 
@@ -91,20 +126,25 @@ class Scenario:
         step = self.actual_step
         step.add_result(result)
 
-        if self.result_id == len(self.steps) or\
+        if self.is_last_step or\
                 result.status == Status.passed or\
                 result.status == Status.failed or\
                 result.status == Status.undefined:
             self.status = result.status.name
             self.duration = self._scenario.duration
+        
+        # check if step execution finished
+        # ebed to after_scenario_step if pseudo_steps enabled
+        if self.is_last_step or \
+            result.status != Status.passed:
+            self.steps_finished = True
 
-        # The result_id needs to be bumped on Status.passed only.
-        if result.status == Status.passed:
-            self.result_id += 1
         return step        
 
     def embed(self, embed_data):
-        self.actual_step.embed(embed_data)
+        _step = self.actual_step
+        if _step is not None:
+            _step.embed(embed_data)
 
     def commentary(self, value=True):
         self.actual_step.commentary_override = value
@@ -177,6 +217,7 @@ class PrettyHTMLFormatter(Formatter):
     description = "Pretty HTML formatter"
     title_string = "Test Suite Reporter"
     Embed = Embed
+    pseudo_steps = False
 
     def __init__(self, stream, config):
         super(PrettyHTMLFormatter, self).__init__(stream, config)
@@ -199,8 +240,25 @@ class PrettyHTMLFormatter(Formatter):
         self.current_feature = Feature(feature)
         self.features.append(self.current_feature)
 
+    @property
+    def current_feature(self):
+        if len(self.features) == 0:
+            return None
+        return self.features[-1]
+
+    @property
+    def current_scenario(self):
+        if self.current_feature is None:
+            return None
+        if len(self.current_feature.scenarios) == 0:
+            return None
+        if self.scenario_finished:
+            return None
+        return self.current_feature.scenarios[-1]
+
     def scenario(self, scenario):
-        self.current_scenario = self.current_feature.add_scenario(scenario)
+        self.scenario_finished = False
+        self.current_feature.add_scenario(scenario, self.pseudo_steps)
 
     def step(self, step):
         self.current_scenario.add_step(step.keyword, step.name, step.text, step.table)
@@ -214,9 +272,8 @@ class PrettyHTMLFormatter(Formatter):
         if match.location:
             self.current_scenario.add_match(match)
 
-
     def reset(self, reset):
-        #print("debug, running reset function - currently unknown if needed")
+        print("debug, running reset function - currently unknown if needed")
         pass
 
     def uri(self, uri):
@@ -240,6 +297,18 @@ class PrettyHTMLFormatter(Formatter):
             b(f"\"{bold_text}\"")
 
         span(the_rest)
+
+    def embed(self, mime_type, data, caption=None, fail_only=False):
+        embed_data = Embed(mime_type, data, caption, fail_only)
+        # Find correct scenario.
+        self.current_feature.embed(embed_data)
+        return embed_data
+
+    def set_title(self, title):
+        self.title_string = title
+
+    def set_icon(self, icon):
+        self.icon = icon
 
     # Used to generate a steps.
     def generate_step(self,
@@ -282,8 +351,7 @@ class PrettyHTMLFormatter(Formatter):
             else:
                 span(step_link_label)
 
-
-    def data_embeding_function(self, embed_data):
+    def generate_embed(self, embed_data):
         self.embed_number += 1
 
         caption = embed_data._caption
@@ -342,22 +410,6 @@ class PrettyHTMLFormatter(Formatter):
                             with a(href=data[0]):
                                 span(data[1])
 
-
-    def embedding(self, mime_type, data, caption=None, fail_only=False):
-        # Find correct scenario.
-        embed_data = Embed(mime_type, data, caption, fail_only)
-        self.current_scenario.embed(embed_data)
-        return embed_data
-
-
-    def set_title(self, title):
-        self.title_string = title
-
-
-    def set_icon(self, icon):
-        self.icon = icon
-
-
     def generate_table(self, given_table):
         table_headings = given_table.headings
         table_rows = given_table.rows
@@ -380,7 +432,6 @@ class PrettyHTMLFormatter(Formatter):
 
         self.table_number += 1
 
-
     def generate_text(self, given_text):
         with table():
             # Do not make the table header.
@@ -400,12 +451,10 @@ class PrettyHTMLFormatter(Formatter):
         #with div(cls=f"step-capsule step-capsule-commentary"):
         #    pre(f"{given_text}")
 
-
     def generate_comment(self, commentary):
         # Generate commentary step.
         with div(cls=f"step-capsule step-capsule-commentary"):
             pre(f"{commentary}")
-
 
     def close(self):
         # Try block to be removed - debugging purposes only.
@@ -518,7 +567,7 @@ class PrettyHTMLFormatter(Formatter):
                                         for embed_id, embed_data in enumerate(step.embeds):
                                             if embed_data._fail_only and step_result != "failed":
                                                 continue
-                                            self.data_embeding_function(embed_data=embed_data)
+                                            self.generate_embed(embed_data=embed_data)
 
             # Write everything to the stream which should corelate to the -o <file> behave option.
             self.stream.write(self.document.render())

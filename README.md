@@ -132,9 +132,9 @@ And the result will look like this:
 ```python
 for formatter in context._runner.formatters:
     if formatter.name == "html-pretty":
-        context.embed = formatter.embedding
+        context.embed = formatter.embed
 # Not required if you already have the Basic setup.
-# You would than use: 'context.formatter.embedding' instead of 'context.embed'
+# You would than use: 'context.formatter.embed' instead of 'context.embed'
 ```
 
 ### Embed image
