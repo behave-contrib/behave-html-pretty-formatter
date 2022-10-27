@@ -19,7 +19,7 @@ from behave.model_core import Status
 from behave.runner_util import make_undefined_step_snippets
 
 
-#TODO
+# TODO
 # Timestamp next to the human-readable time.
 # Experiment with collapsible substeps.
 # Maybe put tags on one line instead under each other, it takes too much space I think.
@@ -51,10 +51,12 @@ class Feature:
         for embed_data in self.to_embed:
             _scenario.embed(embed_data)
         self.to_embed = []
+
         if pseudo_steps:
             _step = _scenario.before_scenario_step
             _step.duration = self.before_scenario_duration
             _step.status = self.before_scenario_status
+
         self.scenarios.append(_scenario)
         return _scenario
 
@@ -105,12 +107,14 @@ class Scenario:
     def before_scenario_step(self):
         if self.pseudo_steps:
             return self.pseudo_steps[0]
+
         return None
 
     @property
     def after_scenario_step(self):
         if self.pseudo_steps:
             return self.pseudo_steps[1]
+
         return None
 
     @property
@@ -121,11 +125,14 @@ class Scenario:
                 _step = self.pseudo_steps[0]
             elif self.steps:
                 _step = self.steps[0]
+
         if self.steps_finished:
             if self.pseudo_steps:
                 _step = self.pseudo_steps[1]
+
         if _step is None and self.steps:
             _step = self.steps[self.match_id]
+
         return _step
 
     @property
@@ -137,6 +144,7 @@ class Scenario:
         self.steps.append(_step)
         for embed_data in self.to_embed:
             _step.embed(embed_data)
+
         self.to_embed = []
         return _step
 
@@ -282,7 +290,7 @@ class PrettyHTMLFormatter(Formatter):
         return self.current_feature.scenarios[-1]
 
     def before_scenario_finish(self, status):
-        # call this on feature, as scenario is not created yet
+        # Call this on Feature, as Scenario is not created yet.
         self.current_feature.before_scenario_finish(status)
 
     def after_scenario_finish(self, status):
@@ -309,15 +317,12 @@ class PrettyHTMLFormatter(Formatter):
             self.current_scenario.add_match(match)
 
     def reset(self, reset):
-        print("debug, running reset function - currently unknown if needed")
         pass
 
     def uri(self, uri):
-        #print("debug, running uri function - currently unknown if needed")
         pass
 
     def background(self, background):
-        #print("debug, running background function - currently unknown if needed")
         pass
 
     # Making bold text in between quotes.
@@ -424,11 +429,11 @@ class PrettyHTMLFormatter(Formatter):
                 if "video/webm" in mime_type:
                     with pre(cls="embed_content"):
                         with video(id=f"embed_{self.embed_number}", style="display: none", width="1024", controls=""):
-                            source(src=f"data:{mime_type};base64,{data}    ", type=mime_type)
+                            source(src=f"data:{mime_type};base64,{data}", type=mime_type)
 
                 if "image/png" in mime_type:
                     with pre(cls="embed_content", id=f"embed_{self.embed_number}", style="display: none"):
-                        img(src=f"data:{mime_type};base64,{data}    ")
+                        img(src=f"data:{mime_type};base64,{data}")
 
                 if "text" in mime_type:
                     with pre(cls="embed_content", id=f"embed_{self.embed_number}", style="display: none"):
@@ -482,10 +487,6 @@ class PrettyHTMLFormatter(Formatter):
                         line += td(row)
 
         self.table_number += 1
-
-        # To test just a commentary field, this does not look good, we can use the table^
-        #with div(cls=f"step-capsule step-capsule-commentary"):
-        #    pre(f"{given_text}")
 
     def generate_comment(self, commentary):
         # Generate commentary step.
