@@ -1,4 +1,7 @@
-# Inspired by https://github.com/Hargne/jest-html-reporter
+"""
+HTML Pretty formatter for behave
+Inspired by https://github.com/Hargne/jest-html-reporter
+"""
 
 from __future__ import absolute_import
 import os
@@ -48,11 +51,18 @@ DEFAULT_CAPTION_FOR_MIME_TYPE = {
 
 
 class Feature:
+    """
+    Simplified behave feature used by PrettyHTMLFormatter
+    """
+
     def __init__(self, feature):
         self.name = feature.name
         self.description = feature.description
         self.location = feature.location
         self.status = None
+        self.icon = None
+        self.high_contrast_button = False
+        self.start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
         self.scenarios = []
         self.to_embed = []
@@ -62,6 +72,9 @@ class Feature:
         self.before_scenario_status = "skipped"
 
     def add_scenario(self, scenario, pseudo_steps=False):
+        """
+        Create new scenario in feature based on behave scenario object
+        """
         self.scenario_finished = False
         _scenario = Scenario(scenario, self, pseudo_steps)
         for embed_data in self.to_embed:
@@ -77,16 +90,27 @@ class Feature:
         return _scenario
 
     def embed(self, embed_data):
+        """
+        Embeds Data to current step in current scenario.
+        """
         if not self.scenarios:
             self.to_embed.append(embed_data)
         else:
             self.scenarios[-1].embed(embed_data)
 
     def before_scenario_finish(self, status):
+        """
+        Sets status and duration of before scenario pseudo step.
+        """
         self.before_scenario_duration = time.time() - self.scenario_begin_timestamp
         self.before_scenario_status = status
 
     def after_scenario_finish(self, status):
+        """
+        Sets status and duration of after scenario presudo step.
+        Should be called at the end of behave's `after_scenario()`,
+        so that next embeds are correctly assigned to next scenario.
+        """
         self.scenario_finished = True
         _scenario = self.scenarios[-1]
         _step = _scenario.after_scenario_step
@@ -95,8 +119,47 @@ class Feature:
             _step.status = status
             self.scenario_begin_timestamp = time.time()
 
+    def generate_html(self, formatter):
+        """
+        Converts this object to HTML.
+        """
+        # Feature Panel
+        with div(cls="feature-panel"):
+            with div(cls="feature-icon-name-container"):
+                if self.icon:
+                    with div(cls="feature-panel-icon"):
+                        img(src=self.icon)
+
+                # Generate content of the panel.
+                if self.high_contrast_button:
+                    # Making sure there is a functioning button.
+                    with a(onclick="toggle_contrast('embed')", href="#"):
+                        # Creating the actual text content which is clickable.
+                        span(f"Feature: {self.name} [High Contrast toggle]")
+                        # Set the flag to be sure there is not another one created.
+
+                # On another feature do not generate the button.
+                else:
+                    span(f"Feature: {self.name}")
+
+            # Suite started information.
+            with div(cls="feature-timestamp"):
+                span("Started: " + self.start_time)
+
+        # Feature data container.
+        with div(cls="feature-container"):
+
+            ########## SCENARIOS ITERATION ##########
+            # Base structure for iterating over Scenarios in Features.
+            for scenario in self.scenarios:
+                scenario.generate_html(formatter)
+
 
 class Scenario:
+    """
+    Simplified behaves's scenario.
+    """
+
     def __init__(self, scenario, feature, pseudo_steps=False):
         self._scenario = scenario
         self.feature = feature
@@ -125,6 +188,9 @@ class Scenario:
 
     @property
     def before_scenario_step(self):
+        """
+        Access to before scenario pseudo step, if exists.
+        """
         if self.pseudo_steps:
             return self.pseudo_steps[0]
 
@@ -132,6 +198,9 @@ class Scenario:
 
     @property
     def after_scenario_step(self):
+        """
+        Access to before scenario pseudo step, if exists.
+        """
         if self.pseudo_steps:
             return self.pseudo_steps[1]
 
@@ -139,6 +208,10 @@ class Scenario:
 
     @property
     def current_step(self):
+        """
+        (Pseudo) Step currently being processed.
+        Used mainly for correct embed tracking.
+        """
         _step = None
         if self.match_id < 0:
             if self.pseudo_steps:
@@ -157,10 +230,16 @@ class Scenario:
 
     @property
     def is_last_step(self):
+        """
+        Is last step processed?
+        """
         return self.match_id + 1 >= len(self.steps)
 
-    def add_step(self, keyword, name, text=None, table=None):
-        _step = Step(keyword, name, text, table, self)
+    def add_step(self, keyword, name, step_text=None, step_table=None):
+        """
+        Add step. Called when new scenario is processed.
+        """
+        _step = Step(keyword, name, step_text, step_table, self)
         self.steps.append(_step)
         for embed_data in self.to_embed:
             _step.embed(embed_data)
@@ -169,11 +248,17 @@ class Scenario:
         return _step
 
     def add_match(self, match):
+        """
+        Process information about step that will be executed next.
+        """
         self.match_id += 1
         step = self.current_step
         step.location = str(match.location.filename) + ":" + str(match.location.line)
 
     def add_result(self, result):
+        """
+        Process information about executed step.
+        """
         step = self.current_step
         step.add_result(result)
 
@@ -195,22 +280,65 @@ class Scenario:
         return step
 
     def embed(self, embed_data):
+        """
+        Embed data to the this step.
+        """
         _step = self.current_step
         if _step is not None:
             _step.embed(embed_data)
         else:
             self.to_embed.append(embed_data)
 
+    def generate_html(self, formatter):
+        """
+        Converts scenario to HTML.
+        """
+        # Scenario container.
+        with div(cls=f"scenario-capsule scenario-capsule-{self.status}"):
+
+            for tag in self.tags:
+                with div(cls="scenario-tags"):
+                    # Do not make links by default,
+                    # this is handled on qecore side for links to bugzilla.
+                    # Tags come with structure [<tag>, None] or [<tag>, <bugzilla_link/git_link>]
+                    if tag.link is not None:
+                        with div(cls="link"):
+                            with a(href=tag.link):
+                                span("@" + tag.behave_tag)
+                    else:
+                        span("@" + tag.behave_tag)
+
+            # Simple container for name + duration
+            with div(cls="scenario-info"):
+
+                with div(cls="scenario-name"):
+                    span(f"Scenario: {self.name}")
+
+                with div(cls="scenario-duration"):
+                    span(f"Scenario duration: {self.duration:.2f}s")
+
+            ########## STEP ITERATION ##########
+            # Base structure for iterating over Steps in Scenarios.
+            steps = self.steps
+            if self.pseudo_steps:
+                steps = [self.pseudo_steps[0]] + steps + [self.pseudo_steps[1]]
+            for step in steps:
+                step.generate_html(formatter, self.status)
+
 
 class Step:
-    def __init__(self, keyword, name, text, table, scenario):
-        self.status = None
+    """
+    Simplified behave step object.
+    """
+
+    def __init__(self, keyword, name, text, step_table, scenario):
+        self.status = Status.skipped
         self.duration = 0.0
         self.scenario = scenario
         self.keyword = keyword
         self.name = name
         self.text = text
-        self.table = table
+        self.table = step_table
         self.location = ""
         self.location_link = None
         self.embeds = []
@@ -218,15 +346,17 @@ class Step:
         self.commentary_override = False
 
     def add_result(self, result):
+        """
+        Process result of the executed step.
+        """
         self.status = result.status.name
         self.duration = result.duration
 
         # If the step has error message and step failed, set the error message.
         if result.error_message and result.status == Status.failed:
-            self.error_message = result.error_message
             self.embed(
                 Embed(
-                    mime_type="text", data=self.error_message, caption="Error Message"
+                    mime_type="text", data=result.error_message, caption="Error Message"
                 )
             )
 
@@ -240,37 +370,242 @@ class Step:
                 make_undefined_step_snippets(undefined_steps=[result])
             )
 
-            self.error_message = undefined_step_message
             self.embed(
                 Embed(
-                    mime_type="text", data=self.error_message, caption="Error Message"
+                    mime_type="text",
+                    data=undefined_step_message,
+                    caption="Error Message",
                 )
             )
 
     def embed(self, embed_data):
+        """
+        Save new embed for this step.
+        """
         self.embeds.append(embed_data)
 
     def set_commentary(self, value=True):
+        """
+        Turn this step into commentary step (or back to normal step).
+        """
         self.commentary_override = value
+
+    def generate_html(self, formatter, scenario_status):
+        """
+        Converts Step Object into HTML.
+        """
+        if self.commentary_override:
+            with div(cls="step-capsule step-capsule-commentary"):
+                pre(f"{self.text}")
+        else:
+            with div(cls=f"step-capsule step-capsule-{self.status}"):
+
+                with div(cls="step-status-decorator-duration-capsule"):
+                    with div(cls="step-status"):
+
+                        # Behave defined status strings are "passed" "failed" "undefined" "skipped".
+                        # Modify these values for high contrast usage.
+                        high_contrast_status = {
+                            "passed": "PASS",
+                            "failed": "FAIL",
+                            "undefined": "SKIP",
+                            "skipped": "SKIP",
+                        }
+                        # Step status for high contrast - "PASS" "FAIL" "SKIP".
+                        span(high_contrast_status[self.status])
+
+                    with div(cls="step-decorator"):
+                        # Step decorator.
+                        b(self.keyword)
+                        formatter.make_bold_text(self.name)
+
+                    with div(cls="step-duration"):
+                        short_duration = f"{self.duration:.2f}s"
+                        # Step duration.
+                        span(f"({short_duration})")
+
+                # Make the link only when the link is provided
+                if self.location_link:
+                    with div(cls="link"):
+                        with a(href=self.location_link):
+                            span(self.location)
+                else:
+                    span(self.location)
+            # Still in non-commentary
+            self.generate_text(formatter)
+            self.generate_table(formatter)
+
+        # Generate all embeds that are in the data structure.
+        # Add div for dashed-line last-child CSS selector.
+        with div(cls="embeds"):
+            for embed_data in self.embeds:
+                if embed_data.fail_only and scenario_status != "failed":
+                    continue
+                self.generate_embed(embed_data, formatter)
+
+    def generate_embed(self, embed_data, formatter):
+        """
+        Converts embed data into HTML.
+        """
+        formatter.embed_number += 1
+
+        caption = embed_data.caption
+        mime_type = embed_data.mime_type
+        data = embed_data.data
+
+        # If caption is user defined.
+        if caption is not None:
+            use_caption = caption
+        # If caption is not defined try to use default one for specific mime type.
+        elif mime_type in DEFAULT_CAPTION_FOR_MIME_TYPE:
+            use_caption = DEFAULT_CAPTION_FOR_MIME_TYPE[mime_type]
+        # No caption and no default caption for given mime type.
+        else:
+            use_caption = "uknown-mime-type"
+            data = "data removed"
+
+        # Check if the content of the data is a valid file - if so encode it to base64.
+        if os.path.isfile(str(data)):
+            data_base64 = base64.b64encode(open(data, "rb").read())
+            data = data_base64.decode("utf-8").replace("\n", "")
+
+        with div(cls="messages"):
+            with div(cls="embed-capsule"):
+
+                # Embed Caption.
+                with div(cls="embed_button"):
+                    with div(cls="link"):
+                        # Label to be shown.
+                        with a(
+                            href="#/",
+                            onclick=f"collapsible_toggle('embed_{formatter.embed_number}')",
+                        ):
+                            span(use_caption)
+
+                # Actual Embed.
+                if "video/webm" in mime_type:
+                    with pre(cls="embed_content"):
+                        with video(
+                            id=f"embed_{formatter.embed_number}",
+                            style="display: none",
+                            width="1024",
+                            controls="",
+                        ):
+                            source(
+                                src=f"data:{mime_type};base64,{data}", type=mime_type
+                            )
+
+                if "image/png" in mime_type:
+                    with pre(
+                        cls="embed_content",
+                        id=f"embed_{formatter.embed_number}",
+                        style="display: none",
+                    ):
+                        img(src=f"data:{mime_type};base64,{data}")
+
+                if "text" in mime_type:
+                    with pre(
+                        cls="embed_content",
+                        id=f"embed_{formatter.embed_number}",
+                        style="display: none",
+                    ):
+                        span(data)
+
+                if "link" in mime_type:
+                    with pre(
+                        cls="embed_content",
+                        id=f"embed_{formatter.embed_number}",
+                        style="display: none",
+                    ):
+                        # FAF reports are coming in format set( [link, label], ... )
+                        if isinstance(data, set):
+                            for single_link in data:
+                                with a(href=single_link[0]):
+                                    span(single_link[1])
+                        # If not 'set' lets assume the data is type list
+                        else:
+                            with a(href=data[0]):
+                                span(data[1])
+
+    def generate_table(self, formatter):
+        """
+        Converts step table into HTML.
+        """
+        if not self.table:
+            return
+        table_headings = self.table.headings
+        table_rows = self.table.rows
+
+        # Generate Table.
+        with table():
+
+            # Make a heading.
+            with thead(onclick=f"collapsible_toggle('table_{formatter.table_number}')"):
+                line = tr()
+                for heading in table_headings:
+                    line += th(heading)
+
+            # Make the body.
+            with tbody(id=f"table_{formatter.table_number}"):
+                for row in table_rows:
+                    with tr() as line:
+                        for cell in row:
+                            line += td(cell)
+
+        formatter.table_number += 1
+
+    def generate_text(self, formatter):
+        """
+        Converts step text into HTML.
+        """
+        if not self.text:
+            return
+        with table():
+            # Do not make the table header.
+            with thead(onclick=f"collapsible_toggle('table_{formatter.table_number}')"):
+                line = tr()
+                line += th("Text")
+            # Make the body.
+            with tbody(id=f"table_{formatter.table_number}"):
+                # Make rows.
+                for row in self.text.split("\n"):
+                    with tr() as line:
+                        line += td(row)
+
+        formatter.table_number += 1
 
 
 class Embed:
+    """
+    Encapsulates data to be embedded to the step.
+    """
+
     def __init__(self, mime_type, data, caption=None, fail_only=False):
-        self._mime_type = mime_type
-        self._data = data
-        self._caption = caption
-        self._fail_only = fail_only
+        self.mime_type = mime_type
+        self.data = data
+        self.caption = caption
+        self.fail_only = fail_only
 
     def set_data(self, mime_type, data, caption=None):
-        self._mime_type = mime_type
-        self._data = data
-        self._caption = caption
+        """
+        Set data, mime_type and caption.
+        """
+        self.mime_type = mime_type
+        self.data = data
+        self.caption = caption
 
     def set_fail_only(self, fail_only):
-        self._fail_only = fail_only
+        """
+        Set fail_only flag, whether embed should be done on pass or not.
+        """
+        self.fail_only = fail_only
 
 
 class Tag:
+    """
+    Adds link to behave's tag
+    """
+
     def __init__(self, behave_tag, link=None):
         self.behave_tag = behave_tag
         self.link = link
@@ -280,6 +615,10 @@ class Tag:
 # Since we need some form of structure from where we will pull all data upon close.
 # Modifications based on our needs and experimentation.
 class PrettyHTMLFormatter(Formatter):
+    """
+    Behave Pretty HTML Formatter
+    """
+
     name = "html-pretty"
     description = "Pretty HTML formatter"
     title_string = "Test Suite Reporter"
@@ -308,51 +647,86 @@ class PrettyHTMLFormatter(Formatter):
 
     @property
     def current_feature(self):
+        """
+        Currently executed feature, if any.
+        """
         if len(self.features) == 0:
             return None
         return self.features[-1]
 
     @property
     def current_scenario(self):
+        """
+        Currently executed scenario, if any.
+        """
         _feature = self.current_feature
         if not _feature or not _feature.scenarios or _feature.scenario_finished:
             return None
         return _feature.scenarios[-1]
 
     def before_scenario_finish(self, status):
+        """
+        Sets status and duration of before scenario pseudo step.
+        """
         # Call this on Feature, as Scenario is not created yet.
         self.current_feature.before_scenario_finish(status)
 
     def after_scenario_finish(self, status):
+        """
+        Sets status and duration of after scenario presudo step.
+        Should be called at the end of behave's `after_scenario()`,
+        so that next embeds are correctly assigned to next scenario.
+        """
         # Call this on Feature, to be consistent with before_scenario_finish.
         self.current_feature.after_scenario_finish(status)
 
     def scenario(self, scenario):
+        """
+        Processes new scenario. It is added to the current feature.
+        """
         self.current_feature.add_scenario(scenario, self.pseudo_steps)
 
     def step(self, step):
+        """
+        Register new step for current scenario.
+        """
         self.current_scenario.add_step(step.keyword, step.name, step.text, step.table)
 
-    def result(self, step):
-        self.current_scenario.add_result(step)
-
     def match(self, match):
+        """
+        Step is mathced and will be executed next.
+        """
         # Executed before result.
-        # Needed for knowing from where the code is coming from, instead of just location in the feature file.
+        # Needed for knowing from where the code is coming from,
+        # instead of just location in the feature file.
         if match.location:
             self.current_scenario.add_match(match)
 
+    def result(self, step):
+        """
+        Step execution is finished.
+        """
+        self.current_scenario.add_result(step)
+
     def reset(self, reset):
-        pass
+        """
+        Reset.
+        """
 
     def uri(self, uri):
-        pass
+        """
+        URI.
+        """
 
     def background(self, background):
-        pass
+        """
+        Background call. Not used by this formatter.
+        """
 
-    # Making bold text in between quotes.
     def make_bold_text(self, given_string):
+        """
+        Turn string into HTML tags, make bold tex in between quotes.
+        """
         quote_count = given_string.count('"')
 
         # Save string to iterate over.
@@ -366,193 +740,35 @@ class PrettyHTMLFormatter(Formatter):
         span(the_rest)
 
     def embed(self, mime_type, data, caption=None, fail_only=False):
+        """
+        Prepares Embed data and append it to the currently executed (pseudo) step.
+        returns: Embbed
+        """
         embed_data = Embed(mime_type, data, caption, fail_only)
         # Find correct scenario.
         self.current_feature.embed(embed_data)
         return embed_data
 
     def set_title(self, title):
+        """
+        Title setter.
+        """
         self.title_string = title
 
     def set_icon(self, icon):
+        """
+        Icon setter.
+        """
         self.icon = icon
-
-    # Used to generate a steps.
-    def generate_step(
-        self,
-        step_result,
-        step_decorator,
-        step_duration,
-        step_link_label,
-        step_link_location,
-    ):
-
-        with div(cls=f"step-capsule step-capsule-{step_result}"):
-
-            with div(cls="step-status-decorator-duration-capsule"):
-                with div(cls="step-status"):
-
-                    # Behave defined status strings are "passed" "failed" "undefined" "skipped".
-                    # Modify these values for high contrast usage.
-                    high_contrast_status = {
-                        "passed": "PASS",
-                        "failed": "FAIL",
-                        "undefined": "SKIP",
-                        "skipped": "SKIP",
-                    }
-                    # Step status for high contrast - "PASS" "FAIL" "SKIP".
-                    span(high_contrast_status[step_result])
-
-                with div(cls="step-decorator"):
-                    # Step decorator.
-                    self.make_bold_text(step_decorator)
-
-                with div(cls="step-duration"):
-                    short_duration = "{:.2f}s".format(step_duration)
-                    # Step duration.
-                    span(f"({short_duration})")
-
-            # Make the link only when the link is provided
-            if step_link_location:
-                with div(cls="link"):
-                    with a(href=step_link_location):
-                        span(step_link_label)
-            else:
-                span(step_link_label)
-
-    def generate_embed(self, embed_data):
-        self.embed_number += 1
-
-        caption = embed_data._caption
-        mime_type = embed_data._mime_type
-        data = embed_data._data
-
-        # If caption is user defined.
-        if caption is not None:
-            use_caption = caption
-        # If caption is not defined try to use default one for specific mime type.
-        elif mime_type in DEFAULT_CAPTION_FOR_MIME_TYPE.keys():
-            use_caption = DEFAULT_CAPTION_FOR_MIME_TYPE[mime_type]
-        # No caption and no default caption for given mime type.
-        else:
-            use_caption = "uknown-mime-type"
-            data = "data removed"
-
-        # Check if the content of the data is a valid file - if so encode it to base64.
-        if os.path.isfile(str(data)):
-            data_base64 = base64.b64encode(open(data, "rb").read())
-            data = data_base64.decode("utf-8").replace("\n", "")
-
-        with div(cls="messages"):
-            with div(cls="embed-capsule"):
-
-                # Embed Caption.
-                with div(cls="embed_button"):
-                    with div(cls="link"):
-                        # Label to be shown.
-                        with a(
-                            href="#/",
-                            onclick=f"collapsible_toggle('embed_{self.embed_number}')",
-                        ):
-                            span(use_caption)
-
-                # Actual Embed.
-                if "video/webm" in mime_type:
-                    with pre(cls="embed_content"):
-                        with video(
-                            id=f"embed_{self.embed_number}",
-                            style="display: none",
-                            width="1024",
-                            controls="",
-                        ):
-                            source(
-                                src=f"data:{mime_type};base64,{data}", type=mime_type
-                            )
-
-                if "image/png" in mime_type:
-                    with pre(
-                        cls="embed_content",
-                        id=f"embed_{self.embed_number}",
-                        style="display: none",
-                    ):
-                        img(src=f"data:{mime_type};base64,{data}")
-
-                if "text" in mime_type:
-                    with pre(
-                        cls="embed_content",
-                        id=f"embed_{self.embed_number}",
-                        style="display: none",
-                    ):
-                        span(data)
-
-                if "link" in mime_type:
-                    with pre(
-                        cls="embed_content",
-                        id=f"embed_{self.embed_number}",
-                        style="display: none",
-                    ):
-                        # FAF reports are coming in format set( [link, label], ... )
-                        if type(data) is set:
-                            for single_link in data:
-                                with a(href=single_link[0]):
-                                    span(single_link[1])
-                        # If not 'set' lets assume the data is type list
-                        else:
-                            with a(href=data[0]):
-                                span(data[1])
-
-    def generate_table(self, given_table):
-        table_headings = given_table.headings
-        table_rows = given_table.rows
-
-        # Generate Table.
-        with table():
-
-            # Make a heading.
-            with thead(onclick=f"collapsible_toggle('table_{self.table_number}')"):
-                line = tr()
-                for heading in table_headings:
-                    line += th(heading)
-
-            # Make the body.
-            with tbody(id=f"table_{self.table_number}"):
-                for row in table_rows:
-                    with tr() as line:
-                        for cell in row:
-                            line += td(cell)
-
-        self.table_number += 1
-
-    def generate_text(self, given_text):
-        with table():
-            # Do not make the table header.
-            with thead(onclick=f"collapsible_toggle('table_{self.table_number}')"):
-                line = tr()
-                line += th("Data")
-            # Make the body.
-            with tbody(id=f"table_{self.table_number}"):
-                # Make rows.
-                for row in given_text.split("\n"):
-                    with tr() as line:
-                        line += td(row)
-
-        self.table_number += 1
-
-    def generate_comment(self, commentary):
-        # Generate commentary step.
-        with div(cls=f"step-capsule step-capsule-commentary"):
-            pre(f"{commentary}")
 
     def close(self):
         # Try block to be removed - debugging purposes only.
         try:
             # Generate everything.
-            self.document = dominate.document(
-                title=self.title_string, pretty_flags=True
-            )
+            document = dominate.document(title=self.title_string, pretty_flags=True)
 
             # Iterate over the data and generate the page.
-            with self.document.head:
+            with document.head:
                 # Load and insert css theme.
                 with open(
                     Path(__file__).parent / "theme.css", "r", encoding="utf-8"
@@ -571,117 +787,15 @@ class PrettyHTMLFormatter(Formatter):
 
                 ########## FEATURE FILE ITERATION ##########
                 # Base structure for iterating over Features.
-                for feature_id, feature in enumerate(self.features):
-                    # Feature Panel
-                    with div(cls="feature-panel"):
-                        with div(cls="feature-icon-name-container"):
-                            if self.icon:
-                                with div(cls="feature-panel-icon"):
-                                    img(src=self.icon)
-
-                            # Generate content of the panel.
-                            if not self.high_contrast_button:
-                                # Making sure there is a functioning button.
-                                with a(onclick=f"toggle_contrast('embed')", href="#"):
-                                    # Creating the actual text content which is clickable.
-                                    span(
-                                        f"Feature: {feature.name} [High Contrast toggle]"
-                                    )
-                                    # Set the flag to be sure there is not another one created.
-                                    self.high_contrast_button = True
-
-                            # On another feature do not generate the button.
-                            else:
-                                span(f"Feature: {feature.name}")
-
-                        # Suite started information.
-                        with div(cls="feature-timestamp"):
-                            span("Started: " + self.suite_start_time)
-
-                    # Feature data container.
-                    with div(cls="feature-container"):
-
-                        ########## SCENARIOS ITERATION ##########
-                        # Base structure for iterating over Scenarios in Features.
-                        for scenario_id, scenario in enumerate(feature.scenarios):
-                            # Scenario container.
-                            with div(
-                                cls=f"scenario-capsule scenario-capsule-{scenario.status}"
-                            ):
-
-                                for tag in scenario.tags:
-                                    with div(cls="scenario-tags"):
-                                        # Do not make links by default, this is handled on qecore side for links to bugzilla.
-                                        # Tags come with structure [<tag>, None] or [<tag>, <bugzilla_link/git_link>]
-                                        if tag.link is not None:
-                                            with div(cls="link"):
-                                                with a(href=tag.link):
-                                                    span("@" + tag.behave_tag)
-                                        else:
-                                            span("@" + tag.behave_tag)
-
-                                # Simple container for name + duration
-                                with div(cls="scenario-info"):
-
-                                    with div(cls="scenario-name"):
-                                        span(f"Scenario: {scenario.name}")
-
-                                    with div(cls="scenario-duration"):
-                                        span(
-                                            f"Scenario duration: {scenario.duration:.2f}s"
-                                        )
-
-                                ########## STEP ITERATION ##########
-                                # Base structure for iterating over Steps in Scenarios.
-                                steps = scenario.steps
-                                if scenario.pseudo_steps:
-                                    steps = (
-                                        [scenario.pseudo_steps[0]]
-                                        + steps
-                                        + [scenario.pseudo_steps[1]]
-                                    )
-                                for step_id, step in enumerate(steps):
-                                    # There was a request for a commentary step.
-                                    # Such step would serve only as an information panel.
-                                    if step.commentary_override:
-                                        self.generate_comment(step.text)
-                                    else:
-
-                                        # Generate the step.
-                                        step_result = (
-                                            step.status if step.status else "skipped"
-                                        )
-
-                                        step_decorator = step.keyword + " " + step.name
-                                        self.generate_step(
-                                            step_result=step_result,
-                                            step_decorator=step_decorator,
-                                            step_duration=step.duration,
-                                            step_link_label=step.location,
-                                            step_link_location=step.location_link,
-                                        )
-
-                                        # Generate table for a step if present.
-                                        if step.table is not None:
-                                            self.generate_table(step.table)
-
-                                        # Generate text field for a step if present.
-                                        if step.text is not None:
-                                            self.generate_text(step.text)
-
-                                    # Generate all embeds that are in the data structure.
-                                    # Add div for dashed-line last-child CSS selector.
-                                    with div(cls="embeds"):
-                                        for embed_data in step.embeds:
-                                            if (
-                                                embed_data._fail_only
-                                                and scenario.status != "failed"
-                                            ):
-                                                continue
-                                            self.generate_embed(embed_data=embed_data)
+                if self.features:
+                    feature = self.features[0]
+                    feature.icon = self.icon
+                    feature.high_contrast_button = True
+                for feature in self.features:
+                    feature.generate_html()
 
             # Write everything to the stream which should corelate to the -o <file> behave option.
-            self.stream.write(self.document.render())
+            self.stream.write(document.render())
 
         except Exception:
             traceback.print_exc(file=sys.stdout)
