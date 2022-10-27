@@ -85,7 +85,7 @@ class Scenario:
         self.pseudo_steps = []
         if pseudo_steps:
             self.pseudo_steps = [Step(when, "scenario", None, None, self) for when in ("Before", "After")]
-        
+
         # We need another information about a tag, to recognize if it should act as a link or span.
         self.tags = [Tag(tag) for tag in scenario.effective_tags]
 
@@ -112,7 +112,7 @@ class Scenario:
         if self.pseudo_steps:
             return self.pseudo_steps[1]
         return None
-        
+
     @property
     def current_step(self):
         _step = None
@@ -155,7 +155,7 @@ class Scenario:
                 result.status == Status.undefined:
             self.status = result.status.name
             self.duration = self._scenario.duration
-        
+
         # check if step execution finished
         # ebed to after_scenario_step if pseudo_steps enabled
         if self.is_last_step or \
@@ -163,7 +163,7 @@ class Scenario:
             self.steps_finished = True
             self.steps_finished_timestamp = time.time()
 
-        return step        
+        return step
 
     def embed(self, embed_data):
         _step = self.current_step
@@ -219,12 +219,12 @@ class Embed:
         self._data = data
         self._caption = caption
         self._fail_only = fail_only
-    
+
     def set_data(self, mime_type, data, caption=None):
         self._mime_type = mime_type
         self._data = data
         self._caption = caption
-        
+
     def set_fail_only(self, fail_only):
         self._fail_only = fail_only
 
@@ -573,7 +573,7 @@ class PrettyHTMLFormatter(Formatter):
                                 # Base structure for iterating over Steps in Scenarios.
                                 steps = scenario.steps
                                 if scenario.pseudo_steps:
-                                    steps = [scenario.pseudo_steps[0]] + steps + [scenario.pseudo_steps[1]] 
+                                    steps = [scenario.pseudo_steps[0]] + steps + [scenario.pseudo_steps[1]]
                                 for step_id, step in enumerate(steps):
                                     # There was a request for a commentary step.
                                     # Such step would serve only as an information panel.
