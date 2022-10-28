@@ -59,7 +59,7 @@ class Feature:
         self.name = feature.name
         self.description = feature.description
         self.location = feature.location
-        self.status = None
+        self.status = Status.skipped.name
         self.icon = None
         self.high_contrast_button = False
         self.start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
@@ -80,6 +80,8 @@ class Feature:
         for embed_data in self.to_embed:
             _scenario.embed(embed_data)
         self.to_embed = []
+        # Stop embeding to before_scenario.
+        _scenario.pseudo_step_id = 1
 
         if pseudo_steps:
             _step = _scenario.before_scenario_step
@@ -115,7 +117,14 @@ class Feature:
         _scenario = self.scenarios[-1]
         _step = _scenario.after_scenario_step
         if _step is not None:
-            _step.duration = time.time() - _scenario.steps_finished_timestamp
+            if _scenario.steps_finished_timestamp:
+                _step.duration = time.time() - _scenario.steps_finished_timestamp
+            else:
+                _step.duration = (
+                    time.time()
+                    - self.scenario_begin_timestamp
+                    - self.before_scenario_duration
+                )
             _step.status = status
             self.scenario_begin_timestamp = time.time()
 
@@ -165,6 +174,7 @@ class Scenario:
         self.feature = feature
         self.name = scenario.name
         self.description = scenario.description
+        self.pseudo_step_id = 0
         self.pseudo_steps = []
         if pseudo_steps:
             self.pseudo_steps = [
@@ -175,7 +185,7 @@ class Scenario:
         self.tags = [Tag(tag) for tag in scenario.effective_tags]
 
         self.location = scenario.location
-        self.status = None
+        self.status = Status.skipped.name
         self.duration = 0.0
         self.match_id = -1
         self.steps_finished = False
@@ -183,8 +193,12 @@ class Scenario:
         self.steps = []
         self.to_embed = []
 
+        self.reported_error = None
+
         self.saved_matched_filename = None
         self.saved_matched_line = None
+        # Process before_scenario errors.
+        self.report_error(scenario)
 
     @property
     def before_scenario_step(self):
@@ -215,13 +229,12 @@ class Scenario:
         _step = None
         if self.match_id < 0:
             if self.pseudo_steps:
-                _step = self.pseudo_steps[0]
+                _step = self.pseudo_steps[self.pseudo_step_id]
             elif self.steps:
                 _step = self.steps[0]
 
         if self.steps_finished:
-            if self.pseudo_steps:
-                _step = self.pseudo_steps[1]
+            _step = self.after_scenario_step
 
         if _step is None and self.steps:
             _step = self.steps[self.match_id]
@@ -279,6 +292,35 @@ class Scenario:
 
         return step
 
+    def report_error(self, behave_obj):
+        """
+        Embeds error message and traceback.
+        """
+        if not behave_obj.error_message:
+            return
+        if self.reported_error:
+            if self.reported_error.data == behave_obj.error_message:
+                return
+            if self.reported_error.data in behave_obj.error_message:
+                # Do not update traceback, as behave saves only first traceback.
+                self.reported_error.data = behave_obj.error_message
+                return
+        self.reported_error = Embed("text", behave_obj.error_message, "Error Message")
+        self.embed(self.reported_error)
+        if "Traceback" not in behave_obj.error_message:
+            self.embed(
+                Embed(
+                    "text",
+                    traceback.format_exception(
+                        type(behave_obj.exception),
+                        behave_obj.exception,
+                        behave_obj.exc_traceback,
+                    ),
+                    "Error Traceback",
+                )
+            )
+        self.status = Status.failed.name
+
     def embed(self, embed_data):
         """
         Embed data to the this step.
@@ -293,6 +335,8 @@ class Scenario:
         """
         Converts scenario to HTML.
         """
+        # Check for after_scenario errors.
+        self.report_error(self._scenario)
         # Scenario container.
         with div(cls=f"scenario-capsule scenario-capsule-{self.status}"):
 
@@ -332,7 +376,7 @@ class Step:
     """
 
     def __init__(self, keyword, name, text, step_table, scenario):
-        self.status = Status.skipped
+        self.status = Status.skipped.name
         self.duration = 0.0
         self.scenario = scenario
         self.keyword = keyword
@@ -354,11 +398,7 @@ class Step:
 
         # If the step has error message and step failed, set the error message.
         if result.error_message and result.status == Status.failed:
-            self.embed(
-                Embed(
-                    mime_type="text", data=result.error_message, caption="Error Message"
-                )
-            )
+            self.scenario.report_error(result)
 
         # If the step is undefined use the behave function to provide information about it.
         if result.status == Status.undefined:
@@ -792,7 +832,7 @@ class PrettyHTMLFormatter(Formatter):
                     feature.icon = self.icon
                     feature.high_contrast_button = True
                 for feature in self.features:
-                    feature.generate_html()
+                    feature.generate_html(self)
 
             # Write everything to the stream which should corelate to the -o <file> behave option.
             self.stream.write(document.render())
