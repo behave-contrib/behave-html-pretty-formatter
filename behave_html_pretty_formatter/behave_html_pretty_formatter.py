@@ -95,7 +95,7 @@ class Feature:
         """
         Embeds Data to current step in current scenario.
         """
-        if not self.scenarios:
+        if not self.scenarios or self.scenario_finished:
             self.to_embed.append(embed_data)
         else:
             self.scenarios[-1].embed(embed_data)
