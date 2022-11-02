@@ -671,8 +671,6 @@ class PrettyHTMLFormatter(Formatter):
     def __init__(self, stream, config):
         super(PrettyHTMLFormatter, self).__init__(stream, config)
 
-        print(config.userdata)
-
         self.features = []
 
         self.high_contrast_button = False
