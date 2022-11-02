@@ -822,9 +822,7 @@ class PrettyHTMLFormatter(Formatter):
         # Try block to be removed - debugging purposes only.
         try:
             # Generate everything.
-            document = dominate.document(
-                title=self.title_string, pretty_flags=self.pretty_output
-            )
+            document = dominate.document(title=self.title_string)
 
             # Iterate over the data and generate the page.
             with document.head:
@@ -852,7 +850,7 @@ class PrettyHTMLFormatter(Formatter):
                     feature.generate_feature(self)
 
             # Write everything to the stream which should corelate to the -o <file> behave option.
-            self.stream.write(document.render())
+            self.stream.write(document.render(pretty=self.pretty_output))
 
         except Exception:
             traceback.print_exc(file=sys.stdout)
