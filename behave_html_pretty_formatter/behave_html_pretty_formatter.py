@@ -666,12 +666,12 @@ class PrettyHTMLFormatter(Formatter):
 
     name = "html-pretty"
     description = "Pretty HTML formatter"
-    title_string = "Test Suite Reporter"
     Embed = Embed
-    pseudo_steps = False
 
     def __init__(self, stream, config):
         super(PrettyHTMLFormatter, self).__init__(stream, config)
+
+        print(config.userdata)
 
         self.features = []
 
@@ -686,6 +686,24 @@ class PrettyHTMLFormatter(Formatter):
 
         # This will return a stream given in behave call -o <file_name>.html.
         self.stream = self.open()
+
+        config_path = f"behave.formatter.{self.name}"
+
+        self.pseudo_steps = self._str_to_bool(
+            config.userdata.get(f"{config_path}.pseudo_steps", "false")
+        )
+
+        self.title_string = config.userdata.get(
+            f"{config_path}.title_string", "Test Suite Reporter"
+        )
+
+        self.pretty_output = self._str_to_bool(
+            config.userdata.get(f"{config_path}.pretty_output", "true")
+        )
+
+    def _str_to_bool(self, value):
+        assert value.lower() in ["true", "false", "yes", "no", "0", "1"]
+        return value.lower() in ["true", "yes", "1"]
 
     def feature(self, feature):
         self.features.append(Feature(feature))
@@ -810,7 +828,9 @@ class PrettyHTMLFormatter(Formatter):
         # Try block to be removed - debugging purposes only.
         try:
             # Generate everything.
-            document = dominate.document(title=self.title_string, pretty_flags=True)
+            document = dominate.document(
+                title=self.title_string, pretty_flags=self.pretty_output
+            )
 
             # Iterate over the data and generate the page.
             with document.head:
