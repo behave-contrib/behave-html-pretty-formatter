@@ -158,8 +158,6 @@ class Feature:
         # Feature data container.
         with div(cls="feature-container"):
 
-            ########## SCENARIOS ITERATION ##########
-            # Base structure for iterating over Scenarios in Features.
             for scenario in self.scenarios:
                 scenario.generate_scenario(formatter)
 
@@ -361,8 +359,6 @@ class Scenario:
                 with div(cls="scenario-duration"):
                     span(f"Scenario duration: {self.duration:.2f}s")
 
-            ########## STEP ITERATION ##########
-            # Base structure for iterating over Steps in Scenarios.
             steps = self.steps
             if self.pseudo_steps:
                 steps = [self.pseudo_steps[0]] + steps + [self.pseudo_steps[1]]
@@ -848,8 +844,6 @@ class PrettyHTMLFormatter(Formatter):
                 with script(type="text/javascript"):
                     raw(js_script)
 
-                ########## FEATURE FILE ITERATION ##########
-                # Base structure for iterating over Features.
                 if self.features:
                     feature = self.features[0]
                     feature.icon = self.icon
