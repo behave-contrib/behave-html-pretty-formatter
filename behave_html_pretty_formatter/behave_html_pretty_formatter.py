@@ -128,7 +128,7 @@ class Feature:
             _step.status = status
             self.scenario_begin_timestamp = time.time()
 
-    def generate_html(self, formatter):
+    def generate_feature(self, formatter):
         """
         Converts this object to HTML.
         """
@@ -161,7 +161,7 @@ class Feature:
             ########## SCENARIOS ITERATION ##########
             # Base structure for iterating over Scenarios in Features.
             for scenario in self.scenarios:
-                scenario.generate_html(formatter)
+                scenario.generate_scenario(formatter)
 
 
 class Scenario:
@@ -331,7 +331,7 @@ class Scenario:
         else:
             self.to_embed.append(embed_data)
 
-    def generate_html(self, formatter):
+    def generate_scenario(self, formatter):
         """
         Converts scenario to HTML.
         """
@@ -367,7 +367,7 @@ class Scenario:
             if self.pseudo_steps:
                 steps = [self.pseudo_steps[0]] + steps + [self.pseudo_steps[1]]
             for step in steps:
-                step.generate_html(formatter, self.status)
+                step.generate_step(formatter, self.status)
 
 
 class Step:
@@ -430,7 +430,7 @@ class Step:
         """
         self.commentary_override = value
 
-    def generate_html(self, formatter, scenario_status):
+    def generate_step(self, formatter, scenario_status):
         """
         Converts Step Object into HTML.
         """
@@ -832,7 +832,7 @@ class PrettyHTMLFormatter(Formatter):
                     feature.icon = self.icon
                     feature.high_contrast_button = True
                 for feature in self.features:
-                    feature.generate_html(self)
+                    feature.generate_feature(self)
 
             # Write everything to the stream which should corelate to the -o <file> behave option.
             self.stream.write(document.render())
