@@ -338,7 +338,7 @@ class Scenario:
         # Check for after_scenario errors.
         self.report_error(self._scenario)
         # Scenario container.
-        with div(cls=f"scenario-capsule scenario-capsule-{self.status}"):
+        with div(cls=f"scenario-capsule {self.status}"):
 
             for tag in self.tags:
                 with div(cls="scenario-tags"):
@@ -435,10 +435,10 @@ class Step:
         Converts Step Object into HTML.
         """
         if self.commentary_override:
-            with div(cls="step-capsule step-capsule-commentary"):
+            with div(cls="step-capsule commentary"):
                 pre(f"{self.text}")
         else:
-            step_cls = f"step-capsule step-capsule-{self.status}"
+            step_cls = f"step-capsule {self.status}"
             if self.keyword == "Before":
                 step_cls = f"{step_cls} margin-bottom"
             if self.keyword == "After":

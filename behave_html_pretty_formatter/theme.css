@@ -137,25 +137,25 @@ header {
   color: black;
 }
 
-.scenario-capsule.contrast {
-  background-color: #000;
-  color: #fff;
-}
-
 .scenario-capsule:last-child {
   border: 0;
 }
 
-.scenario-capsule-passed {
+.scenario-capsule.passed {
   background-color: #dff2bf;
 }
 
-.scenario-capsule-failed {
+.scenario-capsule.failed {
   background-color: #f5c9cd;
 }
 
-.scenario-capsule-undefined {
+.scenario-capsule.undefined {
   background-color: #ffdf61;
+}
+
+.scenario-capsule.contrast {
+  background-color: #000;
+  color: #fff;
 }
 
 .scenario-info {
@@ -211,37 +211,37 @@ header {
   justify-content: space-between;
 }
 
-.step-capsule.contrast {
-  background-color: rgb(36, 35, 35);
-  color: #fff;
-  font-size: 1.25rem;
-  border: none;
-}
-
-.step-capsule-passed {
+.step-capsule.passed {
   background-color: #c6dba3;
   border: 1px solid #b4cc8c;
 }
 
-.step-capsule-failed {
+.step-capsule.failed {
   background-color: #ea868f;
   ;
   border: 1px solid #dd7a82;
 }
 
-.step-capsule-undefined {
+.step-capsule.undefined {
   background-color: #f1cb32;
   border: 1px solid #f1cb32;
 }
 
-.step-capsule-skipped {
+.step-capsule.skipped {
   background-color: #cfe2ff;
   border: 1px solid #b8c9e4;
 }
 
-.step-capsule-commentary {
+.step-capsule.commentary {
   background-color: #b9b9b9;
   margin: 0.2rem 0 0.2rem 1rem;
+}
+
+.step-capsule.contrast {
+  background-color: rgb(36, 35, 35);
+  color: #fff;
+  font-size: 1.25rem;
+  border: none;
 }
 
 .margin-top {
@@ -289,20 +289,20 @@ header {
   margin: 0 0 10px 15px
 }
 
-.scenario-capsule .messages.contrast:last-child {
-  border-bottom: 1px dashed #fff;
-}
-
-.scenario-capsule-passed .messages:last-child {
+.scenario-capsule.passed .messages:last-child {
   border-bottom: 1px dashed #4f8a10;
 }
 
-.scenario-capsule-failed .messages:last-child {
+.scenario-capsule.failed .messages:last-child {
   border-bottom: 1px dashed #d8000c;
 }
 
-.scenario-capsule-undefined .messages:last-child {
+.scenario-capsule.undefined .messages:last-child {
   border-bottom: 1px dashed #9f6000;
+}
+
+.scenario-capsule .messages.contrast:last-child {
+  border-bottom: 1px dashed #fff;
 }
 
 .embed-capsule {

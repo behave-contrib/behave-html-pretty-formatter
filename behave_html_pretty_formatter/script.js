@@ -12,10 +12,10 @@ function collapsible_toggle(id) {
 function toggle_contrast_for(target_class) {
     var elements = document.getElementsByClassName(target_class);
     for(var i = 0; i < elements.length; i++) {
-        if (document.getElementsByClassName(target_class)[i].classList.contains("contrast")) {
-            document.getElementsByClassName(target_class)[i].classList.remove("contrast");
+        if (elements[i].classList.contains("contrast")) {
+            elements[i].classList.remove("contrast");
         } else {
-            document.getElementsByClassName(target_class)[i].classList.add("contrast");
+            elements[i].classList.add("contrast");
         }
     }
 };
@@ -33,17 +33,11 @@ function toggle_contrast(id) {
     const contrast_classes = [
         "feature-panel",
 
-        "scenario-capsule scenario-capsule-passed",
-        "scenario-capsule scenario-capsule-failed",
-        "scenario-capsule scenario-capsule-undefined",
+        "scenario-capsule",
         "scenario-tags",
         "scenario-duration",
 
-        "step-capsule step-capsule-passed",
-        "step-capsule step-capsule-failed",
-        "step-capsule step-capsule-undefined",
-        "step-capsule step-capsule-skipped",
-        "step-capsule step-capsule-commentary",
+        "step-capsule",
         "step-status",
         "step-duration",
 
