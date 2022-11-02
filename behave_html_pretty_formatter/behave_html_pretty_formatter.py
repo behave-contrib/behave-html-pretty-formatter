@@ -438,7 +438,12 @@ class Step:
             with div(cls="step-capsule step-capsule-commentary"):
                 pre(f"{self.text}")
         else:
-            with div(cls=f"step-capsule step-capsule-{self.status}"):
+            step_cls = f"step-capsule step-capsule-{self.status}"
+            if self.keyword == "Before":
+                step_cls = f"{step_cls} margin-bottom"
+            if self.keyword == "After":
+                step_cls = f"{step_cls} margin-top"
+            with div(cls=step_cls):
 
                 with div(cls="step-status-decorator-duration-capsule"):
                     with div(cls="step-status"):

@@ -244,6 +244,14 @@ header {
   margin: 0.2rem 0 0.2rem 1rem;
 }
 
+.margin-top {
+  margin-top: 10px;
+}
+
+.margin-bottom {
+  margin-bottom: 10px;
+}
+
 .step-status-decorator-duration-capsule {
   display: flex;
 }
