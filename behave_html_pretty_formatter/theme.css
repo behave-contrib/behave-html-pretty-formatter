@@ -189,6 +189,7 @@ header {
   font-weight: bold;
   font-size: 0.75rem;
   margin: 0.1rem 0 0.5rem 0;
+  display: inline-block;
 }
 
 .scenario-tags.contrast {
@@ -196,7 +197,6 @@ header {
   font-weight: bold;
   font-size: 1rem;
   margin: 0.1rem 1em 0.5rem 0;
-  display: inline-block;
 }
 
 
