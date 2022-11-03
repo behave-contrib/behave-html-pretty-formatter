@@ -5,7 +5,6 @@ Inspired by https://github.com/Hargne/jest-html-reporter
 
 from __future__ import absolute_import
 import os
-import sys
 import traceback
 import base64
 import time
@@ -866,38 +865,37 @@ class PrettyHTMLFormatter(Formatter):
         self.icon = icon
 
     def close(self):
-        # Try block to be removed - debugging purposes only.
-        try:
-            # Generate everything.
-            document = dominate.document(title=self.title_string)
+        """
+        Generates the entire html page with dominate.
+        """
 
-            # Iterate over the data and generate the page.
-            with document.head:
-                # Load and insert css theme.
-                with open(
-                    Path(__file__).parent / "theme.css", "r", encoding="utf-8"
-                ) as _css_file:
-                    css_theme = _css_file.read()
-                with style(rel="stylesheet"):
-                    raw(css_theme)
+        # Generate everything.
+        document = dominate.document(title=self.title_string)
 
-                # Load and insert javascript - important for embed toggles and high contrast switch.
-                with open(
-                    Path(__file__).parent / "script.js", "r", encoding="utf-8"
-                ) as _script_file:
-                    js_script = _script_file.read()
-                with script(type="text/javascript"):
-                    raw(js_script)
+        # Iterate over the data and generate the page.
+        with document.head:
+            # Load and insert css theme.
+            with open(
+                Path(__file__).parent / "theme.css", "r", encoding="utf-8"
+            ) as _css_file:
+                css_theme = _css_file.read()
+            with style(rel="stylesheet"):
+                raw(css_theme)
 
-                if self.features:
-                    feature = self.features[0]
-                    feature.icon = self.icon
-                    feature.high_contrast_button = True
-                for feature in self.features:
-                    feature.generate_feature(self)
+            # Load and insert javascript - important for embed toggles and high contrast switch.
+            with open(
+                Path(__file__).parent / "script.js", "r", encoding="utf-8"
+            ) as _script_file:
+                js_script = _script_file.read()
+            with script(type="text/javascript"):
+                raw(js_script)
 
-            # Write everything to the stream which should corelate to the -o <file> behave option.
-            self.stream.write(document.render(pretty=self.pretty_output))
+            if self.features:
+                feature = self.features[0]
+                feature.icon = self.icon
+                feature.high_contrast_button = True
+            for feature in self.features:
+                feature.generate_feature(self)
 
-        except Exception:
-            traceback.print_exc(file=sys.stdout)
+        # Write everything to the stream which should corelate to the -o <file> behave option.
+        self.stream.write(document.render(pretty=self.pretty_output))
