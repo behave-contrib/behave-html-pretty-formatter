@@ -339,16 +339,7 @@ class Scenario:
         with div(cls=f"scenario-capsule {self.status}"):
 
             for tag in self.tags:
-                with div(cls="scenario-tags"):
-                    # Do not make links by default,
-                    # this is handled on qecore side for links to bugzilla.
-                    # Tags come with structure [<tag>, None] or [<tag>, <bugzilla_link/git_link>]
-                    if tag.link is not None:
-                        with div(cls="link"):
-                            with a(href=tag.link):
-                                span("@" + tag.behave_tag)
-                    else:
-                        span("@" + tag.behave_tag)
+                tag.generate_tag()
 
             # Simple container for name + duration
             with div(cls="scenario-info"):
@@ -406,13 +397,7 @@ class Step:
                 make_undefined_step_snippets(undefined_steps=[result])
             )
 
-            self.embed(
-                Embed(
-                    mime_type="text",
-                    data=undefined_step_message,
-                    caption="Error Message",
-                )
-            )
+            self.embed(Embed("text", undefined_step_message, "Error Message"))
 
     def embed(self, embed_data):
         """
@@ -473,8 +458,8 @@ class Step:
                 else:
                     span(self.location)
             # Still in non-commentary
-            self.generate_text(formatter)
-            self.generate_table(formatter)
+            self.generate_text()
+            self.generate_table()
 
         # Generate all embeds that are in the data structure.
         # Add div for dashed-line last-child CSS selector.
@@ -482,13 +467,16 @@ class Step:
             for embed_data in self.embeds:
                 if embed_data.fail_only and scenario_status != "failed":
                     continue
-                self.generate_embed(embed_data, formatter)
+                self.generate_embed(embed_data)
 
-    def generate_embed(self, embed_data, formatter):
+    def generate_embed(self, embed_data):
         """
         Converts embed data into HTML.
+
+        This should not be part of Embed class, as Embed objects are
+        returned to user for later modification of data, we want to
+        prevent accidental call of this.
         """
-        formatter.embed_number += 1
 
         caption = embed_data.caption
         mime_type = embed_data.mime_type
@@ -519,7 +507,7 @@ class Step:
                         # Label to be shown.
                         with a(
                             href="#/",
-                            onclick=f"collapsible_toggle('embed_{formatter.embed_number}')",
+                            onclick=f"collapsible_toggle('embed_{embed_data.uid}')",
                         ):
                             span(use_caption)
 
@@ -527,7 +515,7 @@ class Step:
                 if "video/webm" in mime_type:
                     with pre(cls="embed_content"):
                         with video(
-                            id=f"embed_{formatter.embed_number}",
+                            id=f"embed_{embed_data.uid}",
                             style="display: none",
                             width="1024",
                             controls="",
@@ -539,7 +527,7 @@ class Step:
                 if "image/png" in mime_type:
                     with pre(
                         cls="embed_content",
-                        id=f"embed_{formatter.embed_number}",
+                        id=f"embed_{embed_data.uid}",
                         style="display: none",
                     ):
                         img(src=f"data:{mime_type};base64,{data}")
@@ -547,7 +535,7 @@ class Step:
                 if "text" in mime_type:
                     with pre(
                         cls="embed_content",
-                        id=f"embed_{formatter.embed_number}",
+                        id=f"embed_{embed_data.uid}",
                         style="display: none",
                     ):
                         span(data)
@@ -555,7 +543,7 @@ class Step:
                 if "link" in mime_type:
                     with pre(
                         cls="embed_content",
-                        id=f"embed_{formatter.embed_number}",
+                        id=f"embed_{embed_data.uid}",
                         style="display: none",
                     ):
                         # FAF reports are coming in format set( [link, label], ... )
@@ -568,7 +556,7 @@ class Step:
                             with a(href=data[0]):
                                 span(data[1])
 
-    def generate_table(self, formatter):
+    def generate_table(self):
         """
         Converts step table into HTML.
         """
@@ -581,21 +569,23 @@ class Step:
         with table():
 
             # Make a heading.
-            with thead(onclick=f"collapsible_toggle('table_{formatter.table_number}')"):
+            with thead(
+                onclick=f"collapsible_toggle('table_{PrettyHTMLFormatter.table_number}')"
+            ):
                 line = tr()
                 for heading in table_headings:
                     line += th(heading)
 
             # Make the body.
-            with tbody(id=f"table_{formatter.table_number}"):
+            with tbody(id=f"table_{PrettyHTMLFormatter.table_number}"):
                 for row in table_rows:
                     with tr() as line:
                         for cell in row:
                             line += td(cell)
 
-        formatter.table_number += 1
+        PrettyHTMLFormatter.table_number += 1
 
-    def generate_text(self, formatter):
+    def generate_text(self):
         """
         Converts step text into HTML.
         """
@@ -603,17 +593,19 @@ class Step:
             return
         with table():
             # Do not make the table header.
-            with thead(onclick=f"collapsible_toggle('table_{formatter.table_number}')"):
+            with thead(
+                onclick=f"collapsible_toggle('table_{PrettyHTMLFormatter.table_number}')"
+            ):
                 line = tr()
                 line += th("Text")
             # Make the body.
-            with tbody(id=f"table_{formatter.table_number}"):
+            with tbody(id=f"table_{PrettyHTMLFormatter.table_number}"):
                 # Make rows.
                 for row in self.text.split("\n"):
                     with tr() as line:
                         line += td(row)
 
-        formatter.table_number += 1
+        PrettyHTMLFormatter.table_number += 1
 
 
 class Embed:
@@ -621,11 +613,15 @@ class Embed:
     Encapsulates data to be embedded to the step.
     """
 
+    count = 0
+
     def __init__(self, mime_type, data, caption=None, fail_only=False):
-        self.mime_type = mime_type
-        self.data = data
-        self.caption = caption
-        self.fail_only = fail_only
+        self._id = Embed.count
+        Embed.count += 1
+        self._mime_type = mime_type
+        self._data = data
+        self._caption = caption
+        self._fail_only = fail_only
 
     def set_data(self, mime_type, data, caption=None):
         """
@@ -639,7 +635,29 @@ class Embed:
         """
         Set fail_only flag, whether embed should be done on pass or not.
         """
-        self.fail_only = fail_only
+        self._fail_only = fail_only
+
+    @property
+    def mime_type(self):
+        "Read-only mime_type access."
+        return self._mime_type
+
+    @property
+    def data(self):
+        "Read-only data access."
+        return self._data
+
+    @property
+    def caption(self):
+        "Read-only caption access."
+        return self._caption
+
+    @property
+    def uid(self):
+        """
+        Read-only access for embed ID.
+        """
+        return self._id
 
 
 class Tag:
@@ -649,7 +667,37 @@ class Tag:
 
     def __init__(self, behave_tag, link=None):
         self.behave_tag = behave_tag
-        self.link = link
+        self._link = link
+
+    def set_link(self, link):
+        """
+        Set link associated with tag.
+        """
+
+        assert isinstance(link, str), f"Link must be string, got {type(link)}"
+        self._link = link
+
+    def has_link(self):
+        """
+        Check if link is already set.
+        """
+        return self._link is not None
+
+    def generate_tag(self):
+        """
+        Converts tag to HTML.
+        """
+
+        with div(cls="scenario-tags"):
+            # Do not make links by default,
+            # this is handled on qecore side for links to bugzilla.
+            # Tags come with structure [<tag>, None] or [<tag>, <bugzilla_link/git_link>]
+            if self._link is not None:
+                with div(cls="link"):
+                    with a(href=self._link):
+                        span("@" + self.behave_tag)
+            else:
+                span("@" + self.behave_tag)
 
 
 # Heavily based on behave.formatter.json:JSONFormatter
@@ -662,7 +710,7 @@ class PrettyHTMLFormatter(Formatter):
 
     name = "html-pretty"
     description = "Pretty HTML formatter"
-    Embed = Embed
+    table_number = 0
 
     def __init__(self, stream, config):
         super(PrettyHTMLFormatter, self).__init__(stream, config)
@@ -670,8 +718,6 @@ class PrettyHTMLFormatter(Formatter):
         self.features = []
 
         self.high_contrast_button = False
-        self.embed_number = 0
-        self.table_number = 0
 
         self.suite_start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
@@ -801,6 +847,7 @@ class PrettyHTMLFormatter(Formatter):
         Prepares Embed data and append it to the currently executed (pseudo) step.
         returns: Embbed
         """
+
         embed_data = Embed(mime_type, data, caption, fail_only)
         # Find correct scenario.
         self.current_feature.embed(embed_data)
