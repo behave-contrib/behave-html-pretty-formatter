@@ -19,6 +19,14 @@ following content:
 # Define ALIAS for PrettyHTMLFormatter.
 [behave.formatters]
 html-pretty = behave_html_pretty_formatter:PrettyHTMLFormatter
+
+# Optional configuration of PrettyHTMLFormmater
+# also possible to use "behave ... -D behave.formatter.html-pretty.{setting}={value}"
+[behave.userdata]
+behave.formatter.html-pretty.pseudo_steps = false
+behave.formatter.html-pretty.title_string = Test Suite Reporter
+behave.formatter.html-pretty.pretty_output = true
+behave.formatter.html-pretty.date_format = %d-%m-%Y %H:%M:%S
 ```
 
 and then use it by running behave with `-f`/`--format` parameter, e.g.
@@ -99,8 +107,8 @@ You will need to define your own step where you will set flag for commentary ste
 @step('Commentary')
 def commentary_step(context):
     # Get the correct step to override.
-    scenario = context.formatter.features[-1].scenarios[-1]
-    step = scenario.steps[scenario.result_id]
+    scenario = context.formatter.current_scenario
+    step = scenario.current_step
     # Override the step, this will prevent the decorator to be generated and only the text will show.
     step.commentary_override = True
 ```
@@ -162,6 +170,34 @@ mime_type="link", data="<set([<link>, <label>],...)>" or data="list(<link>, <lab
 
 You can simply set `data=data_encoded` generated as described in [Encoding to base64](#encoding-to-base64) section and the formatter will generate the proper [Format](#format-in-which-the-data-is-inserted-to-the-html) based on MIME type or you can just use the `data="/path/to/file"` and formatter will attempt to convert it.
 
+Function `embed()` returns object, which can be saved and modified later via `set_data()` and `set_failonly()` methods. This is if you want to embed some data which are still being processes (output of a backgroud process started in a step, etc.).
+
+### Pseudo steps
+
+If the testsuite use `before_scenario()` and `after_scenario()` and you would like to see them as steps in HTML report (for example to have embeds separated from the standard steps), configuration switch in behave.ini file `behave.formatter.html-pretty.pseudo_steps = true` will do the trick, together with calling `context.html_formatter.before_scenario_finish(status)` at the end of `before_scenario()` (analogously for `after_scenario()`). The status is one of `"passed", "failed", "skipped"`. Function will set color class of the step and also record pseudo step duration.
+
+```python
+# example use in features.environment.py
+
+def before_scenario(context, scenario):
+  ...
+  # this requires to have html_formatter set by code above
+  if error_found:
+    context.embed("text", str(error_found), "Error Message")
+    context.html_formatter.before_scenario_finish("failed")
+    raise error_found
+  else:
+    context.html_formatter.before_scenario_finish("passed")
+
+def after_scenario(context, scenario):
+  ...
+  if error_found:
+    context.embed("text", str(error_found), "Error Message")
+    context.html_formatter.after_scenario_finish("failed")
+    raise error_found
+  else:
+    context.html_formatter.after_scenario_finish("passed")
+```
 ## Static Examples
 
 ### HTML Pretty
