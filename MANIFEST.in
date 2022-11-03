@@ -1,3 +1,0 @@
-include LICENSE
-include README.md
-recursive-include behave_html_formatter *.css *.js *.py
