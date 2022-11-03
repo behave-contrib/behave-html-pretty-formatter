@@ -38,10 +38,6 @@ from behave.model_core import Status
 from behave.runner_util import make_undefined_step_snippets
 
 
-# TODO
-# Timestamp next to the human-readable time.
-
-
 DEFAULT_CAPTION_FOR_MIME_TYPE = {
     "video/webm": "Video",
     "image/png": "Screenshot",
@@ -62,7 +58,7 @@ class Feature:
         self.status = Status.skipped.name
         self.icon = None
         self.high_contrast_button = False
-        self.start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        self.start_time = datetime.now()
 
         self.scenarios = []
         self.to_embed = []
@@ -153,7 +149,7 @@ class Feature:
 
             # Suite started information.
             with div(cls="feature-timestamp"):
-                span("Started: " + self.start_time)
+                span("Started: " + self.start_time.strftime(formatter.date_format))
 
         # Feature data container.
         with div(cls="feature-container"):
@@ -719,7 +715,7 @@ class PrettyHTMLFormatter(Formatter):
 
         self.high_contrast_button = False
 
-        self.suite_start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        self.suite_start_time = datetime.now()
 
         # Some type of icon can be set.
         self.icon = None
@@ -739,6 +735,10 @@ class PrettyHTMLFormatter(Formatter):
 
         self.pretty_output = self._str_to_bool(
             config.userdata.get(f"{config_path}.pretty_output", "true")
+        )
+
+        self.date_format = config.userdata.get(
+            f"{config_path}.date_format", "%d-%m-%Y %H:%M:%S"
         )
 
     def _str_to_bool(self, value):
