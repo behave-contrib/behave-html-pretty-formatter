@@ -1,4 +1,4 @@
 """
 HTML Pretty formatter for Behave.
 """
-from .behave_html_pretty_formatter import PrettyHTMLFormatter
+from .html_pretty import PrettyHTMLFormatter
