@@ -24,105 +24,123 @@ header {
   flex-grow: 1;
 }
 
-/* Summary not used, but prepared if needed/requested.*/
-#summary {
-  color: #333;
-  margin: 2rem 0;
-  display: flex;
-  font-size: 1rem;
-}
-
-#summary>div {
-  margin-right: 2rem;
-  background: #eee;
-  padding: 1rem;
-  min-width: 15rem;
-}
-
-#summary>div:last-child {
-  margin-right: 0;
-}
-
-@media only screen and (max-width: 720px) {
-  #summary {
-    flex-direction: column;
-  }
-
-  #summary>div {
-    margin-right: 0;
-    margin-top: 2rem;
-  }
-
-  #summary>div:first-child {
-    margin-top: 0;
-  }
-}
-
-.summary-total {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-.summary-passed {
-  color: #4f8a10;
-  border-left: 0.4rem solid #4f8a10;
-  padding-left: 0.5rem;
-}
-
-.summary-failed {
-  color: #d8000c;
-  border-left: 0.4rem solid #d8000c;
-  padding-left: 0.5rem;
-}
-
-.summary-skipped {
-  color: #9f6000;
-  border-left: 0.4rem solid #ffdf61;
-  padding-left: 0.5rem;
-}
-
-.summary-empty {
-  color: #999;
-  border-left: 0.4rem solid #999;
-}
-
-
 /*FEATURE CONTENT*/
 .feature-panel {
-  padding: 1rem;
-  background-color: #eee;
-  color: #777;
   display: flex;
-  align-items: center;
+  flex-direction: row;
+  align-items: flex-start;
   margin-bottom: 0.25rem;
-  justify-content: space-between;
-  word-break: break-all;
   flex-grow: 0.5;
   font-size: 1rem;
 }
 
-.feature-icon-name-container {
-  display: flex;
+.contrast-toggle {
+  margin-left: 1rem;
+  color: #000;
+  font-weight: bold;
+  text-decoration: underline;
 }
 
-.feature-panel-icon {
-  height: 1.2rem;
-  margin: 0 0.3rem 0 0;
+.feature-title.contrast .contrast-toggle {
+  color: #fff;
+}
+
+.feature-title {
+  background-color: #eee;
+  color: #777;
+  padding: 1rem;
+  flex-grow: 1;
+}
+
+.feature-icon {
+  height: 1.2em;
+  display: inline-block;
+  margin-right: 0.3em;
   align-items: center;
   text-align: center;
   vertical-align: middle;
 }
 
-.feature-panel.contrast {
+.feature-icon.contrast {
+  display: none;
+}
+
+.feature-title.contrast {
   font-weight: bold;
   font-size: 1.25rem;
   background-color: #000;
   color: #fff;
 }
 
-.feature-timestamp {
-  padding-left: 1rem;
+.feature-summary {
+  padding: 1rem;
+  margin-left: 0.25rem;
+  background-color: #eee;
+  color: #777;
   display: flex;
+  flex-grow: 0;
+  justify-content: start;
+  flex-direction: column;
+  font-size: 0.8rem;
+}
+
+.feature-summary.contrast {
+  background-color: #000;
+  color:rgb(248, 248, 248);
+  font-size: 1rem;
+}
+
+
+@media only screen and (max-width: 720px) {
+  .feature-panel {
+    flex-direction: column;
+  }
+
+  .feature-summary {
+    margin-left: 0;
+    margin-top: 0.25rem;
+    font-size: 1rem;
+  }
+}
+
+.feature-summary-row {
+  display: inline;
+  margin-right: 1em;
+}
+
+.feature-summary-row:last-child {
+  margin-right: 0em;
+}
+
+.feature-summary-row {
+  color: #777;
+  border-left: 0.4rem solid #777;
+  padding-left: 0.5rem;
+}
+
+.feature-summary-row.passed {
+  color: #4f8a10;
+  border-left: 0.4rem solid #4f8a10;
+}
+
+.feature-summary-row.failed {
+  color: #d8000c;
+  border-left: 0.4rem solid #d8000c;
+}
+
+.feature-summary-row.udefined {
+  color: #9f6000;
+  border-left: 0.4rem solid #ffdf61;
+}
+
+.feature-summary-row.skipped {
+  color: #76adff;
+  border-left: 0.4rem solid #76adff;
+}
+
+.feature-summary-row.contrast {
+  color: rgb(248, 248, 248);
+  border-left: 0.4rem solid rgb(248, 248, 248);
 }
 
 .feature-container {
@@ -151,6 +169,10 @@ header {
 
 .scenario-capsule.undefined {
   background-color: #ffdf61;
+}
+
+.scenario-capsule.skipped {
+  background-color: #eef5ff;
 }
 
 .scenario-capsule.contrast {
@@ -188,7 +210,7 @@ header {
   color: #333;
   font-weight: bold;
   font-size: 0.75rem;
-  margin: 0.1rem 0 0.5rem 0;
+  margin: 0.1rem 0.8em 0.5rem 0;
   display: inline-block;
 }
 
@@ -232,16 +254,16 @@ header {
   border: 1px solid #b8c9e4;
 }
 
-.step-capsule.commentary {
-  background-color: #b9b9b9;
-  margin: 0.2rem 0 0.2rem 1rem;
-}
-
 .step-capsule.contrast {
   background-color: rgb(36, 35, 35);
   color: #fff;
   font-size: 1.25rem;
   border: none;
+}
+
+.step-capsule.commentary {
+  background-color: #b9b9b9;
+  margin: 0.2rem 0 0.2rem 1rem;
 }
 
 .margin-top {

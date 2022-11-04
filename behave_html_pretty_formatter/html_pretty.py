@@ -10,6 +10,7 @@ import base64
 import time
 from pathlib import Path
 from datetime import datetime
+from collections import OrderedDict
 
 import dominate
 from dominate.tags import (
@@ -17,6 +18,7 @@ from dominate.tags import (
     span,
     a,
     b,
+    i,
     table,
     tbody,
     thead,
@@ -36,6 +38,9 @@ from behave.formatter.base import Formatter
 from behave.model_core import Status
 from behave.runner_util import make_undefined_step_snippets
 
+
+# TODO - skipped steps config
+# TODO - color the feature-panel?
 
 DEFAULT_CAPTION_FOR_MIME_TYPE = {
     "video/webm": "Video",
@@ -58,6 +63,7 @@ class Feature:
         self.icon = None
         self.high_contrast_button = False
         self.start_time = datetime.now()
+        self.finish_time = None
 
         self.scenarios = []
         self.to_embed = []
@@ -123,15 +129,37 @@ class Feature:
             _step.status = status
             self.scenario_begin_timestamp = time.time()
 
+    def get_feature_stats(self, date_format):
+        """
+        Compute scenario stats if trere are multiple scenarios
+        """
+        stats = OrderedDict()
+        stats["Started"] = self.start_time.strftime(date_format)
+        duration = (self.finish_time - self.start_time).total_seconds()
+        stats["Duration"] = f"{duration:.2f}s"
+
+        # Show Passed Failed always, skip and undefined only when present.
+        # stats["Passed"], stats["Failed"] = 0, 0
+
+        if len(self.scenarios) > 1:
+            for scenario in self.scenarios:
+                status = scenario.status.capitalize()
+                if status in stats:
+                    stats[status] += 1
+                else:
+                    stats[status] = 1
+
+        return stats
+
     def generate_feature(self, formatter):
         """
         Converts this object to HTML.
         """
         # Feature Panel
         with div(cls="feature-panel"):
-            with div(cls="feature-icon-name-container"):
+            with div(cls="feature-title"):
                 if self.icon:
-                    with div(cls="feature-panel-icon"):
+                    with div(cls="feature-icon"):
                         img(src=self.icon)
 
                 # Generate content of the panel.
@@ -139,16 +167,22 @@ class Feature:
                     # Making sure there is a functioning button.
                     with a(onclick="toggle_contrast('embed')", href="#"):
                         # Creating the actual text content which is clickable.
-                        span(f"Feature: {self.name} [High Contrast toggle]")
-                        # Set the flag to be sure there is not another one created.
+                        span(f"Feature: {self.name}")
+                        span("[High contrast toggle]", cls="contrast-toggle")
 
                 # On another feature do not generate the button.
                 else:
                     span(f"Feature: {self.name}")
 
-                # Suite started information.
-                with div(cls="feature-timestamp"):
-                    span("Started: " + self.start_time.strftime(formatter.date_format))
+            # If there are multiple scenarios, generate summary
+            with div(cls="feature-summary"):
+                stats = self.get_feature_stats(formatter.date_format)
+
+                for stat, value in stats.items():
+                    div(
+                        f"{stat}: {value}",
+                        cls=f"feature-summary-row {stat.lower()}",
+                    )
 
         # Feature data container.
         with div(cls="feature-container"):
@@ -437,7 +471,8 @@ class Step:
 
                     with div(cls="step-decorator"):
                         # Step decorator.
-                        b(self.keyword)
+                        with b():
+                            i(self.keyword + " ")
                         formatter.make_bold_text(self.name)
 
                     with div(cls="step-duration"):
@@ -750,6 +785,9 @@ class PrettyHTMLFormatter(Formatter):
         return value.lower() in ["true", "yes", "1"]
 
     def feature(self, feature):
+        current_feature = self.current_feature
+        if current_feature:
+            current_feature.finish_time = datetime.now()
         self.features.append(Feature(feature))
 
     @property
@@ -792,12 +830,17 @@ class PrettyHTMLFormatter(Formatter):
         Processes new scenario. It is added to the current feature.
         """
         self.current_feature.add_scenario(scenario, self.pseudo_steps)
+        for step in scenario.steps:
+            self.current_scenario.add_step(
+                step.keyword, step.name, step.text, step.table
+            )
 
     def step(self, step):
         """
         Register new step for current scenario.
         """
-        self.current_scenario.add_step(step.keyword, step.name, step.text, step.table)
+        # Not used, parsed in scenario().
+        # self.current_scenario.add_step(step.keyword, step.name, step.text, step.table)
 
     def match(self, match):
         """
@@ -873,6 +916,11 @@ class PrettyHTMLFormatter(Formatter):
         """
         Generates the entire html page with dominate.
         """
+
+        # Set finish time of the last feature.
+        current_feature = self.current_feature
+        if current_feature:
+            current_feature.finish_time = datetime.now()
 
         # Generate everything.
         document = dominate.document(title=self.title_string)

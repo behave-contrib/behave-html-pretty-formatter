@@ -26,12 +26,11 @@ function toggle_contrast(id) {
         step_status_items[i].style.display = (step_status_items[i].style.display == "block" ? "none" : "block");
     };
 
-    var icon_items = document.getElementsByClassName("feature-panel-icon");
-    icon_items[0].style.display = (icon_items[0].style.display == "none" ? "flex" : "none");
-
-
     const contrast_classes = [
-        "feature-panel",
+        "feature-title",
+        "feature-summary",
+        "feature-summary-row",
+        "feature-icon",
 
         "scenario-capsule",
         "scenario-tags",
