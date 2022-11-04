@@ -26,7 +26,8 @@ html-pretty = behave_html_pretty_formatter:PrettyHTMLFormatter
 behave.formatter.html-pretty.pseudo_steps = false
 behave.formatter.html-pretty.title_string = Test Suite Reporter
 behave.formatter.html-pretty.pretty_output = true
-behave.formatter.html-pretty.date_format = %d-%m-%Y %H:%M:%S
+# '%' must be escaped in ini format
+behave.formatter.html-pretty.date_format = %%d-%%m-%%Y %%H:%%M:%%S
 ```
 
 and then use it by running behave with `-f`/`--format` parameter, e.g.

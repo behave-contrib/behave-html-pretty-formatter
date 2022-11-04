@@ -146,9 +146,9 @@ class Feature:
                 else:
                     span(f"Feature: {self.name}")
 
-            # Suite started information.
-            with div(cls="feature-timestamp"):
-                span("Started: " + self.start_time.strftime(formatter.date_format))
+                # Suite started information.
+                with div(cls="feature-timestamp"):
+                    span("Started: " + self.start_time.strftime(formatter.date_format))
 
         # Feature data container.
         with div(cls="feature-container"):
@@ -646,6 +646,11 @@ class Embed:
     def caption(self):
         "Read-only caption access."
         return self._caption
+
+    @property
+    def fail_only(self):
+        "Read-only fail_only access."
+        return self._fail_only
 
     @property
     def uid(self):
