@@ -657,9 +657,9 @@ class Embed:
         """
         Set data, mime_type and caption.
         """
-        self.mime_type = mime_type
-        self.data = data
-        self.caption = caption
+        self._mime_type = mime_type
+        self._data = data
+        self._caption = caption
 
     def set_fail_only(self, fail_only):
         """
