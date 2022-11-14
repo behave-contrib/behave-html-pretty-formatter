@@ -576,15 +576,10 @@ class Step:
                         id=f"embed_{embed_data.uid}",
                         style="display: none",
                     ):
-                        # FAF reports are coming in format set( [link, label], ... )
-                        if isinstance(data, set):
-                            for single_link in data:
-                                with a(href=single_link[0]):
-                                    span(single_link[1])
-                        # If not 'set' lets assume the data is type list
-                        else:
-                            with a(href=data[0]):
-                                span(data[1])
+                        # expected format: set( [link, label], ... )
+                        for single_link in data:
+                            with a(href=single_link[0]):
+                                span(single_link[1])
 
     def generate_table(self):
         """
@@ -648,9 +643,7 @@ class Embed:
     def __init__(self, mime_type, data, caption=None, fail_only=False):
         self._id = Embed.count
         Embed.count += 1
-        self._mime_type = mime_type
-        self._data = data
-        self._caption = caption
+        self.set_data(mime_type, data, caption)
         self._fail_only = fail_only
 
     def set_data(self, mime_type, data, caption=None):
@@ -658,6 +651,13 @@ class Embed:
         Set data, mime_type and caption.
         """
         self._mime_type = mime_type
+        # check that link is in format: set([link, label], ...)
+        if mime_type == "link":
+            new_data = []
+            for single_link in data:
+                link, label = single_link
+                new_data.append([link, label])
+            data = new_data
         self._data = data
         self._caption = caption
 
