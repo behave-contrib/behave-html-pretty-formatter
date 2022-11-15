@@ -1,46 +1,47 @@
-Feature: Make behave generate HTML as output
+Feature: Make behave generate Pretty HTML as output
 
   As a package maintainer
-  I want to execute the HTML formatter and verify its output
+  I want to execute the Pretty HTML Formatter and verify its output
   So that I can ensure integration and basic functionality.
 
-  Scenario: Run behave with HTML formatter
+  Scenario: Run behave with Pretty HTML Formatter
     Given a file named "behave.ini" with:
       """
       [behave.formatters]
-      html = behave_html_formatter:HTMLFormatter
+      html-pretty = behave_html_pretty_formatter:PrettyHTMLFormatter
       """
-    When I run "behave --format html --dry-run"
+    When I run "behave --format html-pretty --dry-run"
     Then it should pass
     And the command output should contain:
       """
-      <!DOCTYPE HTML><html>
+      <!DOCTYPE html>
+      <html>
       """
     And the command output should contain:
       """
-      <head><title>Behave Test Report</title>
+      <head>
+      <title>Test Suite Reporter</title>
       """
     And the command output should contain:
       """
-      <meta content="text/html;charset=utf-8" http-equiv="content-type" />
+      <meta content="text/html;charset=utf-8" http-equiv="content-type">
       """
     And the command output should contain:
       """
-      <style type="text/css">
+      <style rel="stylesheet">
       """
     And the command output should contain:
       """
-      </style><script type="text/javascript">
+      <script type="text/javascript">
       """
     And the command output should contain:
       """
-      </script></head><body>
+      </script>
+      </head>
+      <body>
       """
     And the command output should contain:
       """
-      <h1>Behave Test Report</h1>
-      """
-    And the command output should contain:
-      """
-      </body></html>
+      </body>
+      </html>
       """

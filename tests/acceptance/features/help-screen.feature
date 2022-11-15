@@ -8,13 +8,13 @@ Feature: List HTML formatter among the available formatters
     Given a file named "behave.ini" with:
       """
       [behave.formatters]
-      html = behave_html_formatter:HTMLFormatter
+      html-pretty = behave_html_pretty_formatter:PrettyHTMLFormatter
       """
     When I run "behave --format help"
     Then it should pass
     And the command output should contain:
       """
       Available formatters:
-        html           Very basic HTML formatter
+        html-pretty    Pretty HTML Formatter
         json           JSON dump of test run
       """

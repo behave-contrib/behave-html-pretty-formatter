@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import setuptools
 
+
 def read_file(filename):
     """
     Return the content of a file.
@@ -15,7 +16,7 @@ setuptools.setup(
     version="0.1",
     author="Michal Odehnal",
     author_email="modehnal@redhat.com",
-    description="HTML Pretty formatter for Behave",
+    description="Pretty HTML Formatter for Behave",
     url="https://github.com/behave-contrib/behave-html-pretty-formatter",
     packages=setuptools.find_packages(),
     install_requires=[
@@ -24,11 +25,6 @@ setuptools.setup(
     ],
     include_package_data=True,
     python_requires=">=3.6",
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-        "Operating System :: OS Independent",
-    ],
     long_description=read_file("README.md"),
     long_description_content_type="text/markdown",
     classifiers=[
