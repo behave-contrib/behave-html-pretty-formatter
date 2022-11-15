@@ -180,7 +180,11 @@ class Feature:
                     span("[Summary]", cls="button-toggle")
 
             # If there are multiple scenarios, generate summary
-            with div(cls="feature-summary", id="summary", style="display: none",):
+            with div(
+                cls="feature-summary",
+                id="summary",
+                style="display: none",
+            ):
                 stats = self.get_feature_stats(formatter.date_format)
 
                 for stat, value in stats.items():
@@ -269,7 +273,10 @@ class Scenario:
             _step = self.after_scenario_step
 
         if _step is None and self.steps:
-            _step = self.steps[self.match_id]
+            if self.match_id < len(self.steps):
+                _step = self.steps[self.match_id]
+            else:
+                _step = self.steps[-1]
 
         return _step
 
