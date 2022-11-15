@@ -340,6 +340,8 @@ header {
 .embed_content {
   white-space: pre-wrap;
   word-wrap: break-word;
+  font-size: 12px;
+
 }
 
 .embed_button {
@@ -347,12 +349,12 @@ header {
   font-weight: bold;
   text-decoration: underline;
   color: #000;
-  font-size: 1rem;
+  font-size: 12px;
 }
 
 .embed_button.contrast {
   color: #fff;
-  font-size: 1.25rem;
+  font-size: 20px;
 }
 
 
