@@ -71,19 +71,15 @@ header {
   color: #fff;
 }
 
-.feature-summary {
-  padding: 1rem;
-
+.feature-summary-container {
+  padding: 5px;
   background-color: #eee;
   color: #777;
-  display: flex;
-  flex-grow: 0;
   justify-content: start;
-  flex-direction: column;
   font-size: 0.8rem;
 }
 
-.feature-summary.contrast {
+.feature-summary-container.contrast {
   background-color: #000;
   color:rgb(248, 248, 248);
   font-size: 1rem;
@@ -95,16 +91,16 @@ header {
     flex-direction: column;
   }
 
-  .feature-summary {
+  .feature-summary-container {
     margin-left: 0;
     margin-top: 0.25rem;
     font-size: 1rem;
   }
 }
 
-.feature-summary-row {
-  display: inline;
-  margin-right: 1em;
+.feature-summary-stats {
+  display: inline-block;
+  margin-right: 5px;
 }
 
 .feature-summary-row:last-child {
@@ -113,8 +109,19 @@ header {
 
 .feature-summary-row {
   color: #777;
-  border-left: 0.4rem solid #777;
+  border-left: 0.4rem solid #000;
   padding-left: 0.5rem;
+  margin: 1px;
+}
+
+.feature-summary-row.buttons {
+  display: inline-block;
+  color: #000;
+  font-weight: bold;
+  text-decoration: underline;
+  border-left: 0.4rem solid #000;
+  padding-left: 0.5rem;
+  margin: 1px;
 }
 
 .feature-summary-row.passed {
@@ -127,7 +134,7 @@ header {
   border-left: 0.4rem solid #d8000c;
 }
 
-.feature-summary-row.udefined {
+.feature-summary-row.undefined {
   color: #9f6000;
   border-left: 0.4rem solid #ffdf61;
 }
@@ -186,7 +193,7 @@ header {
 }
 
 .scenario-name {
-  width: 50%;
+  width: 70%;
   text-align: left;
   font-weight: bold;
   word-break: break-word;

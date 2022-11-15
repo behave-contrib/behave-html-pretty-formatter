@@ -14,6 +14,7 @@ from collections import OrderedDict
 
 import dominate
 from dominate.tags import (
+    meta,
     div,
     span,
     a,
@@ -139,7 +140,8 @@ class Feature:
         stats["Duration"] = f"{duration:.2f}s"
 
         # Show Passed Failed always, skip and undefined only when present.
-        # stats["Passed"], stats["Failed"] = 0, 0
+        stats["Passed"] = 0
+        stats["Failed"] = 0
 
         if len(self.scenarios) > 1:
             for scenario in self.scenarios:
@@ -170,32 +172,38 @@ class Feature:
                         # Creating the actual text content which is clickable.
                         span("[High contrast toggle]", cls="button-toggle")
 
+                    # After the High Contrast make a Summary toggle button.
+                    with a(onclick="collapsible_summary('summary')", href="#"):
+                        # Creating the actual text content which is clickable.
+                        span("[Summary]", cls="button-toggle")
+
                 # On another feature do not generate the button.
                 else:
                     span(f"Feature: {self.name}")
 
-                # After the High Contrast make a Summary toggle button.
-                with a(onclick="collapsible_toggle('summary')", href="#"):
-                    # Creating the actual text content which is clickable.
-                    span("[Summary]", cls="button-toggle")
-
             # If there are multiple scenarios, generate summary
             with div(
-                cls="feature-summary",
-                id="summary",
-                style="display: none",
+                cls="feature-summary-container", id="summary", style="display: none"
             ):
-                stats = self.get_feature_stats(formatter.date_format)
+                with div(cls="feature-summary-stats"):
+                    stats = self.get_feature_stats(formatter.date_format)
 
-                for stat, value in stats.items():
-                    div(
-                        f"{stat}: {value}",
-                        cls=f"feature-summary-row {stat.lower()}",
-                    )
+                    for stat, value in stats.items():
+                        div(
+                            f"{stat}: {value}",
+                            cls=f"feature-summary-row {stat.lower()}",
+                        )
+
+                with div(cls="feature-summary-stats"):
+                    with a(onclick="expander('expand_all')", href="#"):
+                        div("[Expand All]", cls="feature-summary-row button")
+                    with a(onclick="expander('collapse_all')", href="#"):
+                        div("[Collapse All]", cls="feature-summary-row button")
+                    with a(onclick="expander('expand_all_failed')", href="#"):
+                        div("[Expand All Failed]", cls="feature-summary-row button")
 
         # Feature data container.
         with div(cls="feature-container"):
-
             for scenario in self.scenarios:
                 scenario.generate_scenario(formatter)
 
@@ -477,6 +485,7 @@ class Step:
                             "failed": "FAIL",
                             "undefined": "SKIP",
                             "skipped": "SKIP",
+                            "untested": "SKIP",
                         }
                         # Step status for high contrast - "PASS" "FAIL" "SKIP".
                         span(high_contrast_status[self.status])
@@ -756,7 +765,7 @@ class PrettyHTMLFormatter(Formatter):
     """
 
     name = "html-pretty"
-    description = "Pretty HTML formatter"
+    description = "Pretty HTML Formatter"
     table_number = 0
 
     def __init__(self, stream, config):
@@ -937,8 +946,12 @@ class PrettyHTMLFormatter(Formatter):
         # Generate everything.
         document = dominate.document(title=self.title_string)
 
-        # Iterate over the data and generate the page.
+
+        # Generate the head of the html page.
         with document.head:
+            # Set content and http-equiv - taken from the base html formatter.
+            meta(content="text/html;charset=utf-8", http_equiv="content-type")
+
             # Load and insert css theme.
             with open(
                 Path(__file__).parent / "theme.css", "r", encoding="utf-8"
@@ -955,6 +968,8 @@ class PrettyHTMLFormatter(Formatter):
             with script(type="text/javascript"):
                 raw(js_script)
 
+        # Iterate over the data and generate the page.
+        with document.body:
             if self.features:
                 feature = self.features[0]
                 feature.icon = self.icon
