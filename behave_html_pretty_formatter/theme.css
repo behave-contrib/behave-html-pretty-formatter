@@ -26,30 +26,29 @@ header {
 
 /*FEATURE CONTENT*/
 .feature-panel {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  margin-bottom: 0.25rem;
-  flex-grow: 0.5;
+  margin-bottom: 5px;
   font-size: 1rem;
 }
 
-.contrast-toggle {
+.button-toggle {
   margin-left: 1rem;
   color: #000;
   font-weight: bold;
   text-decoration: underline;
 }
 
-.feature-title.contrast .contrast-toggle {
+.feature-title.contrast .button-toggle {
   color: #fff;
 }
 
 .feature-title {
+  display: block;
+
   background-color: #eee;
   color: #777;
   padding: 1rem;
-  flex-grow: 1;
+  margin-bottom: inherit;
+
 }
 
 .feature-icon {
@@ -74,7 +73,7 @@ header {
 
 .feature-summary {
   padding: 1rem;
-  margin-left: 0.25rem;
+
   background-color: #eee;
   color: #777;
   display: flex;

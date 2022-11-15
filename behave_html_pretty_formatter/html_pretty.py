@@ -165,17 +165,22 @@ class Feature:
                 # Generate content of the panel.
                 if self.high_contrast_button:
                     # Making sure there is a functioning button.
+                    span(f"Feature: {self.name}")
                     with a(onclick="toggle_contrast('embed')", href="#"):
                         # Creating the actual text content which is clickable.
-                        span(f"Feature: {self.name}")
-                        span("[High contrast toggle]", cls="contrast-toggle")
+                        span("[High contrast toggle]", cls="button-toggle")
 
                 # On another feature do not generate the button.
                 else:
                     span(f"Feature: {self.name}")
 
+                # After the High Contrast make a Summary toggle button.
+                with a(onclick="collapsible_toggle('summary')", href="#"):
+                    # Creating the actual text content which is clickable.
+                    span("[Summary]", cls="button-toggle")
+
             # If there are multiple scenarios, generate summary
-            with div(cls="feature-summary"):
+            with div(cls="feature-summary", id="summary", style="display: none",):
                 stats = self.get_feature_stats(formatter.date_format)
 
                 for stat, value in stats.items():
@@ -748,7 +753,7 @@ class PrettyHTMLFormatter(Formatter):
     table_number = 0
 
     def __init__(self, stream, config):
-        super(PrettyHTMLFormatter, self).__init__(stream, config)
+        super().__init__(stream, config)
 
         self.features = []
 
