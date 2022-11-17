@@ -40,9 +40,6 @@ from behave.model_core import Status
 from behave.runner_util import make_undefined_step_snippets
 
 
-# TODO - skipped steps config
-# TODO - color the feature-panel?
-
 DEFAULT_CAPTION_FOR_MIME_TYPE = {
     "video/webm": "Video",
     "image/png": "Screenshot",
@@ -422,7 +419,7 @@ class Step:
     """
 
     def __init__(self, keyword, name, text, step_table, scenario):
-        self.status = Status.skipped.name
+        self.status = None
         self.duration = 0.0
         self.scenario = scenario
         self.keyword = keyword
@@ -474,6 +471,11 @@ class Step:
         """
         Converts Step Object into HTML.
         """
+        if self.status is None:
+            if not formatter.show_unexecuted_steps:
+                return
+            self.status = Status.skipped.name
+
         if self.commentary_override:
             with div(cls="step-capsule commentary"):
                 pre(f"{self.text}")
@@ -484,7 +486,6 @@ class Step:
             if self.keyword == "After":
                 step_cls = f"{step_cls} margin-top"
             with div(cls=step_cls):
-
                 with div(cls="step-status-decorator-duration-capsule"):
                     with div(cls="step-status"):
 
@@ -812,7 +813,11 @@ class PrettyHTMLFormatter(Formatter):
         )
 
         self.show_summary = self._str_to_bool(
-            config.userdata.get(f"{config_path}.show_summary", "true")
+            config.userdata.get(f"{config_path}.show_summary", "false")
+        )
+
+        self.show_unexecuted_steps = self._str_to_bool(
+            config.userdata.get(f"{config_path}.show_unexecuted_steps", "true")
         )
 
     def _str_to_bool(self, value):
