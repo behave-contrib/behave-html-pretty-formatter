@@ -64,11 +64,28 @@ class Feature:
         self.finish_time = None
 
         self.scenarios = []
+        self._background = None
         self.to_embed = []
         self.scenario_finished = True
         self.scenario_begin_timestamp = time.time()
         self.before_scenario_duration = 0.0
         self.before_scenario_status = "skipped"
+
+    def add_background(self, background):
+        """
+        Save steps common for all scenarios in feature.
+        """
+        self._background = background
+
+    @property
+    def background_steps(self):
+        """
+        Return steps common for all scenarios in feature.
+        """
+        _steps = []
+        if self._background:
+            _steps = self._background.steps
+        return _steps
 
     def add_scenario(self, scenario, pseudo_steps=False):
         """
@@ -226,6 +243,7 @@ class Scenario:
             self.pseudo_steps = [
                 Step(when, "scenario", None, None, self) for when in ("Before", "After")
             ]
+            self.pseudo_steps[1].margin_top = True
 
         # We need another information about a tag, to recognize if it should act as a link or span.
         self.tags = [Tag(tag) for tag in scenario.effective_tags]
@@ -245,6 +263,19 @@ class Scenario:
         self.saved_matched_line = None
         # Process before_scenario errors.
         self.report_error(scenario)
+
+        # Process steps
+        background_steps = feature.background_steps
+        for step in background_steps:
+            self.add_step(step.keyword, step.name, step.text, step.table)
+        if background_steps and self.pseudo_steps:
+            self.steps[0].margin_top = True
+        first_step = True
+        for step in scenario.steps:
+            self.add_step(step.keyword, step.name, step.text, step.table)
+            if first_step and (background_steps or pseudo_steps):
+                self.steps[-1].margin_top = True
+            first_step = False
 
     @property
     def before_scenario_step(self):
@@ -431,6 +462,7 @@ class Step:
         self.embeds = []
 
         self.commentary_override = False
+        self.margin_top = False
 
     def add_result(self, result):
         """
@@ -476,16 +508,15 @@ class Step:
                 return
             self.status = Status.skipped.name
 
+        margin_top_cls = ""
+        if self.margin_top:
+            margin_top_cls = "margin-top"
+
         if self.commentary_override:
-            with div(cls="step-capsule commentary"):
+            with div(cls=f"step-capsule commentary {margin_top_cls}"):
                 pre(f"{self.text}")
         else:
-            step_cls = f"step-capsule {self.status}"
-            if self.keyword == "Before":
-                step_cls = f"{step_cls} margin-bottom"
-            if self.keyword == "After":
-                step_cls = f"{step_cls} margin-top"
-            with div(cls=step_cls):
+            with div(cls=f"step-capsule {self.status} {margin_top_cls}"):
                 with div(cls="step-status-decorator-duration-capsule"):
                     with div(cls="step-status"):
 
@@ -870,10 +901,6 @@ class PrettyHTMLFormatter(Formatter):
         Processes new scenario. It is added to the current feature.
         """
         self.current_feature.add_scenario(scenario, self.pseudo_steps)
-        for step in scenario.steps:
-            self.current_scenario.add_step(
-                step.keyword, step.name, step.text, step.table
-            )
 
     def step(self, step):
         """
@@ -910,8 +937,11 @@ class PrettyHTMLFormatter(Formatter):
 
     def background(self, background):
         """
-        Background call. Not used by this formatter.
+        Background call.
         """
+        feature = self.current_feature
+        if feature:
+            feature.add_background(background)
 
     def make_bold_text(self, given_string):
         """

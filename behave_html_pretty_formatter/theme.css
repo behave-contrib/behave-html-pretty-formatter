@@ -273,11 +273,7 @@ header {
 }
 
 .margin-top {
-  margin-top: 10px;
-}
-
-.margin-bottom {
-  margin-bottom: 10px;
+  margin-top: 15px;
 }
 
 .step-status-decorator-duration-capsule {
