@@ -311,7 +311,7 @@ header {
 
 /*EMBED CONTENT*/
 .messages {
-  margin: 0 0 10px 15px
+  margin: 0 0 4px 1em
 }
 
 .scenario-capsule.passed .messages:last-child {
@@ -331,18 +331,18 @@ header {
 }
 
 .embed-capsule {
-  margin-top: 1rem;
+  margin: 0.5em 0;
 }
 
 .embed_content {
   white-space: pre-wrap;
   word-wrap: break-word;
   font-size: 12px;
-
+  margin: 0.5rem;
 }
 
 .embed_button {
-  margin: 0 1rem 1rem 0;
+  margin: 0 1rem 0.5em 0;
   font-weight: bold;
   text-decoration: underline;
   color: #000;
@@ -369,7 +369,7 @@ thead {
 
 table {
   color: #333;
-  margin: 0.2rem 1rem;
+  margin: 2px 1em 4px 1em;
   border-collapse: collapse;
   border: 1px solid black;
   text-align: left;
