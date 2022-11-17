@@ -319,6 +319,11 @@ class Scenario:
         """
         Process information about executed step.
         """
+
+        # If step is "undefined", match() is not called by behave
+        if result.status == Status.undefined:
+            self.match_id += 1
+
         step = self.current_step
         step.add_result(result)
 
@@ -945,7 +950,6 @@ class PrettyHTMLFormatter(Formatter):
 
         # Generate everything.
         document = dominate.document(title=self.title_string)
-
 
         # Generate the head of the html page.
         with document.head:
