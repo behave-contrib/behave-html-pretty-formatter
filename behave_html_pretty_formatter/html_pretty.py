@@ -182,8 +182,13 @@ class Feature:
                     span(f"Feature: {self.name}")
 
             # If there are multiple scenarios, generate summary
+            summary_display = "none"
+            if formatter.show_summary:
+                summary_display = "block"
             with div(
-                cls="feature-summary-container", id="summary", style="display: none"
+                cls="feature-summary-container",
+                id="summary",
+                style=f"display: {summary_display}",
             ):
                 with div(cls="feature-summary-stats"):
                     stats = self.get_feature_stats(formatter.date_format)
@@ -804,6 +809,10 @@ class PrettyHTMLFormatter(Formatter):
 
         self.date_format = config.userdata.get(
             f"{config_path}.date_format", "%d-%m-%Y %H:%M:%S"
+        )
+
+        self.show_summary = self._str_to_bool(
+            config.userdata.get(f"{config_path}.show_summary", "true")
         )
 
     def _str_to_bool(self, value):
