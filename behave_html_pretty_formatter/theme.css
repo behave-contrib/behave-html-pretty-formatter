@@ -405,3 +405,15 @@ a {
   text-decoration: underline;
   text-decoration-color: grey;
 }
+
+.scenario-capsule.collapse .scenario-tags,
+.scenario-capsule.collapse .step-capsule,
+.scenario-capsule.collapse .embeds,
+.scenario-capsule.collapse table
+{
+  display: none;
+}
+
+.scenario-capsule.collapse {
+  padding: 0.5rem 1rem 0 1rem;
+}
