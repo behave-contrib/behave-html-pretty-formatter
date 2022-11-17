@@ -69,7 +69,7 @@ class Feature:
         self.scenario_finished = True
         self.scenario_begin_timestamp = time.time()
         self.before_scenario_duration = 0.0
-        self.before_scenario_status = "skipped"
+        self.before_scenario_status = None
 
     def add_background(self, background):
         """
