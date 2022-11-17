@@ -189,6 +189,7 @@ header {
 .scenario-info {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 1.25rem;
 }
 
@@ -197,14 +198,14 @@ header {
   text-align: left;
   font-weight: bold;
   word-break: break-word;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.5em;
 }
 
 .scenario-duration {
   text-align: right;
   font-size: 0.75rem;
   font-style: italic;
-  padding: 0 0.5rem 0 0;
+  padding: 0 0.5em 0.5em 0;
 }
 
 .scenario-duration.contrast {
