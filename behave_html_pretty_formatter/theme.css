@@ -24,6 +24,10 @@ header {
   flex-grow: 1;
 }
 
+pre {
+  margin: 0;
+}
+
 /*FEATURE CONTENT*/
 .feature-panel {
   margin-bottom: 5px;
@@ -270,7 +274,8 @@ header {
 
 .step-capsule.commentary {
   background-color: #b9b9b9;
-  margin: 0.2rem 0 0.2rem 1rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .margin-top {
