@@ -157,13 +157,12 @@ class Feature:
         stats["Passed"] = 0
         stats["Failed"] = 0
 
-        if len(self.scenarios) > 1:
-            for scenario in self.scenarios:
-                status = scenario.status.capitalize()
-                if status in stats:
-                    stats[status] += 1
-                else:
-                    stats[status] = 1
+        for scenario in self.scenarios:
+            status = scenario.status.capitalize()
+            if status in stats:
+                stats[status] += 1
+            else:
+                stats[status] = 1
 
         return stats
 
