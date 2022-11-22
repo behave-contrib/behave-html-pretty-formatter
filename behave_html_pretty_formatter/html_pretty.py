@@ -109,7 +109,7 @@ class Feature:
 
     def embed(self, embed_data):
         """
-        Embeds Data to current step in current scenario.
+        Embeds data to current step in current scenario.
         """
         if not self.scenarios or self.scenario_finished:
             self.to_embed.append(embed_data)
@@ -146,7 +146,7 @@ class Feature:
 
     def get_feature_stats(self, date_format):
         """
-        Compute scenario stats if trere are multiple scenarios
+        Compute scenario stats if trere are multiple scenarios.
         """
         stats = OrderedDict()
         stats["Started"] = self.start_time.strftime(date_format)
@@ -170,9 +170,10 @@ class Feature:
         """
         Converts this object to HTML.
         """
-        # Feature Panel
+        # Feature Panel.
         with div(cls="feature-panel"):
             with div(cls="feature-title"):
+                # Generate icon if present.
                 if self.icon:
                     with div(cls="feature-icon"):
                         img(src=self.icon)
@@ -190,11 +191,11 @@ class Feature:
                         # Creating the actual text content which is clickable.
                         span("[Summary]", cls="button-toggle")
 
-                # On another feature do not generate the button.
+                # On following features do not generate the buttons.
                 else:
                     span(f"Feature: {self.name}")
 
-            # If there are multiple scenarios, generate summary
+            # Generate summary.
             summary_display = "none"
             if formatter.show_summary:
                 summary_display = "block"
@@ -203,6 +204,7 @@ class Feature:
                 id="summary",
                 style=f"display: {summary_display}",
             ):
+                # Generating Summary results.
                 with div(cls="feature-summary-stats"):
                     stats = self.get_feature_stats(formatter.date_format)
 
@@ -211,7 +213,7 @@ class Feature:
                             f"{stat}: {value}",
                             cls=f"feature-summary-row {stat.lower()}",
                         )
-
+                # Generating clickable buttons for collapsing/expanding.
                 with div(cls="feature-summary-stats"):
                     with a(onclick="expander('expand_all')", href="#"):
                         div("[Expand All]", cls="feature-summary-row button")
@@ -263,7 +265,7 @@ class Scenario:
         # Process before_scenario errors.
         self.report_error(scenario)
 
-        # Process steps
+        # Process steps.
         background_steps = feature.background_steps
         for step in background_steps:
             self.add_step(step.keyword, step.name, step.text, step.table)
@@ -352,7 +354,7 @@ class Scenario:
         Process information about executed step.
         """
 
-        # If step is "undefined", match() is not called by behave
+        # If step is "undefined", match() is not called by behave.
         if result.status == Status.undefined:
             self.match_id += 1
 
@@ -368,8 +370,8 @@ class Scenario:
             self.status = result.status.name
             self.duration = self._scenario.duration
 
-        # check if step execution finished
-        # ebed to after_scenario_step if pseudo_steps enabled
+        # Check if step execution finished.
+        # Embed to after_scenario_step if pseudo_steps enabled.
         if self.is_last_step or result.status != Status.passed:
             self.steps_finished = True
             self.steps_finished_timestamp = time.time()
@@ -427,7 +429,7 @@ class Scenario:
             for tag in self.tags:
                 tag.generate_tag()
 
-            # Simple container for name + duration
+            # Simple container for name + duration.
             with div(cls="scenario-info"):
 
                 with div(cls="scenario-name"):
@@ -542,14 +544,14 @@ class Step:
                         # Step duration.
                         span(f"({short_duration})")
 
-                # Make the link only when the link is provided
+                # Make the link only when the link is provided.
                 if self.location_link:
                     with div(cls="link"):
                         with a(href=self.location_link):
                             span(self.location)
                 else:
                     span(self.location)
-            # Still in non-commentary
+            # Still in non-commentary.
             self.generate_text()
             self.generate_table()
 
@@ -569,7 +571,6 @@ class Step:
         returned to user for later modification of data, we want to
         prevent accidental call of this.
         """
-
         caption = embed_data.caption
         mime_type = embed_data.mime_type
         data = embed_data.data
@@ -713,7 +714,7 @@ class Embed:
         Set data, mime_type and caption.
         """
         self._mime_type = mime_type
-        # check that link is in format: set([link, label], ...)
+        # Check that link is in format: set([link, label], ...)
         if mime_type == "link":
             new_data = []
             for single_link in data:
@@ -770,7 +771,6 @@ class Tag:
         """
         Set link associated with tag.
         """
-
         assert isinstance(link, str), f"Link must be string, got {type(link)}"
         self._link = link
 
@@ -784,12 +784,11 @@ class Tag:
         """
         Converts tag to HTML.
         """
-
         with div(cls="scenario-tags"):
             # Do not make links by default,
             # this is handled on qecore side for links to bugzilla.
-            # Tags come with structure [<tag>, None] or [<tag>, <bugzilla_link/git_link>]
-            if self._link is not None:
+            # Tags come with structure [<tag>, None] or [<tag>, <bugzilla_link/git_link>].
+            if self.has_link():
                 with div(cls="link"):
                     with a(href=self._link):
                         span("@" + self.behave_tag)
@@ -797,7 +796,7 @@ class Tag:
                 span("@" + self.behave_tag)
 
 
-# Heavily based on behave.formatter.json:JSONFormatter
+# Based on behave.formatter.json:JSONFormatter
 # Since we need some form of structure from where we will pull all data upon close.
 # Modifications based on our needs and experimentation.
 class PrettyHTMLFormatter(Formatter):
@@ -910,7 +909,7 @@ class PrettyHTMLFormatter(Formatter):
 
     def match(self, match):
         """
-        Step is mathced and will be executed next.
+        Step is matched and will be executed next.
         """
         # Executed before result.
         # Needed for knowing from where the code is coming from,
@@ -944,7 +943,7 @@ class PrettyHTMLFormatter(Formatter):
 
     def make_bold_text(self, given_string):
         """
-        Turn string into HTML tags, make bold tex in between quotes.
+        Turn string into HTML tags, make bold text in between quotes.
         """
         quote_count = given_string.count('"')
 
@@ -961,9 +960,8 @@ class PrettyHTMLFormatter(Formatter):
     def embed(self, mime_type, data, caption=None, fail_only=False):
         """
         Prepares Embed data and append it to the currently executed (pseudo) step.
-        returns: Embbed
+        returns: Embed
         """
-
         embed_data = Embed(mime_type, data, caption, fail_only)
         # Find correct scenario.
         self.current_feature.embed(embed_data)
@@ -985,13 +983,12 @@ class PrettyHTMLFormatter(Formatter):
         """
         Generates the entire html page with dominate.
         """
-
         # Set finish time of the last feature.
         current_feature = self.current_feature
         if current_feature:
             current_feature.finish_time = datetime.now()
 
-        # Generate everything.
+        # Create dominate document.
         document = dominate.document(title=self.title_string)
 
         # Generate the head of the html page.
@@ -1024,5 +1021,5 @@ class PrettyHTMLFormatter(Formatter):
             for feature in self.features:
                 feature.generate_feature(self)
 
-        # Write everything to the stream which should corelate to the -o <file> behave option.
+        # Write everything to the stream which corelates to the -o <file> behave option.
         self.stream.write(document.render(pretty=self.pretty_output))
