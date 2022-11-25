@@ -265,17 +265,17 @@ pre {
   border: 1px solid #b8c9e4;
 }
 
+.step-capsule.commentary {
+  background-color: #b9b9b9;
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .step-capsule.contrast {
   background-color: rgb(36, 35, 35);
   color: #fff;
   font-size: 1.25rem;
   border: none;
-}
-
-.step-capsule.commentary {
-  background-color: #b9b9b9;
-  margin-left: 1rem;
-  margin-right: 1rem;
 }
 
 .margin-top {
@@ -391,7 +391,8 @@ tbody tr:nth-child(even) {
 
 
 /*IMAGE AND LINK FORMATTING*/
-img {
+img,
+video {
   max-width: 100%;
   max-height: 100%;
 }
