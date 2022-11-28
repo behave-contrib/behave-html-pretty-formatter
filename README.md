@@ -65,6 +65,10 @@ You can switch between the different contrasts with the toggle button.
 - [Pretty HTML Formatter With Summary Expanded and Collapsed Steps](#pretty-html-formatter-with-summary-expanded-and-collapsed-steps):
 - [Pretty HTML Formatter High contrast With Summary Expanded and Collapsed Steps](#pretty-html-formatter-high-contrast-with-summary-expanded-and-collapsed-steps):
 
+To change the setting use the .ini file
+```summary
+behave.formatter.html-pretty.show_summary = true
+```
 
 ## HACKING
 
