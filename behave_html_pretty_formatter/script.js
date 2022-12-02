@@ -48,7 +48,7 @@ function toggle_contrast_for(target_class) {
     }
 };
 
-function toggle_contrast(id) {
+function toggle_contrast() {
     var step_status_items = document.getElementsByClassName("step-status");
     for (var i=0; i < step_status_items.length; i++) {
         step_status_items[i].style.display = (step_status_items[i].style.display == "block" ? "none" : "block");
@@ -75,3 +75,16 @@ function toggle_contrast(id) {
     ];
     contrast_classes.forEach(toggle_contrast_for);
 };
+
+function detect_contrast() {
+    var obj_div = document.createElement("div");
+    obj_div.style.color = "rgb(31, 41, 59)"
+    document.body.appendChild(obj_div);
+    var col = document.defaultView ? document.defaultView.getComputedStyle(obj_div, null).color : obj_div.currentStyle.color;
+    document.body.removeChild(obj_div);
+    col = col.replace(/ /g, "");
+    if (col !== "rgb(31,41,59)") {
+        console.log("High Contrast theme detected.")
+        toggle_contrast();
+    }
+}

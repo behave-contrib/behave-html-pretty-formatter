@@ -1014,7 +1014,8 @@ class PrettyHTMLFormatter(Formatter):
                 raw(js_script)
 
         # Iterate over the data and generate the page.
-        with document.body:
+        with document.body as body:
+            body.attributes["onload"] = "detect_contrast();"
             if self.features:
                 feature = self.features[0]
                 feature.icon = self.icon
