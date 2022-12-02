@@ -1,12 +1,71 @@
 /* Inspired by https://github.com/Hargne/jest-html-reporter */
 
+:root {
+  --body-color: #333;
+  --body-bg: #fff;
+  --strong-color: #000;
+  --feature-bg: #eee;
+  --feature-color: #777;
+  --duration-color: rgb(49, 49, 49);
+  --summary-passed: #4f8a10;
+  --summary-passed-border: #4f8a10;
+  --summary-failed: #d8000c;
+  --summary-failed-border: #d8000c;
+  --summary-undefined: #945901;
+  --summary-undefined-border: #ffdf61;
+  --summary-skipped: #76adff;
+  --summary-skipped-border: #76adff;
+  --passed-bg: #dff2bf;
+  --passed-step-bg: #c6dba3;
+  --passed-border:#b4cc8c;
+  --failed-bg: #f5c9cd;
+  --failed-step-bg: #ea868f;
+  --failed-border: #dd7a82;
+  --undefined-bg: #ffdf61;
+  --undefined-step-bg: #f1cb32;
+  --undefined-border: #917400;
+  --skipped-bg: #eef5ff;
+  --skipped-step-bg: #cfe2ff;
+  --skipped-border: #b8c9e4;
+  --commentary-bg: #b9b9b9;
+  --table-bg-odd: #fff;
+  --table-bg-even: #eee;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --body-color: #ddd;
+    --body-bg: #000;
+    --strong-color: #fff;
+    --feature-bg: #222;
+    --feature-color: #aaa;
+    --duration-color: rgb(206, 206, 206);
+    --passed-bg: #42630a;
+    --passed-step-bg: #697e41;
+    --passed-border: #91a86b;
+    --failed-bg: #69272d;
+    --failed-step-bg: #a8666c;
+    --failed-border: #df888f;
+    --undefined-bg: #665a2a;
+    --undefined-step-bg: #b6940d;
+    --undefined-border: #dbb20e;
+    --skipped-bg: #345381;
+    --skipped-step-bg: #3d659e;
+    --skipped-border: #6981a8;
+    --commentary-bg: #5c5c5c;
+    --table-bg-odd: #555;
+    --table-bg-even: #444;
+  }
+}
+
 html,
 body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1rem;
   margin: 0;
   padding: 0;
-  color: #333;
+  color: var(--body-color);
+  background: var(--body-bg)
 }
 
 body {
@@ -36,7 +95,7 @@ pre {
 
 .button-toggle {
   margin-left: 1rem;
-  color: #000;
+  color: var(--strong-color);
   font-weight: bold;
   text-decoration: underline;
 }
@@ -47,9 +106,8 @@ pre {
 
 .feature-title {
   display: block;
-
-  background-color: #eee;
-  color: #777;
+  background-color: var(--feature-bg);
+  color: var(--feature-color);
   padding: 1rem;
   margin-bottom: inherit;
 
@@ -77,8 +135,8 @@ pre {
 
 .feature-summary-container {
   padding: 5px;
-  background-color: #eee;
-  color: #777;
+  background-color: var(--feature-bg);
+  color: var(--feature-color);
   justify-content: start;
   font-size: 0.8rem;
 }
@@ -112,40 +170,39 @@ pre {
 }
 
 .feature-summary-row {
-  color: #777;
-  border-left: 0.4rem solid #000;
+  color: var(--feature-color);
+  border-left: 0.4rem solid var(--body-color);
   padding-left: 0.5rem;
   margin: 1px;
 }
 
-.feature-summary-row.buttons {
-  display: inline-block;
-  color: #000;
+.feature-summary-row.button {
+  color: var(--body-color);
   font-weight: bold;
   text-decoration: underline;
-  border-left: 0.4rem solid #000;
+  border-left: 0.4rem solid var(--body-color);
   padding-left: 0.5rem;
   margin: 1px;
 }
 
 .feature-summary-row.passed {
-  color: #4f8a10;
-  border-left: 0.4rem solid #4f8a10;
+  color: var(--summary-passed);
+  border-left: 0.4rem solid var(--summary-passed-border);
 }
 
 .feature-summary-row.failed {
-  color: #d8000c;
-  border-left: 0.4rem solid #d8000c;
+  color: var(--summary-failed);
+  border-left: 0.4rem solid var(--summary-failed-border);
 }
 
 .feature-summary-row.undefined {
-  color: #9f6000;
-  border-left: 0.4rem solid #ffdf61;
+  color: var(--summary-undefined);
+  border-left: 0.4rem solid var(--summary-undefined-border);
 }
 
 .feature-summary-row.skipped {
-  color: #76adff;
-  border-left: 0.4rem solid #76adff;
+  color: var(--summary-skipped);
+  border-left: 0.4rem solid var(--summary-skipped-border);
 }
 
 .feature-summary-row.contrast {
@@ -162,7 +219,7 @@ pre {
 .scenario-capsule {
   padding: 1rem;
   margin-bottom: 0.5rem;
-  color: black;
+  color: var(--strong-color);
 }
 
 .scenario-capsule:last-child {
@@ -170,19 +227,19 @@ pre {
 }
 
 .scenario-capsule.passed {
-  background-color: #dff2bf;
+  background-color: var(--passed-bg);
 }
 
 .scenario-capsule.failed {
-  background-color: #f5c9cd;
+  background-color: var(--failed-bg);
 }
 
 .scenario-capsule.undefined {
-  background-color: #ffdf61;
+  background-color: var(--undefined-bg);
 }
 
 .scenario-capsule.skipped {
-  background-color: #eef5ff;
+  background-color: var(--skipped-bg);
 }
 
 .scenario-capsule.contrast {
@@ -218,7 +275,7 @@ pre {
 }
 
 .scenario-tags {
-  color: #333;
+  color: var(--body-color);
   font-weight: bold;
   font-size: 0.75rem;
   margin: 0.1rem 0.8em 0.5rem 0;
@@ -237,7 +294,7 @@ pre {
 .step-capsule {
   margin: 2px 0 2px 2px;
   padding: 0.5rem;
-  color: #000;
+  color: var(--strong-color);
   display: flex;
   flex-flow: wrap;
   font-size: 0.75rem;
@@ -245,24 +302,24 @@ pre {
 }
 
 .step-capsule.passed {
-  background-color: #c6dba3;
-  border: 1px solid #b4cc8c;
+  background-color: var(--passed-step-bg);
+  border: 1px solid var(--passed-border);
 }
 
 .step-capsule.failed {
-  background-color: #ea868f;
+  background-color: var(--failed-step-bg);
   ;
-  border: 1px solid #dd7a82;
+  border: 1px solid var(--failed-border);
 }
 
 .step-capsule.undefined {
-  background-color: #f1cb32;
-  border: 1px solid #f1cb32;
+  background-color: var(--undefined-step-bg);
+  border: 1px solid var(--undefined-border);
 }
 
 .step-capsule.skipped {
-  background-color: #cfe2ff;
-  border: 1px solid #b8c9e4;
+  background-color: var(--skipped-step-bg);
+  border: 1px solid var(--skipped-border);
 }
 
 .step-capsule.commentary {
@@ -276,6 +333,12 @@ pre {
   color: #fff;
   font-size: 1.25rem;
   border: none;
+}
+
+.step-capsule.commentary {
+  background-color: var(--commentary-bg);
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .margin-top {
@@ -303,7 +366,7 @@ pre {
 }
 
 .step-duration {
-  color: rgb(49, 49, 49);
+  color: var(--duration-color);
   font-style: italic;
   text-align: left;
   padding: 0 0.5rem 0 0;
@@ -320,15 +383,19 @@ pre {
 }
 
 .scenario-capsule.passed .messages:last-child {
-  border-bottom: 1px dashed #4f8a10;
+  border-bottom: 1px dashed var(--passed-border);
 }
 
 .scenario-capsule.failed .messages:last-child {
-  border-bottom: 1px dashed #d8000c;
+  border-bottom: 1px dashed var(--failed-border);
 }
 
 .scenario-capsule.undefined .messages:last-child {
-  border-bottom: 1px dashed #9f6000;
+  border-bottom: 1px dashed var(--undefined-border);
+}
+
+.scenario-capsule.skipped .messages:last-child {
+  border-bottom: 1px dashed var(--skipped-border);
 }
 
 .scenario-capsule .messages.contrast:last-child {
@@ -350,7 +417,7 @@ pre {
   margin: 0 1rem 0.5em 0;
   font-weight: bold;
   text-decoration: underline;
-  color: #000;
+  color: var(--strong-color);
   font-size: 12px;
 }
 
@@ -368,25 +435,25 @@ td {
 
 thead {
   background-color: #333;
-  color: white;
+  color: #fff;
   cursor: pointer;
 }
 
 table {
-  color: #333;
+  color: var(--body-color);
   margin: 2px 1em 4px 1em;
   border-collapse: collapse;
-  border: 1px solid black;
+  border: 1px solid #000;
   text-align: left;
   vertical-align: middle;
 }
 
 tbody tr:nth-child(odd) {
-  background-color: #fff;
+  background-color: var(--table-bg-odd);
 }
 
 tbody tr:nth-child(even) {
-  background-color: #eee;
+  background-color: var(--table-bg-even);
 }
 
 
