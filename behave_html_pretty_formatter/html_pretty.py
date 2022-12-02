@@ -365,6 +365,7 @@ class Scenario:
             self.is_last_step
             or result.status == Status.passed
             or result.status == Status.failed
+            or result.status == Status.skipped
             or result.status == Status.undefined
         ):
             self.status = result.status.name
