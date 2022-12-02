@@ -448,12 +448,22 @@ table {
   vertical-align: middle;
 }
 
-tbody tr:nth-child(odd) {
+table.contrast {
+  font-size: 1rem;
+}
+
+table tbody tr:nth-child(odd) {
   background-color: var(--table-bg-odd);
 }
 
-tbody tr:nth-child(even) {
+table tbody tr:nth-child(even) {
   background-color: var(--table-bg-even);
+}
+
+table.contrast tbody tr {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #000;
 }
 
 

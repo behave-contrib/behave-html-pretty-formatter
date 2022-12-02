@@ -71,6 +71,7 @@ function toggle_contrast() {
         "messages",
         "embed_button",
         "link",
+        "table",
 
     ];
     contrast_classes.forEach(toggle_contrast_for);

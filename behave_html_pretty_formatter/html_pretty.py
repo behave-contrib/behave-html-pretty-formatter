@@ -655,7 +655,7 @@ class Step:
         table_rows = self.table.rows
 
         # Generate Table.
-        with table():
+        with table(cls="table"):
 
             # Make a heading.
             with thead(
@@ -680,7 +680,7 @@ class Step:
         """
         if not self.text:
             return
-        with table():
+        with table(cls="table"):
             # Do not make the table header.
             with thead(
                 onclick=f"collapsible_toggle('table_{PrettyHTMLFormatter.table_number}')"
