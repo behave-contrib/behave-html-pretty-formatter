@@ -998,16 +998,18 @@ class PrettyHTMLFormatter(Formatter):
             meta(content="text/html;charset=utf-8", http_equiv="content-type")
 
             # Load and insert css theme.
+            css_fname = "theme.css" if self.pretty_output else "theme.min.css"
             with open(
-                Path(__file__).parent / "theme.css", "r", encoding="utf-8"
+                Path(__file__).parent / css_fname, "r", encoding="utf-8"
             ) as _css_file:
                 css_theme = _css_file.read()
             with style(rel="stylesheet"):
                 raw(css_theme)
 
             # Load and insert javascript - important for embed toggles and high contrast switch.
+            js_fname = "script.js" if self.pretty_output else "script.min.js"
             with open(
-                Path(__file__).parent / "script.js", "r", encoding="utf-8"
+                Path(__file__).parent / js_fname, "r", encoding="utf-8"
             ) as _script_file:
                 js_script = _script_file.read()
             with script(type="text/javascript"):
