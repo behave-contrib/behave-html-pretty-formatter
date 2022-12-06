@@ -1,0 +1,3 @@
+include LICENSE
+include README.md
+recursive-include behave_html_pretty_formatter *.css *.js *.py
