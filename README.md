@@ -3,7 +3,7 @@
 - Inspired by [jest-html-reporter](https://github.com/Hargne/jest-html-reporter)
 - Using project [dominate](https://github.com/Knio/dominate) to generate the page
 
-## Installation - NOT LIVE YET
+## Installation
 
 ```shell
 sudo python3 -m pip install behave-html-pretty-formatter
