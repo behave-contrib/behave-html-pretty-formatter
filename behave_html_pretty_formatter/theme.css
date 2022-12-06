@@ -65,7 +65,7 @@ body {
   margin: 0;
   padding: 0;
   color: var(--body-color);
-  background: var(--body-bg)
+  background: var(--body-bg);
 }
 
 body {
@@ -314,7 +314,7 @@ pre {
 
 .step-capsule.undefined {
   background-color: var(--undefined-step-bg);
-  border: 1px solid var(--undefined-border);
+  border: 1px solid var(--undefined-step-bg);
 }
 
 .step-capsule.skipped {

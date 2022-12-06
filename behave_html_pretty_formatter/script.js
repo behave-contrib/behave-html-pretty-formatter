@@ -26,8 +26,7 @@ function expander(action) {
         } else if (action == "expand_all_failed") {
             if (!elem[i].classList.contains("passed")) {
                 elem[i].classList.remove("collapse");
-            }
-            else {
+            } else {
                 if (!elem[i].classList.contains("collapse")) {
                     elem[i].classList.add("collapse");
                 }
