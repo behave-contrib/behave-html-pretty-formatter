@@ -226,6 +226,32 @@ def after_scenario(context, scenario):
   else:
     context.html_formatter.after_scenario_finish("passed")
 ```
+
+## Contributing
+
+You want to help with improving this software? Please create an issue in our open bug tracker, or open a pull request directly.
+
+We use [tox](https://pypi.org/project/tox/) for running linting and tests, e.g.
+
+```console
+tox
+tox -l
+tox -e flake8
+```
+
+For code formatting we use [black](https://pypi.org/project/black/), which you can run using our Tox setup, e.g.
+
+```console
+tox -e black
+```
+
+If you need to change CSS or JavaScript code: First edit the regular files, then generate the minified versions like so:
+
+```console
+tox -e minify
+```
+
+
 ## Image Examples
 
 ### Pretty HTML Formatter
