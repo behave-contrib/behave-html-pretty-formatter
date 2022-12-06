@@ -1,0 +1,10 @@
+[tool.black]
+color = true
+
+[tool.isort]
+color_output = true
+profile = "black"
+
+[tool.pylint.master]
+disable = ["attribute-defined-outside-init","invalid-name","W0511","R0903","R0902"]
+output-format = "colorized"
