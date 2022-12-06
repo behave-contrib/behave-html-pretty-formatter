@@ -589,8 +589,9 @@ class Step:
 
         # Check if the content of the data is a valid file - if so encode it to base64.
         if os.path.isfile(str(data)):
-            data_base64 = base64.b64encode(open(data, "rb").read())
-            data = data_base64.decode("utf-8").replace("\n", "")
+            with open(data, "rb") as _file:
+                data_base64 = _file.read()
+                data = data_base64.decode("utf-8").replace("\n", "")
 
         with div(cls="messages"):
             with div(cls="embed-capsule"):
