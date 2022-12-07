@@ -5,11 +5,11 @@ Provides step definitions to perform tests with the Python logging subsystem.
 import logging
 
 from behave import step, then
-from behave.configuration import LogLevel
 from behave4cmd0.command_steps import (
     step_file_should_contain_multiline_text,
     step_file_should_not_contain_multiline_text,
 )
+from behave.configuration import LogLevel
 
 
 def make_log_record(category, level, message):

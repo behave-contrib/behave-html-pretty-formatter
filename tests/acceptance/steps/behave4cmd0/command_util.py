@@ -3,11 +3,10 @@ Provides some command utility functions.
 """
 
 import os.path
-import sys
 import shutil
-import time
+import sys
 import tempfile
-
+import time
 from fnmatch import fnmatch
 
 from . import pathutil

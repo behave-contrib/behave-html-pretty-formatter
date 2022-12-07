@@ -4,41 +4,40 @@ Inspired by https://github.com/Hargne/jest-html-reporter
 """
 
 from __future__ import absolute_import
-import os
-import traceback
+
 import base64
+import os
 import time
-from pathlib import Path
-from datetime import datetime
+import traceback
 from collections import OrderedDict
+from datetime import datetime
+from pathlib import Path
 
 import dominate
-from dominate.tags import (
-    meta,
-    div,
-    span,
-    a,
-    b,
-    i,
-    table,
-    tbody,
-    thead,
-    tr,
-    th,
-    td,
-    pre,
-    video,
-    source,
-    script,
-    img,
-    style,
-)
-from dominate.util import raw
-
 from behave.formatter.base import Formatter
 from behave.model_core import Status
 from behave.runner_util import make_undefined_step_snippets
-
+from dominate.tags import (
+    a,
+    b,
+    div,
+    i,
+    img,
+    meta,
+    pre,
+    script,
+    source,
+    span,
+    style,
+    table,
+    tbody,
+    td,
+    th,
+    thead,
+    tr,
+    video,
+)
+from dominate.util import raw
 
 DEFAULT_CAPTION_FOR_MIME_TYPE = {
     "video/webm": "Video",
