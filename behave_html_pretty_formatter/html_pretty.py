@@ -4,41 +4,40 @@ Inspired by https://github.com/Hargne/jest-html-reporter
 """
 
 from __future__ import absolute_import
-import os
-import traceback
+
 import base64
+import os
 import time
-from pathlib import Path
-from datetime import datetime
+import traceback
 from collections import OrderedDict
+from datetime import datetime
+from pathlib import Path
 
 import dominate
-from dominate.tags import (
-    meta,
-    div,
-    span,
-    a,
-    b,
-    i,
-    table,
-    tbody,
-    thead,
-    tr,
-    th,
-    td,
-    pre,
-    video,
-    source,
-    script,
-    img,
-    style,
-)
-from dominate.util import raw
-
 from behave.formatter.base import Formatter
 from behave.model_core import Status
 from behave.runner_util import make_undefined_step_snippets
-
+from dominate.tags import (
+    a,
+    b,
+    div,
+    i,
+    img,
+    meta,
+    pre,
+    script,
+    source,
+    span,
+    style,
+    table,
+    tbody,
+    td,
+    th,
+    thead,
+    tr,
+    video,
+)
+from dominate.util import raw
 
 DEFAULT_CAPTION_FOR_MIME_TYPE = {
     "video/webm": "Video",
@@ -246,7 +245,8 @@ class Scenario:
             ]
             self.pseudo_steps[1].margin_top = True
 
-        # We need another information about a tag, to recognize if it should act as a link or span.
+        # We need another information about a tag, to recognize if it
+        # should act as a link or span.
         self.tags = [Tag(tag) for tag in scenario.effective_tags]
 
         self.location = scenario.location
@@ -477,7 +477,8 @@ class Step:
         if result.error_message and result.status == Status.failed:
             self.scenario.report_error(result)
 
-        # If the step is undefined use the behave function to provide information about it.
+        # If the step is undefined use the behave function to provide
+        # information about it.
         if result.status == Status.undefined:
             undefined_step_message = (
                 "\nYou can implement step definitions for undefined steps with "
@@ -522,7 +523,8 @@ class Step:
                 with div(cls="step-status-decorator-duration-capsule"):
                     with div(cls="step-status"):
 
-                        # Behave defined status strings are "passed" "failed" "undefined" "skipped".
+                        # Behave defined status strings are:
+                        # "passed" "failed" "undefined" "skipped".
                         # Modify these values for high contrast usage.
                         high_contrast_status = {
                             "passed": "PASS",
@@ -660,7 +662,8 @@ class Step:
 
             # Make a heading.
             with thead(
-                onclick=f"collapsible_toggle('table_{PrettyHTMLFormatter.table_number}')"
+                onclick="collapsible_toggle("
+                f"'table_{PrettyHTMLFormatter.table_number}')"
             ):
                 line = tr()
                 for heading in table_headings:
@@ -684,7 +687,8 @@ class Step:
         with table(cls="table"):
             # Do not make the table header.
             with thead(
-                onclick=f"collapsible_toggle('table_{PrettyHTMLFormatter.table_number}')"
+                onclick="collapsible_toggle("
+                f"'table_{PrettyHTMLFormatter.table_number}')"
             ):
                 line = tr()
                 line += th("Text")
@@ -787,9 +791,9 @@ class Tag:
         Converts tag to HTML.
         """
         with div(cls="scenario-tags"):
-            # Do not make links by default,
-            # this is handled on qecore side for links to bugzilla.
-            # Tags come with structure [<tag>, None] or [<tag>, <bugzilla_link/git_link>].
+            # Do not make links by default, this is handled on qecore
+            # side for links to bugzilla. Tags come with structure
+            # [<tag>, None] or [<tag>, <bugzilla_link/git_link>].
             if self.has_link():
                 with div(cls="link"):
                     with a(href=self._link):
@@ -999,7 +1003,7 @@ class PrettyHTMLFormatter(Formatter):
             meta(content="text/html;charset=utf-8", http_equiv="content-type")
 
             # Load and insert css theme.
-            css_fname = "theme.css" if self.pretty_output else "theme.min.css"
+            css_fname = "behave.css" if self.pretty_output else "behave.min.css"
             with open(
                 Path(__file__).parent / css_fname, "r", encoding="utf-8"
             ) as _css_file:
@@ -1007,8 +1011,9 @@ class PrettyHTMLFormatter(Formatter):
             with style(rel="stylesheet"):
                 raw(css_theme)
 
-            # Load and insert javascript - important for embed toggles and high contrast switch.
-            js_fname = "script.js" if self.pretty_output else "script.min.js"
+            # Load and insert javascript - important for embed toggles
+            # and high contrast switch.
+            js_fname = "behave.js" if self.pretty_output else "behave.min.js"
             with open(
                 Path(__file__).parent / js_fname, "r", encoding="utf-8"
             ) as _script_file:

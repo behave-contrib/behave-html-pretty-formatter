@@ -1,12 +1,11 @@
-#!/usr/bin/env python3
+"""
+Packaging setup for behave-html-pretty-formatter.
+"""
 import setuptools
 
 
 def read_file(filename):
-    """
-    Return the content of a file.
-    """
-
+    """Return the content of a file."""
     with open(filename, "r", encoding="utf-8") as file:
         return file.read()
 
@@ -38,6 +37,8 @@ setuptools.setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Testing",

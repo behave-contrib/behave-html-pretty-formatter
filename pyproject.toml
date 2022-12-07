@@ -1,0 +1,10 @@
+[tool.black]
+color = true
+
+[tool.isort]
+color_output = true
+profile = "black"
+
+[tool.pylint.master]
+disable = ["missing-module-docstring","too-many-lines","too-many-instance-attributes","too-many-arguments"]
+output-format = "colorized"

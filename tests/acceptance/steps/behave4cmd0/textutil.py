@@ -4,7 +4,7 @@ Provides some command utility functions.
 
 import codecs
 
-from hamcrest import assert_that, is_not, equal_to, contains_string
+from hamcrest import assert_that, contains_string, equal_to, is_not
 from hamcrest.core.helpers.hasmethod import hasmethod
 from hamcrest.library.text.substringmatcher import SubstringMatcher
 

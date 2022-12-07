@@ -2,9 +2,9 @@
 Provides some command utility functions.
 """
 
+import codecs
 import os.path
 import sys
-import codecs
 
 
 def realpath_with_context(path, context):

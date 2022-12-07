@@ -8,19 +8,25 @@ on:
     branches:
     - main
 
+env:
+  PY_COLORS: "1"
+
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         env:
+        - black
         - flake8
+        - isort
+        - minify
         - pylint
         - readme
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
       with:
         python-version: '3.x'
     - name: Install build tools
