@@ -6,7 +6,7 @@
 ## Installation
 
 ```shell
-sudo python3 -m pip install behave-html-pretty-formatter
+python3 -m pip install behave-html-pretty-formatter
 ```
 
 
