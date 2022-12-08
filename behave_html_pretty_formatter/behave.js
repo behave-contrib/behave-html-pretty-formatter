@@ -15,7 +15,8 @@ function collapsible_summary(id) {
 
 
 function expander(action) {
-    var elem = document.getElementsByClassName("scenario-capsule");
+    var elem = Array.from(document.getElementsByClassName("scenario-capsule"));
+    elem = elem.concat(Array.from(document.getElementsByClassName("scenario-header")));
     for(var i = 0; i < elem.length; i++) {
         if (action == "expand_all") {
             elem[i].classList.remove("collapse")
@@ -59,6 +60,7 @@ function toggle_contrast() {
         "feature-summary-row",
         "feature-icon",
 
+        "scenario-header",
         "scenario-capsule",
         "scenario-tags",
         "scenario-duration",

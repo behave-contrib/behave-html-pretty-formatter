@@ -218,7 +218,16 @@ pre {
 /*SCENARIO CONTENT*/
 .scenario-capsule {
   padding: 1rem;
-  margin-bottom: 0.5rem;
+  padding-top: 0.3rem;
+  margin-bottom: 1rem;
+  color: var(--strong-color);
+}
+
+.scenario-header {
+  padding: 1rem;
+  padding-bottom: 0;
+  margin-top:0;
+  margin-bottom: 0;
   color: var(--strong-color);
 }
 
@@ -226,22 +235,27 @@ pre {
   border: 0;
 }
 
-.scenario-capsule.passed {
-  background-color: var(--passed-bg);
+.scenario-capsule {
+  background-color: var(--feature-bg);
 }
 
-.scenario-capsule.failed {
-  background-color: var(--failed-bg);
+.scenario-header.passed {
+  background-color: var(--passed-step-bg);
 }
 
-.scenario-capsule.undefined {
-  background-color: var(--undefined-bg);
+.scenario-header.failed {
+  background-color: var(--failed-step-bg);
 }
 
-.scenario-capsule.skipped {
-  background-color: var(--skipped-bg);
+.scenario-header.undefined {
+  background-color: var(--undefined-step-bg);
 }
 
+.scenario-header.skipped {
+  background-color: var(--skipped-step-bg);
+}
+
+.scenario-header.contrast,
 .scenario-capsule.contrast {
   background-color: #000;
   color: #fff;
@@ -382,20 +396,8 @@ pre {
   margin: 0 0 4px 1em
 }
 
-.scenario-capsule.passed .messages:last-child {
-  border-bottom: 1px dashed var(--passed-border);
-}
-
-.scenario-capsule.failed .messages:last-child {
-  border-bottom: 1px dashed var(--failed-border);
-}
-
-.scenario-capsule.undefined .messages:last-child {
-  border-bottom: 1px dashed var(--undefined-border);
-}
-
-.scenario-capsule.skipped .messages:last-child {
-  border-bottom: 1px dashed var(--skipped-border);
+.scenario-capsule .messages:last-child {
+  border-bottom: 1px dashed var(--strong-color);
 }
 
 .scenario-capsule .messages.contrast:last-child {
@@ -415,7 +417,6 @@ pre {
 
 .embed_button {
   margin: 0 1rem 0.5em 0;
-  font-weight: bold;
   text-decoration: underline;
   color: var(--strong-color);
   font-size: 12px;
@@ -481,7 +482,7 @@ a {
 
 .link a span:hover {
   text-decoration: underline;
-  text-decoration-color: black;
+  text-decoration-color: var(--strong-color);
 }
 
 .link.contrast a span:hover {
@@ -490,14 +491,13 @@ a {
   text-decoration-color: grey;
 }
 
-.scenario-capsule.collapse .scenario-tags,
-.scenario-capsule.collapse .step-capsule,
-.scenario-capsule.collapse .embeds,
-.scenario-capsule.collapse table
+.scenario-header.collapse .scenario-tags,
+.scenario-capsule.collapse
 {
   display: none;
 }
 
-.scenario-capsule.collapse {
+.scenario-header.collapse {
   padding: 0.5rem 1rem 0 1rem;
+  margin-bottom: 1rem;
 }

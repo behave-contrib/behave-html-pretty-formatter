@@ -425,7 +425,7 @@ class Scenario:
         # Check for after_scenario errors.
         self.report_error(self._scenario)
         # Scenario container.
-        with div(cls=f"scenario-capsule {self.status}"):
+        with div(cls=f"scenario-header {self.status}"):
 
             for tag in self.tags:
                 tag.generate_tag()
@@ -439,6 +439,7 @@ class Scenario:
                 with div(cls="scenario-duration"):
                     span(f"Scenario duration: {self.duration:.2f}s")
 
+        with div(cls=f"scenario-capsule {self.status}"):
             steps = self.steps
             if self.pseudo_steps:
                 steps = [self.pseudo_steps[0]] + steps + [self.pseudo_steps[1]]
