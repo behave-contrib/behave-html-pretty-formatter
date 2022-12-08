@@ -342,17 +342,17 @@ pre {
   margin-right: 1rem;
 }
 
+.step-capsule.commentary {
+  background-color: var(--commentary-bg);
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .step-capsule.contrast {
   background-color: rgb(36, 35, 35);
   color: #fff;
   font-size: 1.25rem;
   border: none;
-}
-
-.step-capsule.commentary {
-  background-color: var(--commentary-bg);
-  margin-left: 1rem;
-  margin-right: 1rem;
 }
 
 .margin-top {
