@@ -9,7 +9,7 @@ function collapsible_toggle(id) {
 
 function collapsible_summary(id) {
     var elem = document.getElementById(id);
-    var visible_display = "flex";
+    var visible_display = "block";
     elem.style.display = (elem.style.display == "none" ? visible_display : "none");
 };
 
