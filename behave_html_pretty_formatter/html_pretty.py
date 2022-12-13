@@ -221,6 +221,20 @@ class Feature:
                     with a(onclick="expander('expand_all_failed')", href="#"):
                         div("[Expand All Failed]", cls="feature-summary-row button")
 
+                if formatter.additional_info:
+                    with div(
+                        cls="feature-additional-info-container",
+                        id="additional-info",
+                        style=f"display: {summary_display}"
+                    ):
+                        # Generating Additional info results
+                        with div(cls="feature-additional-info"):
+                            for key, item in formatter.additional_info.items():
+                                div(
+                                    f"{key}: {item}",
+                                    cls=f"feature-additional-info-row {key.lower()}",
+                                )
+
         # Feature data container.
         with div(cls="feature-container"):
             for scenario in self.scenarios:
@@ -831,6 +845,7 @@ class PrettyHTMLFormatter(Formatter):
         self.stream = self.open()
 
         config_path = f"behave.formatter.{self.name}"
+        additional_info_path = "behave.additional-info."
 
         self.pseudo_steps = self._str_to_bool(
             config.userdata.get(f"{config_path}.pseudo_steps", "false")
@@ -855,6 +870,13 @@ class PrettyHTMLFormatter(Formatter):
         self.show_unexecuted_steps = self._str_to_bool(
             config.userdata.get(f"{config_path}.show_unexecuted_steps", "true")
         )
+
+        self.additional_info = {}
+
+        for key,item in config.userdata.items():
+            if key.startswith(additional_info_path):
+                short_key = key.replace(additional_info_path, '')
+                self.additional_info[short_key] = item
 
     def _str_to_bool(self, value):
         assert value.lower() in ["true", "false", "yes", "no", "0", "1"]
