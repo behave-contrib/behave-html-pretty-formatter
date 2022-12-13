@@ -878,6 +878,13 @@ class PrettyHTMLFormatter(Formatter):
             config.userdata.get(f"{config_path}.show_unexecuted_steps", "true")
         )
 
+        self.additional_info = {}
+
+        for key,item in config.userdata.items():
+            if key.startswith(additional_info_path):
+                short_key = key.replace(additional_info_path, '')
+                self.additional_info[short_key] = item
+
     def _str_to_bool(self, value):
         assert value.lower() in ["true", "false", "yes", "no", "0", "1"]
         return value.lower() in ["true", "yes", "1"]
