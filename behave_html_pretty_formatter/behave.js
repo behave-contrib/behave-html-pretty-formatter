@@ -9,15 +9,19 @@ function collapsible_toggle(id) {
 
 function collapsible_summary(id) {
     var elem = document.getElementById(id);
-    var visible_display = "flex";
+    var visible_display = "block";
     elem.style.display = (elem.style.display == "none" ? visible_display : "none");
 };
 
 
-function expander(action) {
+function expander(action, summary_block) {
     var elem = Array.from(document.getElementsByClassName("scenario-capsule"));
     elem = elem.concat(Array.from(document.getElementsByClassName("scenario-header")));
+    parent_feature = summary_block.parentElement.parentElement.id
     for(var i = 0; i < elem.length; i++) {
+        if (parent_feature != elem[i].parentElement.id){
+            continue
+        }
         if (action == "expand_all") {
             elem[i].classList.remove("collapse")
         } else if (action == "collapse_all") {
@@ -33,6 +37,53 @@ function expander(action) {
                 }
             }
         }
+    }
+
+    // changing arrows
+    var arrows = Array.from(document.getElementsByClassName("arrow up"));
+    arrows = arrows.concat(Array.from(document.getElementsByClassName("arrow down")));
+    for(var i = 0; i < arrows.length; i++){
+        arrow_parent_scenario = arrows[i].parentElement.parentElement.parentElement.parentElement;
+        feature_id = arrow_parent_scenario.parentElement.id;
+        if (parent_feature != feature_id){
+          continue;
+        }
+        if (action == "expand_all"){
+            arrows[i].className = "arrow down" ;
+        }
+        else if (action == "collapse_all"){
+            arrows[i].className = "arrow up" ;
+        } else if (action == "expand_all_failed") {
+            if (!arrow_parent_scenario.classList.contains("passed")){
+                arrows[i].className = "arrow down" ;
+            } else {
+                arrows[i].className = "arrow up"
+            }
+        }
+    }
+};
+
+
+function expand_this_only(arrow) {
+    scenario = arrow.parentElement.parentElement.parentElement.id
+    var elem = Array.from(document.getElementsByClassName("scenario-capsule"));
+    elem = elem.concat(Array.from(document.getElementsByClassName("scenario-header")));
+    isCollapsed = false;
+    for(var i = 0; i < elem.length; i++) {
+        if (scenario != elem[i].id){
+            continue
+        }
+        if (!elem[i].classList.contains("collapse")) {
+            elem[i].classList.add("collapse");
+            isCollapsed = true; 
+        } else {
+            elem[i].classList.remove("collapse")
+        }
+    }
+    if (isCollapsed){
+      arrow.firstElementChild.className = "arrow up"
+    } else {
+      arrow.firstElementChild.className = "arrow down"
     }
 };
 
