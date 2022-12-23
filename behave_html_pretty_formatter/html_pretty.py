@@ -186,7 +186,7 @@ class Feature:
                         span("[High contrast toggle]", cls="button-toggle")
 
                     # After the High Contrast make a Summary toggle button.
-                    with a(onclick="collapsible_summary('summary')", href="#"):
+                    with a(onclick="collapsible_summary('feature-summary-container')", href="#"):
                         # Creating the actual text content which is clickable.
                         span("[Summary]", cls="button-toggle")
 

@@ -7,12 +7,13 @@ function collapsible_toggle(id) {
     elem.style.display = (elem.style.display == "none" ? visible_display : "none");
 };
 
-function collapsible_summary(id) {
-    var elem = document.getElementById(id);
+function collapsible_summary(classname) {
+    var elem = document.getElementsByClassName(classname);
     var visible_display = "block";
-    elem.style.display = (elem.style.display == "none" ? visible_display : "none");
+    for (var i = 0; i < elem.length; i++){
+        elem[i].style.display = (elem[i].style.display == "none" ? visible_display : "none");
+    }
 };
-
 
 function expander(action, summary_block) {
     var elem = Array.from(document.getElementsByClassName("scenario-capsule"));
