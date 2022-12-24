@@ -35,6 +35,11 @@ behave.formatter.html-pretty.date_format = %%d-%%m-%%Y %%H:%%M:%%S
 behave.formatter.html-pretty.show_summary = false
 # Defines if the user is interested in what steps are not executed.
 behave.formatter.html-pretty.show_unexecuted_steps = true
+
+# Following will be formatted in summary section as "tester: worker1".
+behave.additional-info.tester=worker1
+# Can be used multiple times.
+behave.additional-info.location=lab2
 ```
 
 and then use it by running behave with `-f`/`--format` parameter, e.g.
