@@ -223,9 +223,7 @@ class Feature:
 
                 if formatter.additional_info:
                     with div(
-                        cls="feature-additional-info-container",
-                        id="additional-info",
-                        style=f"display: {summary_display}"
+                        cls="feature-additional-info-container", id="additional-info"
                     ):
                         # Generating Additional info results
                         with div(cls="feature-additional-info"):
@@ -873,9 +871,9 @@ class PrettyHTMLFormatter(Formatter):
 
         self.additional_info = {}
 
-        for key,item in config.userdata.items():
+        for key, item in config.userdata.items():
             if key.startswith(additional_info_path):
-                short_key = key.replace(additional_info_path, '')
+                short_key = key.replace(additional_info_path, "")
                 self.additional_info[short_key] = item
 
     def _str_to_bool(self, value):
