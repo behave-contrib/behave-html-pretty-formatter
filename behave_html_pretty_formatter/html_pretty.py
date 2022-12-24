@@ -52,7 +52,7 @@ class Feature:
     Simplified behave feature used by PrettyHTMLFormatter
     """
 
-    def __init__(self, feature):
+    def __init__(self, feature, feature_counter):
         self.name = feature.name
         self.description = feature.description
         self.location = feature.location
@@ -61,6 +61,7 @@ class Feature:
         self.high_contrast_button = False
         self.start_time = datetime.now()
         self.finish_time = None
+        self.counter = feature_counter
 
         self.scenarios = []
         self._background = None
@@ -86,12 +87,12 @@ class Feature:
             _steps = self._background.steps
         return _steps
 
-    def add_scenario(self, scenario, pseudo_steps=False):
+    def add_scenario(self, scenario, scenario_counter, pseudo_steps=False):
         """
         Create new scenario in feature based on behave scenario object
         """
         self.scenario_finished = False
-        _scenario = Scenario(scenario, self, pseudo_steps)
+        _scenario = Scenario(scenario, self, scenario_counter, pseudo_steps)
         for embed_data in self.to_embed:
             _scenario.embed(embed_data)
         self.to_embed = []
@@ -200,7 +201,7 @@ class Feature:
                 summary_display = "block"
             with div(
                 cls="feature-summary-container",
-                id=self.name,
+                id=f"f{self.counter}",
                 style=f"display: {summary_display}",
             ):
                 # Generating Summary results.
@@ -237,8 +238,7 @@ class Feature:
 
         # Feature data container.
         with div(
-            cls="feature-container",
-            id = self.name
+            cls="feature-container", id = f"f{self.counter}"
         ):
             for scenario in self.scenarios:
                 scenario.generate_scenario(formatter)
@@ -249,13 +249,14 @@ class Scenario:
     Simplified behaves's scenario.
     """
 
-    def __init__(self, scenario, feature, pseudo_steps=False):
+    def __init__(self, scenario, feature, scenario_counter, pseudo_steps=False):
         self._scenario = scenario
         self.feature = feature
         self.name = scenario.name
         self.description = scenario.description
         self.pseudo_step_id = 0
         self.pseudo_steps = []
+        self.counter = scenario_counter
         if pseudo_steps:
             self.pseudo_steps = [
                 Step(when, "scenario", None, None, self) for when in ("Before", "After")
@@ -442,7 +443,7 @@ class Scenario:
         # Check for after_scenario errors.
         self.report_error(self._scenario)
         # Scenario container.
-        with div(cls=f"scenario-header {self.status}", id = self.name):
+        with div(cls=f"scenario-header {self.status}", id = f"f{self.feature.counter}-s{self.counter}"):
 
             for tag in self.tags:
                 tag.generate_tag()
@@ -458,7 +459,7 @@ class Scenario:
                 with div(cls="scenario-duration"):
                     span(f"Scenario duration: {self.duration:.2f}s")
 
-        with div(cls=f"scenario-capsule {self.status}", id = self.name):
+        with div(cls=f"scenario-capsule {self.status}", id = f"f{self.feature.counter}-s{self.counter}"):
             steps = self.steps
             if self.pseudo_steps:
                 steps = [self.pseudo_steps[0]] + steps + [self.pseudo_steps[1]]
@@ -834,6 +835,9 @@ class PrettyHTMLFormatter(Formatter):
     description = "Pretty HTML Formatter"
     table_number = 0
 
+    feature_counter = 0
+    scenario_counter = 0
+
     def __init__(self, stream, config):
         super().__init__(stream, config)
 
@@ -891,7 +895,9 @@ class PrettyHTMLFormatter(Formatter):
         current_feature = self.current_feature
         if current_feature:
             current_feature.finish_time = datetime.now()
-        self.features.append(Feature(feature))
+        self.feature_counter += 1
+        self.scenario_counter = 0
+        self.features.append(Feature(feature, self.feature_counter))
 
     @property
     def current_feature(self):
@@ -932,7 +938,8 @@ class PrettyHTMLFormatter(Formatter):
         """
         Processes new scenario. It is added to the current feature.
         """
-        self.current_feature.add_scenario(scenario, self.pseudo_steps)
+        self.scenario_counter += 1
+        self.current_feature.add_scenario(scenario, self.scenario_counter, self.pseudo_steps)
 
     def step(self, step):
         """
