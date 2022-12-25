@@ -187,7 +187,10 @@ class Feature:
                         span("[High contrast toggle]", cls="button-toggle")
 
                     # After the High Contrast make a Summary toggle button.
-                    with a(onclick="collapsible_summary('feature-summary-container')", href="#"):
+                    with a(
+                        onclick="collapsible_summary('feature-summary-container')",
+                        href="#",
+                    ):
                         # Creating the actual text content which is clickable.
                         span("[Summary]", cls="button-toggle")
 
@@ -235,9 +238,7 @@ class Feature:
                                 )
 
         # Feature data container.
-        with div(
-            cls="feature-container", id = f"f{self.counter}"
-        ):
+        with div(cls="feature-container", id=f"f{self.counter}"):
             for scenario in self.scenarios:
                 scenario.generate_scenario(formatter)
 
@@ -441,23 +442,29 @@ class Scenario:
         # Check for after_scenario errors.
         self.report_error(self._scenario)
         # Scenario container.
-        with div(cls=f"scenario-header {self.status}", id = f"f{self.feature.counter}-s{self.counter}"):
-
+        with div(
+            cls=f"scenario-header {self.status}",
+            id=f"f{self.feature.counter}-s{self.counter}-h",
+        ):
             for tag in self.tags:
                 tag.generate_tag()
 
             # Simple container for name + duration.
             with div(cls="scenario-info"):
 
-                with div(cls="scenario-name"):
+                with div(
+                    cls="scenario-name",
+                    id=f"f{self.feature.counter}-s{self.counter}",
+                    onclick="expand_this_only(this)",
+                ):
                     span(f"Scenario: {self.name}")
-                    with a(onclick="expand_this_only(this)", href="#"):
-                        i(cls="arrow down")
-
                 with div(cls="scenario-duration"):
                     span(f"Scenario duration: {self.duration:.2f}s")
 
-        with div(cls=f"scenario-capsule {self.status}", id = f"f{self.feature.counter}-s{self.counter}"):
+        with div(
+            cls=f"scenario-capsule {self.status}",
+            id=f"f{self.feature.counter}-s{self.counter}-c",
+        ):
             steps = self.steps
             if self.pseudo_steps:
                 steps = [self.pseudo_steps[0]] + steps + [self.pseudo_steps[1]]
@@ -937,7 +944,9 @@ class PrettyHTMLFormatter(Formatter):
         Processes new scenario. It is added to the current feature.
         """
         self.scenario_counter += 1
-        self.current_feature.add_scenario(scenario, self.scenario_counter, self.pseudo_steps)
+        self.current_feature.add_scenario(
+            scenario, self.scenario_counter, self.pseudo_steps
+        )
 
     def step(self, step):
         """
