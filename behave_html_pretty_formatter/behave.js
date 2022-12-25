@@ -39,52 +39,19 @@ function expander(action, summary_block) {
             }
         }
     }
-
-    // changing arrows
-    var arrows = Array.from(document.getElementsByClassName("arrow up"));
-    arrows = arrows.concat(Array.from(document.getElementsByClassName("arrow down")));
-    for(var i = 0; i < arrows.length; i++){
-        arrow_parent_scenario = arrows[i].parentElement.parentElement.parentElement.parentElement;
-        feature_id = arrow_parent_scenario.parentElement.id;
-        if (parent_feature != feature_id){
-          continue;
-        }
-        if (action == "expand_all"){
-            arrows[i].className = "arrow down" ;
-        }
-        else if (action == "collapse_all"){
-            arrows[i].className = "arrow up" ;
-        } else if (action == "expand_all_failed") {
-            if (!arrow_parent_scenario.classList.contains("passed")){
-                arrows[i].className = "arrow down" ;
-            } else {
-                arrows[i].className = "arrow up"
-            }
-        }
-    }
 };
 
 
-function expand_this_only(arrow) {
-    scenario = arrow.parentElement.parentElement.parentElement.id
-    var elem = Array.from(document.getElementsByClassName("scenario-capsule"));
-    elem = elem.concat(Array.from(document.getElementsByClassName("scenario-header")));
-    isCollapsed = false;
-    for(var i = 0; i < elem.length; i++) {
-        if (scenario != elem[i].id){
-            continue
-        }
-        if (!elem[i].classList.contains("collapse")) {
-            elem[i].classList.add("collapse");
-            isCollapsed = true; 
-        } else {
-            elem[i].classList.remove("collapse")
-        }
-    }
-    if (isCollapsed){
-      arrow.firstElementChild.className = "arrow up"
+function expand_this_only(name) {
+    var id = name.id;
+    var capsule = document.getElementById(id + "-c");
+    var header = document.getElementById(id + "-h");
+    if (header.classList.contains("collapse")) {
+        header.classList.remove("collapse");
+        capsule.classList.remove("collapse");
     } else {
-      arrow.firstElementChild.className = "arrow down"
+        header.classList.add("collapse");
+        capsule.classList.add("collapse");
     }
 };
 

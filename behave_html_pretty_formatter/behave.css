@@ -88,21 +88,25 @@ pre {
 }
 
 /*ARROWS*/
-.arrow {
-  border: solid black;
-  border-width: 0 3px 3px 0;
-  display: inline-block;
-  padding: 3px;
+.scenario-name::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  content: "\2303";
+  font-size: 1.8em;
 }
 
-.up {
-  transform: rotate(-135deg);
-  -webkit-transform: rotate(-135deg);
+.collapse .scenario-name::after {
+  top: -0.5em;
+  content: "\2304";
 }
 
-.down {
-  transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
+.scenario-name:hover::after {
+  top: -0.1em;
+}
+
+.collapse .scenario-name:hover::after {
+  top: -0.4em;
 }
 
 /*FEATURE CONTENT*/
@@ -307,11 +311,13 @@ pre {
 }
 
 .scenario-name {
-  width: 70%;
+  cursor: pointer;
   text-align: left;
   font-weight: bold;
   word-break: break-word;
   padding-bottom: 0.5em;
+  padding-right: 1.6em;
+  position: relative;
 }
 
 .scenario-duration {
