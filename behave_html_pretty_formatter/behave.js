@@ -109,3 +109,31 @@ function detect_contrast() {
         toggle_contrast();
     }
 }
+
+function download_embed(id, filename) {
+    var elem = document.getElementById(id);
+    var child = elem.children[1];
+    var value = "";
+    var tag = child.tagName.toLowerCase();
+    if (tag === "span") {
+        filename += ".txt";
+        value = "data:text/plain," + encodeURIComponent(child.innerHTML);
+    } else if (tag == "video") {
+        filename += ".webm";
+        value = child.children[0].src;
+    } else if (tag == "img") {
+        filename += ".png";
+        value = child.src;
+    } else {
+        filename += ".html";
+        value = elem.innerHTML;
+    }
+    var link = document.createElement("a");
+    link.style.display = "none";
+    link.href = value;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click()
+    /* fix race in FF */
+    setTimeout(function() {document.body.removeChild(link);}, 2000);
+};
