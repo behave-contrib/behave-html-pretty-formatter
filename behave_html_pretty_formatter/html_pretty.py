@@ -632,13 +632,25 @@ class Step:
                             onclick=f"collapsible_toggle('embed_{embed_data.uid}')",
                         ):
                             span(use_caption)
+                        # Download button
 
-                # Actual Embed.
-                if "video/webm" in mime_type:
-                    with pre(cls="embed_content"):
+                with pre(
+                    cls="embed_content",
+                    id=f"embed_{embed_data.uid}",
+                    style="display: none",
+                ):
+                    args = f"'embed_{embed_data.uid}','{use_caption}'"
+                    onclick = f"download_embed({args})"
+                    a(
+                        "[Download]",
+                        href="#/",
+                        cls="embed_download",
+                        onclick=onclick,
+                    )
+
+                    # Actual Embed.
+                    if "video/webm" in mime_type:
                         with video(
-                            id=f"embed_{embed_data.uid}",
-                            style="display: none",
                             width="1024",
                             controls="",
                         ):
@@ -646,32 +658,18 @@ class Step:
                                 src=f"data:{mime_type};base64,{data}", type=mime_type
                             )
 
-                if "image/png" in mime_type:
-                    with pre(
-                        cls="embed_content",
-                        id=f"embed_{embed_data.uid}",
-                        style="display: none",
-                    ):
+                    if "image/png" in mime_type:
                         img(src=f"data:{mime_type};base64,{data}")
 
-                if "text" in mime_type:
-                    with pre(
-                        cls="embed_content",
-                        id=f"embed_{embed_data.uid}",
-                        style="display: none",
-                    ):
+                    if "text" in mime_type:
                         span(data)
 
-                if "link" in mime_type:
-                    with pre(
-                        cls="embed_content",
-                        id=f"embed_{embed_data.uid}",
-                        style="display: none",
-                    ):
+                    if "link" in mime_type:
                         # expected format: set( [link, label], ... )
-                        for single_link in data:
-                            with a(href=single_link[0]):
-                                span(single_link[1])
+                        with div():
+                            for single_link in data:
+                                with a(href=single_link[0]):
+                                    span(single_link[1])
 
     def generate_table(self):
         """

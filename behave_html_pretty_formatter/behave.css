@@ -442,6 +442,10 @@ pre {
   font-size: 20px;
 }
 
+.embed_download {
+  font-weight: bold;
+  display: block;
+}
 
 /*TABLE FORMATTING*/
 th,
