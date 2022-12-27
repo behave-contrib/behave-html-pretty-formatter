@@ -90,23 +90,28 @@ pre {
 /*ARROWS*/
 .scenario-name::after {
   position: absolute;
-  top: 0;
+  top: -0.5em;
   right: 0;
-  content: "\2303";
+  content: "\2304";
   font-size: 1.8em;
 }
 
 .collapse .scenario-name::after {
-  top: -0.5em;
-  content: "\2304";
+  top: -0.25em;
+  transform: rotate(270deg);
+  -moz-transform: rotate(270deg);
+  -webkit-transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  -o-transform: rotate(270deg);
 }
 
 .scenario-name:hover::after {
-  top: -0.1em;
+  top: -0.45em;
 }
 
 .collapse .scenario-name:hover::after {
-  top: -0.4em;
+  top: -0.25em;
+  right: -0.05em;
 }
 
 /*FEATURE CONTENT*/
