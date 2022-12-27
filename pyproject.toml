@@ -1,5 +1,5 @@
 [tool.black]
-color = true
+color = false
 
 [tool.isort]
 color_output = true
