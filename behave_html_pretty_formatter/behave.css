@@ -73,16 +73,6 @@ body {
   font-size: 0.85rem;
 }
 
-header {
-  display: flex;
-  align-items: center;
-}
-
-#title {
-  margin: 0;
-  flex-grow: 1;
-}
-
 pre {
   margin: 0;
 }
@@ -146,7 +136,6 @@ pre {
   height: 1.2em;
   display: inline-block;
   margin-right: 0.3em;
-  align-items: center;
   text-align: center;
   vertical-align: middle;
 }
@@ -188,25 +177,6 @@ pre {
   background-color: #000;
   color:rgb(248, 248, 248);
   font-size: 1rem;
-}
-
-
-@media only screen and (max-width: 720px) {
-  .feature-panel {
-    flex-direction: column;
-  }
-
-  .feature-summary-container {
-    margin-left: 0;
-    margin-top: 0.25rem;
-    font-size: 1rem;
-  }
-
-  .feature-additional-info-container {
-    margin-left: 0;
-    margin-top: 0.25rem;
-    font-size: 1rem;
-  }
 }
 
 .feature-summary-stats {
@@ -312,23 +282,21 @@ pre {
 
 .scenario-info {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-wrap: wrap;
   font-size: 1.25rem;
 }
 
 .scenario-name {
   cursor: pointer;
-  text-align: left;
   font-weight: bold;
-  word-break: break-word;
   padding-bottom: 0.5em;
   padding-left: 1.2em;
   position: relative;
 }
 
 .scenario-duration {
-  text-align: right;
+  align-self: center;
+  margin-left: auto;
   font-size: 0.75rem;
   font-style: italic;
   padding: 0 0.5em 0.5em 0;
@@ -361,9 +329,8 @@ pre {
   padding: 0.5rem;
   color: var(--strong-color);
   display: flex;
-  flex-flow: wrap;
+  flex-wrap: wrap;
   font-size: 0.75rem;
-  justify-content: space-between;
 }
 
 .step-capsule.passed {
@@ -410,35 +377,32 @@ pre {
   margin-top: 15px;
 }
 
-.step-status-decorator-duration-capsule {
-  display: flex;
-}
-
 .step-status {
-  text-align: left;
   display: none;
-}
-
-.step-status.contrast {
-  width: 3rem;
   padding: 0 1rem 0 0;
   font-weight: bold;
   font-size: 1.25rem;
 }
 
 .step-decorator {
-  padding: 0 1.5rem 0 0;
+  padding: 0;
+  padding-right: 1.5rem;
 }
 
 .step-duration {
   color: var(--duration-color);
   font-style: italic;
-  text-align: left;
-  padding: 0 0.5rem 0 0;
+  padding: 0;
+  padding-right: 1.5rem;
 }
 
 .step-duration.contrast {
   color: rgb(248, 248, 248);
+}
+
+/* Step location */
+.step-capsule .link {
+  margin-left: auto;
 }
 
 
@@ -496,7 +460,6 @@ table {
   margin: 2px 1em 4px 1em;
   border-collapse: collapse;
   border: 1px solid #000;
-  text-align: left;
   vertical-align: middle;
 }
 
@@ -551,4 +514,24 @@ a {
 .scenario-header.collapse {
   padding: 0.5rem 1rem 0 1rem;
   margin-bottom: 1rem;
+}
+
+/* SMALL SCREEN - SHOULD BE LAST TO OVERIDE PREVIOUS*/
+
+@media only screen and (max-width: 720px) {
+  .feature-panel {
+    flex-direction: column;
+  }
+
+  .feature-summary-container {
+    margin-left: 0;
+    margin-top: 0.25rem;
+    font-size: 1rem;
+  }
+
+  .feature-additional-info-container {
+    margin-left: 0;
+    margin-top: 0.25rem;
+    font-size: 1rem;
+  }
 }

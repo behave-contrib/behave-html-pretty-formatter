@@ -546,32 +546,31 @@ class Step:
                 pre(f"{self.text}")
         else:
             with div(cls=f"step-capsule {self.status} {margin_top_cls}"):
-                with div(cls="step-status-decorator-duration-capsule"):
-                    with div(cls="step-status"):
+                with div(cls="step-status"):
 
-                        # Behave defined status strings are:
-                        # "passed" "failed" "undefined" "skipped".
-                        # Modify these values for high contrast usage.
-                        high_contrast_status = {
-                            "passed": "PASS",
-                            "failed": "FAIL",
-                            "undefined": "SKIP",
-                            "skipped": "SKIP",
-                            "untested": "SKIP",
-                        }
-                        # Step status for high contrast - "PASS" "FAIL" "SKIP".
-                        span(high_contrast_status[self.status])
+                    # Behave defined status strings are:
+                    # "passed" "failed" "undefined" "skipped".
+                    # Modify these values for high contrast usage.
+                    high_contrast_status = {
+                        "passed": "PASS",
+                        "failed": "FAIL",
+                        "undefined": "SKIP",
+                        "skipped": "SKIP",
+                        "untested": "SKIP",
+                    }
+                    # Step status for high contrast - "PASS" "FAIL" "SKIP".
+                    span(high_contrast_status[self.status])
 
-                    with div(cls="step-decorator"):
-                        # Step decorator.
-                        with b():
-                            i(self.keyword + " ")
-                        formatter.make_bold_text(self.name)
+                with div(cls="step-decorator"):
+                    # Step decorator.
+                    with b():
+                        i(self.keyword + " ")
+                    formatter.make_bold_text(self.name)
 
-                    with div(cls="step-duration"):
-                        short_duration = f"{self.duration:.2f}s"
-                        # Step duration.
-                        span(f"({short_duration})")
+                with div(cls="step-duration"):
+                    short_duration = f"{self.duration:.2f}s"
+                    # Step duration.
+                    span(f"({short_duration})")
 
                 # Make the link only when the link is provided.
                 if self.location_link:
