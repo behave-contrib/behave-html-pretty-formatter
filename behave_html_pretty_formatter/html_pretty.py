@@ -14,6 +14,7 @@ from datetime import datetime
 from pathlib import Path
 
 import dominate
+import markdown
 from behave.formatter.base import Formatter
 from behave.model_core import Status
 from behave.runner_util import make_undefined_step_snippets
@@ -662,7 +663,15 @@ class Step:
                         img(src=f"data:{mime_type};base64,{data}")
 
                     if "text" in mime_type:
-                        span(data)
+                        if "html" in mime_type:
+                            data_span = span()
+                            data_span.add_raw_string(data)
+                        elif "markdown" in mime_type:
+                            data_md = markdown.markdown(data)
+                            data_span = span()
+                            data_span.add_raw_string(data_md)
+                        else:
+                            span(data)
 
                     if "link" in mime_type:
                         # expected format: set( [link, label], ... )

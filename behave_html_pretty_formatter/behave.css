@@ -73,7 +73,7 @@ body {
   font-size: 0.85rem;
 }
 
-pre {
+pre, pre * {
   margin: 0;
 }
 
