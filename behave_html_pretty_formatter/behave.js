@@ -1,4 +1,16 @@
-function collapsible_toggle(id) {
+function collapsible_toggle(id, parent) {
+    console.log(parent);
+    while (parent !== undefined  && !parent.classList.contains("embed_button")) {
+        parent = parent.parentElement;
+        console.log(parent);
+    }
+    if (parent !== undefined) {
+        if (!parent.classList.contains("collapse")) {
+            parent.classList.add("collapse");
+        } else {
+            parent.classList.remove("collapse");
+        }
+    }
     var elem = document.getElementById(id);
     var visible_display = "block";
     if (id.indexOf("table") >= 0) {

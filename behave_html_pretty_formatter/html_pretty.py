@@ -638,12 +638,13 @@ class Step:
             with div(cls="embed-capsule"):
 
                 # Embed Caption.
-                with div(cls="embed_button"):
+                with div(cls="embed_button collapse"):
                     with div(cls="link"):
                         # Label to be shown.
+                        embed_id = f"embed_{embed_data.uid}"
                         with a(
                             href="#/",
-                            onclick=f"collapsible_toggle('embed_{embed_data.uid}')",
+                            onclick=f"collapsible_toggle('{embed_id}',this)",
                         ):
                             span(use_caption)
                         # Download button

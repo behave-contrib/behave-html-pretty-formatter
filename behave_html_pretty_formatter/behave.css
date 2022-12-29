@@ -84,6 +84,7 @@ pre, pre * {
 }
 
 /* ARROWS */
+.embed_button::after,
 .scenario-name::after {
   position: absolute;
   top: -0.5em;
@@ -93,6 +94,7 @@ pre, pre * {
   transition: all 0.2s linear;
 }
 
+.embed_button.collapse::after,
 .collapse .scenario-name::after {
   top: -0.25em;
   left: -0.5em;
@@ -101,6 +103,12 @@ pre, pre * {
   -webkit-transform: rotate(-90deg);
   -ms-transform: rotate(-90deg);
   -o-transform: rotate(-90deg);
+}
+
+.embed_button,
+.scenario-name {
+  padding-left: 1.2em;
+  position: relative;
 }
 
 /*FEATURE CONTENT*/
@@ -282,8 +290,6 @@ pre, pre * {
   cursor: pointer;
   font-weight: bold;
   padding-bottom: 0.5em;
-  padding-left: 1.2em;
-  position: relative;
 }
 
 .scenario-duration {
