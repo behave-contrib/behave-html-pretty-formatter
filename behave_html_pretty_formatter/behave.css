@@ -206,6 +206,33 @@ pre {
   font-size: 1rem;
 }
 
+.feature-bar {
+  width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.bar-part {
+  border: 1px solid var(--feature-bg);
+  height: 0.8em;
+  box-sizing: border-box;
+}
+
+.bar-part.passed {
+  background-color: var(--summary-passed-border);
+}
+
+.bar-part.failed {
+  background-color: var(--summary-failed-border);
+}
+
+.bar-part.skipped {
+  background-color: var(--summary-skipped-border);
+}
+
+.bar-part.undefined {
+  background-color: var(--summary-undefined-border);
+}
 
 @media only screen and (max-width: 720px) {
   .feature-panel {

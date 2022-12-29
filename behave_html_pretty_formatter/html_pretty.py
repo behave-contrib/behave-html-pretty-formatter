@@ -222,7 +222,7 @@ class Feature:
                         div("[Expand All]", cls="feature-summary-row button")
                     with a(onclick="expander('collapse_all', this)", href="#"):
                         div("[Collapse All]", cls="feature-summary-row button")
-                    with a(onclick="expander('expand_all_failed', this)", href="#"):
+                    with a(onclick="expander('expand_all_non_passed', this)", href="#"):
                         div("[Expand All Failed]", cls="feature-summary-row button")
 
                 if formatter.additional_info:
@@ -236,11 +236,39 @@ class Feature:
                                     f"{key}: {item}",
                                     cls=f"feature-additional-info-row {key.lower()}",
                                 )
+                self.generate_time_status_strip()
 
         # Feature data container.
         with div(cls="feature-container", id=f"f{self.counter}"):
             for scenario in self.scenarios:
                 scenario.generate_scenario(formatter)
+
+    def generate_time_status_strip(self):
+        div("Scenarios by status:")
+        total_num = len(self.scenarios)
+        stats = self.get_feature_stats("")
+        with div(cls="feature-bar"):
+            for status in ["Passed", "Failed", "Skipped", "Undefined"]:
+                status_num = stats.get(status, 0)
+                if status_num:
+                    a(
+                        href="#/",
+                        cls=f"bar-part {status.lower()}",
+                        style=f"width:{100*status_num/total_num:.2f}%;",
+                        title=f"{status}: {status_num}",
+                        onclick=f"expander('expand_all_{status.lower()}', this)",
+                    )
+
+        div("Scenarios by time:")
+        total_duration = sum([s.duration for s in self.scenarios])
+        with div(cls="feature-bar"):
+            for idx, scenario in enumerate(self.scenarios):
+                a(
+                    cls=f"bar-part {scenario.status}",
+                    href=f"#f{self.counter}-s{idx+1}",
+                    style=f"width:{100*scenario.duration/total_duration:.2f}%;",
+                    title=scenario.name,
+                )
 
 
 class Scenario:

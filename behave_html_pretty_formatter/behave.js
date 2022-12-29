@@ -50,8 +50,9 @@ function expander(action, summary_block) {
             if (!elem[i].classList.contains("collapse")) {
                 elem[i].classList.add("collapse");
             }
-        } else if (action == "expand_all_failed") {
-            if (!elem[i].classList.contains("passed")) {
+        } else if (action.indexOf("expand_all_") == 0) {
+            var status = action.replace("expand_all_", "");
+            if (elem[i].classList.contains(status) || (status == "non_passed" && !elem[i].classList.contains("passed"))) {
                 elem[i].classList.remove("collapse");
             } else {
                 if (!elem[i].classList.contains("collapse")) {
