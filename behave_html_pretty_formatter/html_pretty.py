@@ -181,18 +181,18 @@ class Feature:
                 # Generate content of the panel.
                 if self.high_contrast_button:
                     # Making sure there is a functioning button.
-                    span(f"Feature: {self.name}")
+                    a(
+                        f"Feature: {self.name}",
+                        cls=f"feature-summary-toggle {'collapse' if not formatter.show_summary else ''}",
+                        onclick=f"collapsible_summary('feature-summary-container')",
+                        href="#/",
+                    )
+                    
                     with a(onclick="toggle_contrast('embed')", href="#"):
                         # Creating the actual text content which is clickable.
                         span("[High contrast toggle]", cls="button-toggle")
 
-                    # After the High Contrast make a Summary toggle button.
-                    with a(
-                        onclick="collapsible_summary('feature-summary-container')",
-                        href="#",
-                    ):
-                        # Creating the actual text content which is clickable.
-                        span("[Summary]", cls="button-toggle")
+                        
 
                 # On following features do not generate the buttons.
                 else:
@@ -625,12 +625,12 @@ class Step:
             with div(cls="embed-capsule"):
 
                 # Embed Caption.
-                with div(cls="embed_button"):
+                with div(cls="embed_button collapse"):
                     with div(cls="link"):
                         # Label to be shown.
                         with a(
                             href="#/",
-                            onclick=f"collapsible_toggle('embed_{embed_data.uid}')",
+                            onclick=f"collapsible_toggle('embed_{embed_data.uid}', this)",
                         ):
                             span(use_caption)
 

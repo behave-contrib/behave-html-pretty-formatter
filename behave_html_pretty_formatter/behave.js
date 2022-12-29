@@ -1,4 +1,16 @@
-function collapsible_toggle(id) {
+function collapsible_toggle(id, parent) {
+    console.log(parent);
+    while (parent !== undefined  && !parent.classList.contains("embed_button")) {
+        parent = parent.parentElement;
+        console.log(parent);
+    }
+    if (parent !== undefined) {
+        if (!parent.classList.contains("collapse")) {
+            parent.classList.add("collapse");
+        } else {
+            parent.classList.remove("collapse");
+        }
+    }
     var elem = document.getElementById(id);
     var visible_display = "block";
     if (id.indexOf("table") >= 0) {
@@ -8,6 +20,15 @@ function collapsible_toggle(id) {
 };
 
 function collapsible_summary(classname) {
+    var toggle_btns = document.getElementsByClassName("feature-summary-toggle");
+    for (var i = 0; i<toggle_btns.length; i++) {
+        var toggle_btn = toggle_btns[i];
+        if (!toggle_btn.classList.contains("collapse")) {
+            toggle_btn.classList.add("collapse");
+        } else {
+            toggle_btn.classList.remove("collapse");
+        }
+    }
     var elem = document.getElementsByClassName(classname);
     var visible_display = "block";
     for (var i = 0; i < elem.length; i++){

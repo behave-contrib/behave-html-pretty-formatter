@@ -88,6 +88,8 @@ pre {
 }
 
 /*ARROWS*/
+.embed_button::after,
+.feature-summary-toggle::after,
 .scenario-name::after {
   position: absolute;
   top: -0.5em;
@@ -97,6 +99,8 @@ pre {
   transition: all 0.2s linear;
 }
 
+.embed_button.collapse::after,
+.feature-summary-toggle.collapse::after,
 .collapse .scenario-name::after {
   top: -0.25em;
   left: -0.5em;
@@ -107,14 +111,26 @@ pre {
   -o-transform: rotate(-90deg);
 }
 
+.embed_button:hover::after,
+.feature-summary-toggle:hover::after,
 .scenario-name:hover::after {
   top: -0.45em;
 }
 
+.embed_button.collapse:hover::after,
+.feature-summary-toggle.collapse:hover::after,
 .collapse .scenario-name:hover::after {
   top: -0.25em;
   left: -0.45em;
 }
+
+.embed_button,
+.feature-summary-toggle,
+.scenario-name {
+  padding-left: 1.2em;
+  position: relative;
+}
+
 
 /*FEATURE CONTENT*/
 .feature-panel {
@@ -323,8 +339,6 @@ pre {
   font-weight: bold;
   word-break: break-word;
   padding-bottom: 0.5em;
-  padding-left: 1.2em;
-  position: relative;
 }
 
 .scenario-duration {
