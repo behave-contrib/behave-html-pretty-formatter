@@ -130,6 +130,7 @@ pre, pre * {
 
 .feature-title {
   display: flex;
+  flex-wrap: wrap;
   background-color: var(--feature-bg);
   color: var(--feature-color);
   padding: 1rem;
@@ -157,6 +158,7 @@ pre, pre * {
 
 .feature-summary-container {
   display: flex;
+  flex-wrap: wrap;
   padding: 5px;
   background-color: var(--feature-bg);
   color: var(--feature-color);
@@ -176,6 +178,7 @@ pre, pre * {
   color: var(--feature-color);
   justify-content: start;
   font-size: 0.8rem;
+  flex-basis: 100%;
 }
 
 .feature-additional-info-container.contrast {
