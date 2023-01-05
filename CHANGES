@@ -1,3 +1,11 @@
+behave-html-pretty-formatter 1.4
+================================
+Format the summary.
+Make single scenario collapsible.
+Add arrow indicator for collapsed embed and scenario.
+Make embeds downloadable.
+Support HTML and markdown mime type in embed.
+
 behave-html-pretty-formatter 1.3
 ================================
 Add additional info in summarry.
@@ -8,7 +16,7 @@ Change background color of scenario.
 
 behave-html-pretty-formatter 1.1
 ================================
-Change readme to LIVE
+Change readme to LIVE.
 
 behave-html-pretty-formatter 1.0
 ================================
