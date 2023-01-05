@@ -18,9 +18,9 @@ function collapsible_summary(classname) {
 function expander(action, summary_block) {
     var elem = Array.from(document.getElementsByClassName("scenario-capsule"));
     elem = elem.concat(Array.from(document.getElementsByClassName("scenario-header")));
-    parent_feature = summary_block.parentElement.parentElement.id
+    var feature_id = summary_block.parentElement.parentElement.id
     for(var i = 0; i < elem.length; i++) {
-        if (parent_feature != elem[i].parentElement.id){
+        if (feature_id != elem[i].parentElement.id){
             continue
         }
         if (action == "expand_all") {
