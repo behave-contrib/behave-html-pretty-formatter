@@ -96,7 +96,7 @@ pre, pre * {
 
 .embed_button.collapse::after,
 .collapse .scenario-name::after {
-  top: -0.25em;
+  top: -0.29em;
   left: -0.5em;
   transform: rotate(-90deg);
   -moz-transform: rotate(-90deg);
