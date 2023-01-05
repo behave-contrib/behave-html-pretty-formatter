@@ -87,6 +87,35 @@ pre {
   margin: 0;
 }
 
+/*ARROWS*/
+.scenario-name::after {
+  position: absolute;
+  top: -0.5em;
+  left: -0.2em;
+  content: "\2304";
+  font-size: 1.8em;
+  transition: all 0.2s linear;
+}
+
+.collapse .scenario-name::after {
+  top: -0.25em;
+  left: -0.5em;
+  transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+}
+
+.scenario-name:hover::after {
+  top: -0.45em;
+}
+
+.collapse .scenario-name:hover::after {
+  top: -0.25em;
+  left: -0.45em;
+}
+
 /*FEATURE CONTENT*/
 .feature-panel {
   margin-bottom: 5px;
@@ -289,11 +318,13 @@ pre {
 }
 
 .scenario-name {
-  width: 70%;
+  cursor: pointer;
   text-align: left;
   font-weight: bold;
   word-break: break-word;
   padding-bottom: 0.5em;
+  padding-left: 1.2em;
+  position: relative;
 }
 
 .scenario-duration {

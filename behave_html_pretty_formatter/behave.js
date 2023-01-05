@@ -7,17 +7,22 @@ function collapsible_toggle(id) {
     elem.style.display = (elem.style.display == "none" ? visible_display : "none");
 };
 
-function collapsible_summary(id) {
-    var elem = document.getElementById(id);
+function collapsible_summary(classname) {
+    var elem = document.getElementsByClassName(classname);
     var visible_display = "block";
-    elem.style.display = (elem.style.display == "none" ? visible_display : "none");
+    for (var i = 0; i < elem.length; i++){
+        elem[i].style.display = (elem[i].style.display == "none" ? visible_display : "none");
+    }
 };
 
-
-function expander(action) {
+function expander(action, summary_block) {
     var elem = Array.from(document.getElementsByClassName("scenario-capsule"));
     elem = elem.concat(Array.from(document.getElementsByClassName("scenario-header")));
+    parent_feature = summary_block.parentElement.parentElement.id
     for(var i = 0; i < elem.length; i++) {
+        if (parent_feature != elem[i].parentElement.id){
+            continue
+        }
         if (action == "expand_all") {
             elem[i].classList.remove("collapse")
         } else if (action == "collapse_all") {
@@ -33,6 +38,20 @@ function expander(action) {
                 }
             }
         }
+    }
+};
+
+
+function expand_this_only(name) {
+    var id = name.id;
+    var capsule = document.getElementById(id + "-c");
+    var header = document.getElementById(id + "-h");
+    if (header.classList.contains("collapse")) {
+        header.classList.remove("collapse");
+        capsule.classList.remove("collapse");
+    } else {
+        header.classList.add("collapse");
+        capsule.classList.add("collapse");
     }
 };
 

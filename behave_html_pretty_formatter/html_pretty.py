@@ -52,7 +52,7 @@ class Feature:
     Simplified behave feature used by PrettyHTMLFormatter
     """
 
-    def __init__(self, feature):
+    def __init__(self, feature, feature_counter):
         self.name = feature.name
         self.description = feature.description
         self.location = feature.location
@@ -61,6 +61,7 @@ class Feature:
         self.high_contrast_button = False
         self.start_time = datetime.now()
         self.finish_time = None
+        self.counter = feature_counter
 
         self.scenarios = []
         self._background = None
@@ -86,12 +87,12 @@ class Feature:
             _steps = self._background.steps
         return _steps
 
-    def add_scenario(self, scenario, pseudo_steps=False):
+    def add_scenario(self, scenario, scenario_counter, pseudo_steps=False):
         """
         Create new scenario in feature based on behave scenario object
         """
         self.scenario_finished = False
-        _scenario = Scenario(scenario, self, pseudo_steps)
+        _scenario = Scenario(scenario, self, scenario_counter, pseudo_steps)
         for embed_data in self.to_embed:
             _scenario.embed(embed_data)
         self.to_embed = []
@@ -186,7 +187,10 @@ class Feature:
                         span("[High contrast toggle]", cls="button-toggle")
 
                     # After the High Contrast make a Summary toggle button.
-                    with a(onclick="collapsible_summary('summary')", href="#"):
+                    with a(
+                        onclick="collapsible_summary('feature-summary-container')",
+                        href="#",
+                    ):
                         # Creating the actual text content which is clickable.
                         span("[Summary]", cls="button-toggle")
 
@@ -200,7 +204,7 @@ class Feature:
                 summary_display = "block"
             with div(
                 cls="feature-summary-container",
-                id="summary",
+                id=f"f{self.counter}",
                 style=f"display: {summary_display}",
             ):
                 # Generating Summary results.
@@ -214,11 +218,11 @@ class Feature:
                         )
                 # Generating clickable buttons for collapsing/expanding.
                 with div(cls="feature-summary-stats"):
-                    with a(onclick="expander('expand_all')", href="#"):
+                    with a(onclick="expander('expand_all', this)", href="#"):
                         div("[Expand All]", cls="feature-summary-row button")
-                    with a(onclick="expander('collapse_all')", href="#"):
+                    with a(onclick="expander('collapse_all', this)", href="#"):
                         div("[Collapse All]", cls="feature-summary-row button")
-                    with a(onclick="expander('expand_all_failed')", href="#"):
+                    with a(onclick="expander('expand_all_failed', this)", href="#"):
                         div("[Expand All Failed]", cls="feature-summary-row button")
 
                 if formatter.additional_info:
@@ -234,7 +238,7 @@ class Feature:
                                 )
 
         # Feature data container.
-        with div(cls="feature-container"):
+        with div(cls="feature-container", id=f"f{self.counter}"):
             for scenario in self.scenarios:
                 scenario.generate_scenario(formatter)
 
@@ -244,13 +248,14 @@ class Scenario:
     Simplified behaves's scenario.
     """
 
-    def __init__(self, scenario, feature, pseudo_steps=False):
+    def __init__(self, scenario, feature, scenario_counter, pseudo_steps=False):
         self._scenario = scenario
         self.feature = feature
         self.name = scenario.name
         self.description = scenario.description
         self.pseudo_step_id = 0
         self.pseudo_steps = []
+        self.counter = scenario_counter
         if pseudo_steps:
             self.pseudo_steps = [
                 Step(when, "scenario", None, None, self) for when in ("Before", "After")
@@ -437,21 +442,29 @@ class Scenario:
         # Check for after_scenario errors.
         self.report_error(self._scenario)
         # Scenario container.
-        with div(cls=f"scenario-header {self.status}"):
-
+        with div(
+            cls=f"scenario-header {self.status}",
+            id=f"f{self.feature.counter}-s{self.counter}-h",
+        ):
             for tag in self.tags:
                 tag.generate_tag()
 
             # Simple container for name + duration.
             with div(cls="scenario-info"):
 
-                with div(cls="scenario-name"):
+                with div(
+                    cls="scenario-name",
+                    id=f"f{self.feature.counter}-s{self.counter}",
+                    onclick="expand_this_only(this)",
+                ):
                     span(f"Scenario: {self.name}")
-
                 with div(cls="scenario-duration"):
                     span(f"Scenario duration: {self.duration:.2f}s")
 
-        with div(cls=f"scenario-capsule {self.status}"):
+        with div(
+            cls=f"scenario-capsule {self.status}",
+            id=f"f{self.feature.counter}-s{self.counter}-c",
+        ):
             steps = self.steps
             if self.pseudo_steps:
                 steps = [self.pseudo_steps[0]] + steps + [self.pseudo_steps[1]]
@@ -827,6 +840,9 @@ class PrettyHTMLFormatter(Formatter):
     description = "Pretty HTML Formatter"
     table_number = 0
 
+    feature_counter = 0
+    scenario_counter = 0
+
     def __init__(self, stream, config):
         super().__init__(stream, config)
 
@@ -843,6 +859,7 @@ class PrettyHTMLFormatter(Formatter):
         self.stream = self.open()
 
         config_path = f"behave.formatter.{self.name}"
+        additional_info_path = "behave.additional-info."
         additional_info_path = "behave.additional-info."
 
         self.pseudo_steps = self._str_to_bool(
@@ -884,7 +901,9 @@ class PrettyHTMLFormatter(Formatter):
         current_feature = self.current_feature
         if current_feature:
             current_feature.finish_time = datetime.now()
-        self.features.append(Feature(feature))
+        self.feature_counter += 1
+        self.scenario_counter = 0
+        self.features.append(Feature(feature, self.feature_counter))
 
     @property
     def current_feature(self):
@@ -925,7 +944,10 @@ class PrettyHTMLFormatter(Formatter):
         """
         Processes new scenario. It is added to the current feature.
         """
-        self.current_feature.add_scenario(scenario, self.pseudo_steps)
+        self.scenario_counter += 1
+        self.current_feature.add_scenario(
+            scenario, self.scenario_counter, self.pseudo_steps
+        )
 
     def step(self, step):
         """
