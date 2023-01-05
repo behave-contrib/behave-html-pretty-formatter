@@ -103,15 +103,6 @@ pre, pre * {
   -o-transform: rotate(-90deg);
 }
 
-.scenario-name:hover::after {
-  top: -0.45em;
-}
-
-.collapse .scenario-name:hover::after {
-  top: -0.25em;
-  left: -0.45em;
-}
-
 /*FEATURE CONTENT*/
 .feature-panel {
   margin-bottom: 5px;
