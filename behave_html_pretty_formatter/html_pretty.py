@@ -145,14 +145,11 @@ class Feature:
             _step.status = status
             self.scenario_begin_timestamp = time.time()
 
-    def get_feature_stats(self, date_format):
+    def get_feature_stats(self):
         """
         Compute scenario stats if trere are multiple scenarios.
         """
         stats = OrderedDict()
-        stats["Started"] = self.start_time.strftime(date_format)
-        duration = (self.finish_time - self.start_time).total_seconds()
-        stats["Duration"] = f"{duration:.2f}s"
 
         # Show Passed Failed always, skip and undefined only when present.
         stats["Passed"] = 0
@@ -183,14 +180,18 @@ class Feature:
                 if self.high_contrast_button:
                     # Making sure there is a functioning button.
                     span(f"Feature: {self.name}")
-                    with a(onclick="toggle_contrast('embed')", href="#"):
+                    with a(
+                        onclick="toggle_contrast('embed')",
+                        href="#/",
+                        cls="flex-left-space",
+                    ):
                         # Creating the actual text content which is clickable.
                         span("[High contrast toggle]", cls="button-toggle")
 
                     # After the High Contrast make a Summary toggle button.
                     with a(
                         onclick="collapsible_summary('feature-summary-container')",
-                        href="#",
+                        href="#/",
                     ):
                         # Creating the actual text content which is clickable.
                         span("[Summary]", cls="button-toggle")
@@ -200,23 +201,35 @@ class Feature:
                     span(f"Feature: {self.name}")
 
             # Generate summary.
-            summary_display = "none"
+            summary_display = "display: none"
             if formatter.show_summary:
-                summary_display = "block"
+                summary_display = ""
             with div(
                 cls="feature-summary-container",
                 id=f"f{self.counter}",
-                style=f"display: {summary_display}",
+                style=summary_display,
             ):
                 # Generating Summary results.
                 with div(cls="feature-summary-stats"):
-                    stats = self.get_feature_stats(formatter.date_format)
+                    stats = self.get_feature_stats()
 
                     for stat, value in stats.items():
                         div(
                             f"{stat}: {value}",
                             cls=f"feature-summary-row {stat.lower()}",
                         )
+
+                with div(cls="feature-summary-stats flex-left-space"):
+                    div(
+                        f"Started: {self.start_time.strftime(formatter.date_format)}",
+                        cls="feature-summary-row",
+                    )
+                    duration = (self.finish_time - self.start_time).total_seconds()
+                    div(f"Duration: {duration:.2f}", cls="feature-summary-row")
+                    div(
+                        f"Finished: {self.finish_time.strftime(formatter.date_format)}",
+                        cls="feature-summary-row",
+                    )
                 # Generating clickable buttons for collapsing/expanding.
                 with div(cls="feature-summary-stats"):
                     with a(onclick="expander('expand_all', this)", href="#"):
@@ -575,11 +588,11 @@ class Step:
 
                 # Make the link only when the link is provided.
                 if self.location_link:
-                    with div(cls="link"):
+                    with div(cls="link flex-left-space"):
                         with a(href=self.location_link):
                             span(self.location)
                 else:
-                    span(self.location)
+                    span(self.location, cls="flex-left-space")
             # Still in non-commentary.
             self.generate_text()
             self.generate_table()

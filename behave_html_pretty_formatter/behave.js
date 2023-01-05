@@ -9,7 +9,7 @@ function collapsible_toggle(id) {
 
 function collapsible_summary(classname) {
     var elem = document.getElementsByClassName(classname);
-    var visible_display = "block";
+    var visible_display = "";
     for (var i = 0; i < elem.length; i++){
         elem[i].style.display = (elem[i].style.display == "none" ? visible_display : "none");
     }
