@@ -57,12 +57,17 @@ You can find information about behave and user-defined formatters in the
 
 - [Default Static Example](#pretty-html-formatter):
 - [High contrast Static Example](#pretty-html-formatter-high-contrast):
-  - Started as High contrast with Dark Mode TODO
   - Colours adjusted.
   - Extra information is added before every decorator about the status of the step.
   - Text is bigger.
 
 You can switch between the different contrasts with the toggle button.
+
+
+## Dark mode
+
+Stylesheet follows the browser dark theme, so it reverts background to dark and
+adjusts colors to darker shade. 
 
 
 ## Summary is hidden by default
@@ -198,6 +203,8 @@ These are examples we use on daily basis, we can define more if required.
 mime_type="video/webm", data="/path/to/video.webm" or data="<base64_encoded_video>"
 mime_type="image/png", data="/path/to/image.png" or data="<base64_encoded_image>"
 mime_type="text/plain", data="<string>"
+mime_type="text/html", data="<string>"  # data string is pasted as raw HTML (not escaped)
+mime_type="text/markdown", data="<string>"  # data string is converted using markdwon pip module
 mime_type="link", data="list(<link>, <label>)"
 ```
 

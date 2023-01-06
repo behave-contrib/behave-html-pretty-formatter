@@ -58,6 +58,8 @@
   }
 }
 
+/* GENERAL CONTENT */
+
 html,
 body {
   font-family: Arial, Helvetica, sans-serif;
@@ -77,7 +79,12 @@ pre, pre * {
   margin: 0;
 }
 
-/*ARROWS*/
+.flex-left-space {
+  margin-left: auto;
+}
+
+/* ARROWS */
+.embed_button::after,
 .scenario-name::after {
   position: absolute;
   top: -0.5em;
@@ -87,8 +94,9 @@ pre, pre * {
   transition: all 0.2s linear;
 }
 
+.embed_button.collapse::after,
 .collapse .scenario-name::after {
-  top: -0.25em;
+  top: -0.29em;
   left: -0.5em;
   transform: rotate(-90deg);
   -moz-transform: rotate(-90deg);
@@ -97,13 +105,10 @@ pre, pre * {
   -o-transform: rotate(-90deg);
 }
 
-.scenario-name:hover::after {
-  top: -0.45em;
-}
-
-.collapse .scenario-name:hover::after {
-  top: -0.25em;
-  left: -0.45em;
+.embed_button,
+.scenario-name {
+  padding-left: 1.2em;
+  position: relative;
 }
 
 /*FEATURE CONTENT*/
@@ -124,12 +129,12 @@ pre, pre * {
 }
 
 .feature-title {
-  display: block;
+  display: flex;
+  flex-wrap: wrap;
   background-color: var(--feature-bg);
   color: var(--feature-color);
   padding: 1rem;
   margin-bottom: inherit;
-
 }
 
 .feature-icon {
@@ -152,6 +157,8 @@ pre, pre * {
 }
 
 .feature-summary-container {
+  display: flex;
+  flex-wrap: wrap;
   padding: 5px;
   background-color: var(--feature-bg);
   color: var(--feature-color);
@@ -171,6 +178,7 @@ pre, pre * {
   color: var(--feature-color);
   justify-content: start;
   font-size: 0.8rem;
+  flex-basis: 100%;
 }
 
 .feature-additional-info-container.contrast {
@@ -180,12 +188,7 @@ pre, pre * {
 }
 
 .feature-summary-stats {
-  display: inline-block;
-  margin-right: 5px;
-}
-
-.feature-summary-row:last-child {
-  margin-right: 0em;
+  margin-right: 1em;
 }
 
 .feature-summary-row {
@@ -290,8 +293,6 @@ pre, pre * {
   cursor: pointer;
   font-weight: bold;
   padding-bottom: 0.5em;
-  padding-left: 1.2em;
-  position: relative;
 }
 
 .scenario-duration {
@@ -399,12 +400,6 @@ pre, pre * {
 .step-duration.contrast {
   color: rgb(248, 248, 248);
 }
-
-/* Step location */
-.step-capsule .link {
-  margin-left: auto;
-}
-
 
 /*EMBED CONTENT*/
 .messages {

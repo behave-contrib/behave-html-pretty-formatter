@@ -1,4 +1,16 @@
-function collapsible_toggle(id) {
+function collapsible_toggle(id, parent) {
+    console.log(parent);
+    while (parent !== undefined  && !parent.classList.contains("embed_button")) {
+        parent = parent.parentElement;
+        console.log(parent);
+    }
+    if (parent !== undefined) {
+        if (!parent.classList.contains("collapse")) {
+            parent.classList.add("collapse");
+        } else {
+            parent.classList.remove("collapse");
+        }
+    }
     var elem = document.getElementById(id);
     var visible_display = "block";
     if (id.indexOf("table") >= 0) {
@@ -9,7 +21,7 @@ function collapsible_toggle(id) {
 
 function collapsible_summary(classname) {
     var elem = document.getElementsByClassName(classname);
-    var visible_display = "block";
+    var visible_display = "";
     for (var i = 0; i < elem.length; i++){
         elem[i].style.display = (elem[i].style.display == "none" ? visible_display : "none");
     }
@@ -18,9 +30,9 @@ function collapsible_summary(classname) {
 function expander(action, summary_block) {
     var elem = Array.from(document.getElementsByClassName("scenario-capsule"));
     elem = elem.concat(Array.from(document.getElementsByClassName("scenario-header")));
-    parent_feature = summary_block.parentElement.parentElement.id
+    var feature_id = summary_block.parentElement.parentElement.id
     for(var i = 0; i < elem.length; i++) {
-        if (parent_feature != elem[i].parentElement.id){
+        if (feature_id != elem[i].parentElement.id){
             continue
         }
         if (action == "expand_all") {

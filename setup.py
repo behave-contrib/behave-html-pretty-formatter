@@ -12,10 +12,20 @@ def read_file(filename):
 
 setuptools.setup(
     name="behave-html-pretty-formatter",
-    version="1.3",
+    version="1.4",
     author="Michal Odehnal",
     author_email="modehnal@redhat.com",
-    description="Pretty HTML Formatter for Behave",
+    description="""
+Pretty HTML Formatter for Behave
+
+Authors:
+Michal Odehnal <modehnal@redhat.com>,
+Filip Pokryvka <fpokryvk@redhat.com>
+
+Github contributors:
+@bittner
+@lu-maca
+""",
     url="https://github.com/behave-contrib/behave-html-pretty-formatter",
     packages=setuptools.find_packages(),
     install_requires=[
