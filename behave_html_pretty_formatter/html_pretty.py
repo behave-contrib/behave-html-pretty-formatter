@@ -654,14 +654,15 @@ class Step:
                     id=f"embed_{embed_data.uid}",
                     style="display: none",
                 ):
-                    args = f"'embed_{embed_data.uid}','{use_caption}'"
-                    onclick = f"download_embed({args})"
-                    a(
-                        "[Download]",
-                        href="#/",
-                        cls="embed_download",
-                        onclick=onclick,
-                    )
+                    if embed_data.is_downloadable:
+                        args = f"'embed_{embed_data.uid}','{use_caption}'"
+                        onclick = f"download_embed({args})"
+                        a(
+                            "[Download]",
+                            href="#/",
+                            cls="embed_download",
+                            onclick=onclick,
+                        )
 
                     # Actual Embed.
                     if "video/webm" in mime_type:
@@ -755,11 +756,14 @@ class Embed:
 
     count = 0
 
-    def __init__(self, mime_type, data, caption=None, fail_only=False):
+    def __init__(
+        self, mime_type, data, caption=None, fail_only=False, is_downloadable=True
+    ):
         self._id = Embed.count
         Embed.count += 1
         self.set_data(mime_type, data, caption)
         self._fail_only = fail_only
+        self.is_downloadable = is_downloadable
 
     def set_data(self, mime_type, data, caption=None):
         """
@@ -1026,12 +1030,14 @@ class PrettyHTMLFormatter(Formatter):
 
         span(the_rest)
 
-    def embed(self, mime_type, data, caption=None, fail_only=False):
+    def embed(
+        self, mime_type, data, caption=None, fail_only=False, is_downloadable=True
+    ):
         """
         Prepares Embed data and append it to the currently executed (pseudo) step.
         returns: Embed
         """
-        embed_data = Embed(mime_type, data, caption, fail_only)
+        embed_data = Embed(mime_type, data, caption, fail_only, is_downloadable)
         # Find correct scenario.
         self.current_feature.embed(embed_data)
         return embed_data
