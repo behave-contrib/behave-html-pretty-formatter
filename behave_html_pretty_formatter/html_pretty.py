@@ -429,10 +429,12 @@ class Scenario:
             self.embed(
                 Embed(
                     "text",
-                    traceback.format_exception(
-                        type(behave_obj.exception),
-                        behave_obj.exception,
-                        behave_obj.exc_traceback,
+                    "".join(
+                        traceback.format_exception(
+                            type(behave_obj.exception),
+                            behave_obj.exception,
+                            behave_obj.exc_traceback,
+                        ),
                     ),
                     "Error Traceback",
                 )
