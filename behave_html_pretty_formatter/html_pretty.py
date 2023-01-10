@@ -654,15 +654,41 @@ class Step:
                     id=f"embed_{embed_data.uid}",
                     style="display: none",
                 ):
-                    if embed_data.is_downloadable:
-                        args = f"'embed_{embed_data.uid}','{use_caption}'"
-                        onclick = f"download_embed({args})"
-                        a(
-                            "[Download]",
-                            href="#/",
-                            cls="embed_download",
-                            onclick=onclick,
-                        )
+                    # Handle rules for download_button per mime type.
+                    def _create_download_button_per_mime_type_rules():
+                        # Create the button.
+                        def _create_download_button():
+                            args = f"'embed_{embed_data.uid}','{use_caption}'"
+                            onclick = f"download_embed({args})"
+                            a(
+                                "[Download]",
+                                href="#/",
+                                cls="embed_download",
+                                onclick=onclick,
+                            )
+
+                        # Disable download for any link, it makes no sense in any case.
+                        if "link" in mime_type:
+                            # Do not create any button.
+                            return
+
+                        # Rule for embed_data.download_button as None - default value.
+                        if embed_data.download_button is None:
+                            # Allow download of text only if there is 20 and more lines.
+                            # With lower number of lines the user can copy the text with ease.
+                            if "text" in mime_type and data.count("\n") < 20:
+                                # Do not create any button.
+                                return
+                            # In all other cases create the button.
+                            _create_download_button()
+
+                        # Rule for embed_data.download_button as True.
+                        if embed_data.download_button:
+                            # Create download for all cases.
+                            _create_download_button()
+
+                    # Create download button.
+                    _create_download_button_per_mime_type_rules()
 
                     # Actual Embed.
                     if "video/webm" in mime_type:
@@ -757,13 +783,13 @@ class Embed:
     count = 0
 
     def __init__(
-        self, mime_type, data, caption=None, fail_only=False, is_downloadable=True
+        self, mime_type, data, caption=None, fail_only=False, download_button=None
     ):
         self._id = Embed.count
         Embed.count += 1
         self.set_data(mime_type, data, caption)
         self._fail_only = fail_only
-        self.is_downloadable = is_downloadable
+        self.download_button = download_button
 
     def set_data(self, mime_type, data, caption=None):
         """
@@ -1031,13 +1057,13 @@ class PrettyHTMLFormatter(Formatter):
         span(the_rest)
 
     def embed(
-        self, mime_type, data, caption=None, fail_only=False, is_downloadable=True
+        self, mime_type, data, caption=None, fail_only=False, download_button=None
     ):
         """
         Prepares Embed data and append it to the currently executed (pseudo) step.
         returns: Embed
         """
-        embed_data = Embed(mime_type, data, caption, fail_only, is_downloadable)
+        embed_data = Embed(mime_type, data, caption, fail_only, download_button)
         # Find correct scenario.
         self.current_feature.embed(embed_data)
         return embed_data
