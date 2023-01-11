@@ -644,7 +644,7 @@ class Step:
             # Create download for all cases.
             _create_download_button()
 
-    def generate_embed(self, embed_data):
+    def generate_embed(self, embed_data):  # pylint: disable=too-many-branches
         """
         Converts embed data into HTML.
 
