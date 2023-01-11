@@ -21,6 +21,7 @@ from behave.runner_util import make_undefined_step_snippets
 from dominate.tags import (
     a,
     b,
+    br,
     div,
     i,
     img,
@@ -667,16 +668,21 @@ class Step:
                             cls="embed_download",
                             onclick=onclick,
                         )
+                        # Download margin, the button was too close to the content.
+                        br()
 
                     # Rule for embed_data.download_button as None - default value.
                     if embed_data.download_button is None:
-                        # Allow download of text only if there is 20 and more lines.
-                        # With lower number of lines the user can copy the text with ease.
-                        if "text" in mime_type and data.count("\n") >= 20:
-                            # For mime type text create button only for 20 and more lines.
-                            _create_download_button()
-                        elif "link" not in mime_type:
-                            # Create button if the mime type is not link.
+                        # Do not create button if there is mime type text with less then 20 lines.
+                        if "text" in mime_type and data.count("\n") < 20:
+                            pass
+
+                        # Do not create button if the mime type is link.
+                        elif "link" in mime_type:
+                            pass
+
+                        # In all other cases the button is valid.
+                        else:
                             _create_download_button()
 
                     # Rule for embed_data.download_button as True.
