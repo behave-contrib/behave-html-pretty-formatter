@@ -656,41 +656,33 @@ class Step:
                     id=f"embed_{embed_data.uid}",
                     style="display: none",
                 ):
-                    # Handle rules for download_button per mime type.
-                    def _create_download_button_per_mime_type_rules():
-                        # Create the button.
-                        def _create_download_button():
-                            args = f"'embed_{embed_data.uid}','{use_caption}'"
-                            onclick = f"download_embed({args})"
-                            a(
-                                "[Download]",
-                                href="#/",
-                                cls="embed_download",
-                                onclick=onclick,
-                            )
 
-                        # Disable download for any link, it makes no sense in any case.
-                        if "link" in mime_type:
-                            # Do not create any button.
-                            return
+                    # Create the button.
+                    def _create_download_button():
+                        args = f"'embed_{embed_data.uid}','{use_caption}'"
+                        onclick = f"download_embed({args})"
+                        a(
+                            "[Download]",
+                            href="#/",
+                            cls="embed_download",
+                            onclick=onclick,
+                        )
 
-                        # Rule for embed_data.download_button as None - default value.
-                        if embed_data.download_button is None:
-                            # Allow download of text only if there is 20 and more lines.
-                            # With lower number of lines the user can copy the text with ease.
-                            if "text" in mime_type and data.count("\n") < 20:
-                                # Do not create any button.
-                                return
-                            # In all other cases create the button.
+                    # Rule for embed_data.download_button as None - default value.
+                    if embed_data.download_button is None:
+                        # Allow download of text only if there is 20 and more lines.
+                        # With lower number of lines the user can copy the text with ease.
+                        if "text" in mime_type and data.count("\n") >= 20:
+                            # For mime type text create button only for 20 and more lines.
+                            _create_download_button()
+                        elif "link" not in mime_type:
+                            # Create button if the mime type is not link.
                             _create_download_button()
 
-                        # Rule for embed_data.download_button as True.
-                        if embed_data.download_button:
-                            # Create download for all cases.
-                            _create_download_button()
-
-                    # Create download button.
-                    _create_download_button_per_mime_type_rules()
+                    # Rule for embed_data.download_button as True.
+                    elif embed_data.download_button:
+                        # Create download for all cases.
+                        _create_download_button()
 
                     # Actual Embed.
                     if "video/webm" in mime_type:
