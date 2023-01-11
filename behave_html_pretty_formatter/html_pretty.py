@@ -607,6 +607,43 @@ class Step:
                     continue
                 self.generate_embed(embed_data)
 
+    def generate_download_button(self, embed_data, data, use_caption):
+        """
+        Creates Download button in HTML.
+
+        This should not be part of Embed class, as Embed objects are
+        returned to user for later modification of data, we want to
+        prevent accidental call of this.
+        """
+
+        def _create_download_button():
+            args = f"'embed_{embed_data.uid}','{use_caption}'"
+            onclick = f"download_embed({args})"
+            a(
+                "[Download]",
+                href="#/",
+                cls="embed_download margin-bottom",
+                onclick=onclick,
+            )
+
+        # Rule for embed_data.download_button as None - default value.
+        if embed_data.download_button is None:
+            # Do not create button if there is mime type text with less then 20 lines.
+            if "text" in embed_data.mime_type and data.count("\n") < 20:
+                return
+
+            # Do not create button if the mime type is link.
+            if "link" in embed_data.mime_type:
+                return
+
+            # In all other cases the button is valid.
+            _create_download_button()
+
+        # Rule for embed_data.download_button as True.
+        elif embed_data.download_button:
+            # Create download for all cases.
+            _create_download_button()
+
     def generate_embed(self, embed_data):
         """
         Converts embed data into HTML.
@@ -656,35 +693,7 @@ class Step:
                     style="display: none",
                 ):
 
-                    # Create the download button helper function.
-                    def _create_download_button():
-                        args = f"'embed_{embed_data.uid}','{use_caption}'"
-                        onclick = f"download_embed({args})"
-                        a(
-                            "[Download]",
-                            href="#/",
-                            cls="embed_download margin-bottom",
-                            onclick=onclick,
-                        )
-
-                    # Rule for embed_data.download_button as None - default value.
-                    if embed_data.download_button is None:
-                        # Do not create button if there is mime type text with less then 20 lines.
-                        if "text" in mime_type and data.count("\n") < 20:
-                            pass
-
-                        # Do not create button if the mime type is link.
-                        elif "link" in mime_type:
-                            pass
-
-                        # In all other cases the button is valid.
-                        else:
-                            _create_download_button()
-
-                    # Rule for embed_data.download_button as True.
-                    elif embed_data.download_button:
-                        # Create download for all cases.
-                        _create_download_button()
+                    self.generate_download_button(embed_data, data, use_caption)
 
                     # Actual Embed.
                     if "video/webm" in mime_type:
