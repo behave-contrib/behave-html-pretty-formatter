@@ -429,10 +429,12 @@ class Scenario:
             self.embed(
                 Embed(
                     "text",
-                    traceback.format_exception(
-                        type(behave_obj.exception),
-                        behave_obj.exception,
-                        behave_obj.exc_traceback,
+                    "".join(
+                        traceback.format_exception(
+                            type(behave_obj.exception),
+                            behave_obj.exception,
+                            behave_obj.exc_traceback,
+                        ),
                     ),
                     "Error Traceback",
                 )
@@ -605,7 +607,44 @@ class Step:
                     continue
                 self.generate_embed(embed_data)
 
-    def generate_embed(self, embed_data):
+    def generate_download_button(self, embed_data, data, use_caption):
+        """
+        Creates Download button in HTML.
+
+        This should not be part of Embed class, as Embed objects are
+        returned to user for later modification of data, we want to
+        prevent accidental call of this.
+        """
+
+        def _create_download_button():
+            args = f"'embed_{embed_data.uid}','{use_caption}'"
+            onclick = f"download_embed({args})"
+            a(
+                "[Download]",
+                href="#/",
+                cls="embed_download margin-bottom",
+                onclick=onclick,
+            )
+
+        # Rule for embed_data.download_button as None - default value.
+        if embed_data.download_button is None:
+            # Do not create button if there is mime type text with less then 20 lines.
+            if "text" in embed_data.mime_type and data.count("\n") < 20:
+                return
+
+            # Do not create button if the mime type is link.
+            if "link" in embed_data.mime_type:
+                return
+
+            # In all other cases the button is valid.
+            _create_download_button()
+
+        # Rule for embed_data.download_button as True.
+        elif embed_data.download_button:
+            # Create download for all cases.
+            _create_download_button()
+
+    def generate_embed(self, embed_data):  # pylint: disable=too-many-branches
         """
         Converts embed data into HTML.
 
@@ -631,8 +670,12 @@ class Step:
         # Check if the content of the data is a valid file - if so encode it to base64.
         if os.path.isfile(str(data)):
             with open(data, "rb") as _file:
-                data_base64 = base64.b64encode(_file.read())
-                data = data_base64.decode("utf-8").replace("\n", "")
+                data = _file.read()
+                if "text" not in mime_type:
+                    data_base64 = base64.b64encode(data)
+                    data = data_base64.decode("utf-8").replace("\n", "")
+                else:
+                    data = data.decode("utf-8")
 
         with div(cls="messages"):
             with div(cls="embed-capsule"):
@@ -647,21 +690,14 @@ class Step:
                             onclick=f"collapsible_toggle('{embed_id}',this)",
                         ):
                             span(use_caption)
-                        # Download button
 
                 with pre(
                     cls="embed_content",
                     id=f"embed_{embed_data.uid}",
                     style="display: none",
                 ):
-                    args = f"'embed_{embed_data.uid}','{use_caption}'"
-                    onclick = f"download_embed({args})"
-                    a(
-                        "[Download]",
-                        href="#/",
-                        cls="embed_download",
-                        onclick=onclick,
-                    )
+
+                    self.generate_download_button(embed_data, data, use_caption)
 
                     # Actual Embed.
                     if "video/webm" in mime_type:
@@ -755,11 +791,14 @@ class Embed:
 
     count = 0
 
-    def __init__(self, mime_type, data, caption=None, fail_only=False):
+    def __init__(
+        self, mime_type, data, caption=None, fail_only=False, download_button=None
+    ):
         self._id = Embed.count
         Embed.count += 1
         self.set_data(mime_type, data, caption)
         self._fail_only = fail_only
+        self.download_button = download_button
 
     def set_data(self, mime_type, data, caption=None):
         """
@@ -1026,12 +1065,14 @@ class PrettyHTMLFormatter(Formatter):
 
         span(the_rest)
 
-    def embed(self, mime_type, data, caption=None, fail_only=False):
+    def embed(
+        self, mime_type, data, caption=None, fail_only=False, download_button=None
+    ):
         """
         Prepares Embed data and append it to the currently executed (pseudo) step.
         returns: Embed
         """
-        embed_data = Embed(mime_type, data, caption, fail_only)
+        embed_data = Embed(mime_type, data, caption, fail_only, download_button)
         # Find correct scenario.
         self.current_feature.embed(embed_data)
         return embed_data

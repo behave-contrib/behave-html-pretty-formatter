@@ -122,6 +122,18 @@ function detect_contrast() {
     }
 }
 
+var element = document.createElement('div');
+var entity = /&(?:#x[a-f0-9]+|#[0-9]+|[a-z0-9]+);?/ig;
+
+function decodeHTMLEntities(str) {
+    str = str.replace(entity, function(m) {
+        element.innerHTML = m;
+        return element.textContent;
+    });
+    element.textContent = '';
+    return str;
+}
+
 function download_embed(id, filename) {
     var elem = document.getElementById(id);
     var child = elem.children[1];
@@ -129,7 +141,7 @@ function download_embed(id, filename) {
     var tag = child.tagName.toLowerCase();
     if (tag === "span") {
         filename += ".txt";
-        value = "data:text/plain," + encodeURIComponent(child.innerHTML);
+        value = "data:text/plain," + encodeURIComponent(decodeHTMLEntities(child.innerHTML));
     } else if (tag == "video") {
         filename += ".webm";
         value = child.children[0].src;
@@ -138,7 +150,7 @@ function download_embed(id, filename) {
         value = child.src;
     } else {
         filename += ".html";
-        value = elem.innerHTML;
+        value = decodeHTMLEntities(child.innerHTML);
     }
     var link = document.createElement("a");
     link.style.display = "none";

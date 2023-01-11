@@ -204,7 +204,7 @@ mime_type="video/webm", data="/path/to/video.webm" or data="<base64_encoded_vide
 mime_type="image/png", data="/path/to/image.png" or data="<base64_encoded_image>"
 mime_type="text/plain", data="<string>"
 mime_type="text/html", data="<string>"  # data string is pasted as raw HTML (not escaped)
-mime_type="text/markdown", data="<string>"  # data string is converted using markdwon pip module
+mime_type="text/markdown", data="<string>"  # data string is converted using markdown pip module
 mime_type="link", data="list(<link>, <label>)"
 ```
 
