@@ -21,7 +21,6 @@ from behave.runner_util import make_undefined_step_snippets
 from dominate.tags import (
     a,
     b,
-    br,
     div,
     i,
     img,
@@ -650,7 +649,6 @@ class Step:
                             onclick=f"collapsible_toggle('{embed_id}',this)",
                         ):
                             span(use_caption)
-                        # Download button
 
                 with pre(
                     cls="embed_content",
@@ -658,18 +656,16 @@ class Step:
                     style="display: none",
                 ):
 
-                    # Create the button.
+                    # Create the download button helper function.
                     def _create_download_button():
                         args = f"'embed_{embed_data.uid}','{use_caption}'"
                         onclick = f"download_embed({args})"
                         a(
                             "[Download]",
                             href="#/",
-                            cls="embed_download",
+                            cls="embed_download margin-bottom",
                             onclick=onclick,
                         )
-                        # Download margin, the button was too close to the content.
-                        br()
 
                     # Rule for embed_data.download_button as None - default value.
                     if embed_data.download_button is None:

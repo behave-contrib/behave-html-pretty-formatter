@@ -378,6 +378,10 @@ pre, pre * {
   margin-top: 15px;
 }
 
+.margin-bottom {
+  margin-bottom: 15px;
+}
+
 .step-status {
   display: none;
   padding: 0 1rem 0 0;
