@@ -512,12 +512,12 @@ a {
   text-decoration: none;
 }
 
-.link a span:hover {
+a:hover {
   text-decoration: underline;
   text-decoration-color: var(--strong-color);
 }
 
-.link.contrast a span:hover {
+.contrast a:hover {
   color: grey;
   text-decoration: underline;
   text-decoration-color: grey;

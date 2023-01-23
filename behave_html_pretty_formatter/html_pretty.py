@@ -600,9 +600,9 @@ class Step:
 
                 # Make the link only when the link is provided.
                 if self.location_link:
-                    with div(cls="link flex-left-space"):
-                        with a(href=self.location_link):
-                            span(self.location)
+                    with div(cls="flex-left-space"):
+                        a(self.location, href=self.location_link)
+
                 else:
                     span(self.location, cls="flex-left-space")
             # Still in non-commentary.
@@ -733,14 +733,13 @@ class Step:
 
                 # Embed Caption.
                 with div(cls="embed_button collapse"):
-                    with div(cls="link"):
-                        # Label to be shown.
-                        embed_id = f"embed_{embed_data.uid}"
-                        with a(
-                            href="#/",
-                            onclick=f"collapsible_toggle('{embed_id}',this)",
-                        ):
-                            span(use_caption)
+                    # Label to be shown.
+                    embed_id = f"embed_{embed_data.uid}"
+                    a(
+                        use_caption,
+                        href="#/",
+                        onclick=f"collapsible_toggle('{embed_id}',this)",
+                    )
 
                 # Embed content.
                 with pre(
@@ -902,9 +901,7 @@ class Tag:
             # side for links to bugzilla. Tags come with structure
             # [<tag>, None] or [<tag>, <bugzilla_link/git_link>].
             if self.has_link():
-                with div(cls="link"):
-                    with a(href=self._link):
-                        span("@" + self.behave_tag)
+                a("@" + self.behave_tag, href=self._link)
             else:
                 span("@" + self.behave_tag)
 
