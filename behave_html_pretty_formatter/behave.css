@@ -17,7 +17,7 @@
   --summary-skipped-border: #76adff;
   --passed-bg: #dff2bf;
   --passed-step-bg: #c6dba3;
-  --passed-border:#b4cc8c;
+  --passed-border: #b4cc8c;
   --failed-bg: #f5c9cd;
   --failed-step-bg: #ea868f;
   --failed-border: #dd7a82;
@@ -75,7 +75,8 @@ body {
   font-size: 0.85rem;
 }
 
-pre, pre * {
+pre,
+pre * {
   margin: 0;
 }
 
@@ -156,6 +157,25 @@ pre, pre * {
   color: #fff;
 }
 
+.feature-summary-commentary {
+  border-left: 0.4rem solid var(--feature-color);
+  background-color: var(--commentary-bg);
+  color: var(--strong-color);
+  word-wrap: break-word;
+  max-width: 40%;
+  margin-right: 1rem;
+  margin-top: 0.2rem;
+  margin-left: 0.2rem;
+  padding: 0.5rem;
+  white-space: pre-wrap
+}
+
+.feature-summary-commentary.contrast {
+  background-color: #000;
+  color: rgb(248, 248, 248);
+  font-size: 1rem;
+}
+
 .feature-summary-container {
   display: flex;
   flex-wrap: wrap;
@@ -168,7 +188,7 @@ pre, pre * {
 
 .feature-summary-container.contrast {
   background-color: #000;
-  color:rgb(248, 248, 248);
+  color: rgb(248, 248, 248);
   font-size: 1rem;
 }
 
@@ -181,14 +201,15 @@ pre, pre * {
   flex-basis: 100%;
 }
 
-.feature-additional-info-container.contrast {
+.contrast .feature-additional-info-container {
   background-color: #000;
-  color:rgb(248, 248, 248);
+  color: rgb(248, 248, 248);
   font-size: 1rem;
 }
 
 .feature-summary-stats {
   margin-right: 1em;
+  margin-top: 0.2em;
 }
 
 .feature-summary-row {
@@ -248,7 +269,7 @@ pre, pre * {
 .scenario-header {
   padding: 1rem;
   padding-bottom: 0;
-  margin-top:0;
+  margin-top: 0;
   margin-bottom: 0;
   color: var(--strong-color);
 }
@@ -353,12 +374,6 @@ pre, pre * {
 .step-capsule.skipped {
   background-color: var(--skipped-step-bg);
   border: 1px solid var(--skipped-border);
-}
-
-.step-capsule.commentary {
-  background-color: #b9b9b9;
-  margin-left: 1rem;
-  margin-right: 1rem;
 }
 
 .step-capsule.commentary {
@@ -509,8 +524,7 @@ a {
 }
 
 .scenario-header.collapse .scenario-tags,
-.scenario-capsule.collapse
-{
+.scenario-capsule.collapse {
   display: none;
 }
 
