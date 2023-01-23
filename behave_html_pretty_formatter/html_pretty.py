@@ -180,21 +180,22 @@ class Feature:
                 if self.high_contrast_button:
                     # Making sure there is a functioning button.
                     span(f"Feature: {self.name}")
-                    with a(
-                        onclick="toggle_contrast('embed')",
-                        href="#/",
-                        cls="flex-left-space",
-                    ):
-                        # Creating the actual text content which is clickable.
-                        span("[High contrast toggle]", cls="button-toggle")
+                    with div(cls="flex-left-space"):
+                        # Creating High Contrast oggle which is clickable.
+                        a(
+                            "[High contrast toggle]",
+                            cls="button-toggle",
+                            onclick="toggle_contrast('embed')",
+                            href="#/",
+                        )
 
-                    # After the High Contrast make a Summary toggle button.
-                    with a(
-                        onclick="collapsible_summary('feature-summary-container')",
-                        href="#/",
-                    ):
-                        # Creating the actual text content which is clickable.
-                        span("[Summary]", cls="button-toggle")
+                        # Creating Summary which is clickable.
+                        a(
+                            "[Summary]",
+                            cls="button-toggle",
+                            onclick="collapsible_summary('feature-summary-container')",
+                            href="#/",
+                        )
 
                 # On following features do not generate the buttons.
                 else:
@@ -229,6 +230,7 @@ class Feature:
                             cls=f"feature-summary-row {stat.lower()}",
                         )
 
+                # Generating Started/Duration/Finished message.
                 with div(cls="feature-summary-stats flex-left-space"):
                     div(
                         f"Started: {self.start_time.strftime(formatter.date_format)}",
@@ -240,6 +242,7 @@ class Feature:
                         f"Finished: {self.finish_time.strftime(formatter.date_format)}",
                         cls="feature-summary-row",
                     )
+
                 # Generating clickable buttons for collapsing/expanding.
                 with div(cls="feature-summary-stats"):
                     with a(onclick="expander('expand_all', this)", href="#"):
@@ -478,14 +481,14 @@ class Scenario:
             # Simple container for name + duration.
             with div(cls="scenario-info"):
 
-                with div(
+                div(
+                    f"Scenario: {self.name}",
                     cls="scenario-name",
                     id=f"f{self.feature.counter}-s{self.counter}",
                     onclick="expand_this_only(this)",
-                ):
-                    span(f"Scenario: {self.name}")
-                with div(cls="scenario-duration"):
-                    span(f"Scenario duration: {self.duration:.2f}s")
+                )
+
+                div(f"Scenario duration: {self.duration:.2f}s", cls="scenario-duration")
 
         with div(
             cls=f"scenario-capsule {self.status}",
@@ -568,43 +571,39 @@ class Step:
             margin_top_cls = "margin-top"
 
         if self.commentary_override:
-            with div(cls=f"step-capsule commentary {margin_top_cls}"):
-                pre(f"{self.text}")
+            div(f"{self.text}", cls=f"step-capsule commentary {margin_top_cls}")
+
         else:
             with div(cls=f"step-capsule {self.status} {margin_top_cls}"):
-                with div(cls="step-status"):
+                # Behave defined status strings are:
+                # "passed" "failed" "undefined" "skipped".
+                # Modify these values for high contrast usage.
+                # Step status for high contrast - "PASS" "FAIL" "SKIP".
+                high_contrast_status = {
+                    "passed": "PASS",
+                    "failed": "FAIL",
+                    "undefined": "SKIP",
+                    "skipped": "SKIP",
+                    "untested": "SKIP",
+                }
 
-                    # Behave defined status strings are:
-                    # "passed" "failed" "undefined" "skipped".
-                    # Modify these values for high contrast usage.
-                    high_contrast_status = {
-                        "passed": "PASS",
-                        "failed": "FAIL",
-                        "undefined": "SKIP",
-                        "skipped": "SKIP",
-                        "untested": "SKIP",
-                    }
-                    # Step status for high contrast - "PASS" "FAIL" "SKIP".
-                    span(high_contrast_status[self.status])
+                div(high_contrast_status[self.status], cls="step-status")
 
-                with div(cls="step-decorator"):
-                    # Step decorator.
-                    with b():
-                        i(self.keyword + " ")
-                    formatter.make_bold_text(self.name)
+                # Step decorator.
+                div(b(i(self.keyword + " ")), cls="step-decorator")
+                formatter.make_bold_text(self.name)
 
-                with div(cls="step-duration"):
-                    short_duration = f"{self.duration:.2f}s"
-                    # Step duration.
-                    span(f"({short_duration})")
+                # Step duration.
+                short_duration = f"{self.duration:.2f}s"
+                div(f"({short_duration})", cls="step-duration")
 
                 # Make the link only when the link is provided.
                 if self.location_link:
-                    with div(cls="flex-left-space"):
-                        a(self.location, href=self.location_link)
+                    a(self.location, cls="flex-left-space", href=self.location_link)
 
                 else:
                     span(self.location, cls="flex-left-space")
+
             # Still in non-commentary.
             self.generate_text()
             self.generate_table()
