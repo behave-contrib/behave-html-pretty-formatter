@@ -55,7 +55,7 @@ class Feature:
 
     def __init__(self, feature, feature_counter):
         self.name = feature.name
-        self.description = feature.description
+        self.description = "\n".join(feature.description)
         self.location = feature.location
         self.status = Status.skipped.name
         self.icon = None
@@ -209,8 +209,18 @@ class Feature:
                 id=f"f{self.counter}",
                 style=summary_display,
             ):
+                # Generating feature commentary.
+                flex_left_space = "flex-left-space" if self.description else ""
+
+                # with div(cls=""):
+                if self.description:
+                    pre(
+                        self.description,
+                        cls="feature-summary-commentary",
+                    )
+
                 # Generating Summary results.
-                with div(cls="feature-summary-stats"):
+                with div(cls=f"feature-summary-stats {flex_left_space}"):
                     stats = self.get_feature_stats()
 
                     for stat, value in stats.items():
