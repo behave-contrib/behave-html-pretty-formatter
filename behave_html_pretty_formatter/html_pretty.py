@@ -654,7 +654,47 @@ class Step:
             # Create download for all cases.
             _create_download_button()
 
-    def generate_embed(self, embed_data):  # pylint: disable=too-many-branches
+    def generate_embed_content(self, mime_type, data):
+        """
+        Generate content of the embed based on the mime_type.
+
+        :param mime_type: Mime type of the data to embed.
+        :type mime_type: str
+
+        :param data: Data to be embedded.
+        :type data: Unspecified.
+        """
+
+        # Actual Embed.
+        if "video/webm" in mime_type:
+            with video(
+                width="1024",
+                controls="",
+            ):
+                source(src=f"data:{mime_type};base64,{data}", type=mime_type)
+
+        if "image/png" in mime_type:
+            img(src=f"data:{mime_type};base64,{data}")
+
+        if "text" in mime_type:
+            if "html" in mime_type:
+                data_span = span()
+                data_span.add_raw_string(data)
+            elif "markdown" in mime_type:
+                data_md = markdown.markdown(data)
+                data_span = span()
+                data_span.add_raw_string(data_md)
+            else:
+                span(data)
+
+        if "link" in mime_type:
+            # expected format: set( [link, label], ... )
+            with div():
+                for single_link in data:
+                    with a(href=single_link[0]):
+                        span(single_link[1])
+
+    def generate_embed(self, embed_data):
         """
         Converts embed data into HTML.
 
@@ -662,6 +702,7 @@ class Step:
         returned to user for later modification of data, we want to
         prevent accidental call of this.
         """
+
         caption = embed_data.caption
         mime_type = embed_data.mime_type
         data = embed_data.data
@@ -701,6 +742,7 @@ class Step:
                         ):
                             span(use_caption)
 
+                # Embed content.
                 with pre(
                     cls="embed_content",
                     id=f"embed_{embed_data.uid}",
@@ -708,37 +750,7 @@ class Step:
                 ):
 
                     self.generate_download_button(embed_data, data, use_caption)
-
-                    # Actual Embed.
-                    if "video/webm" in mime_type:
-                        with video(
-                            width="1024",
-                            controls="",
-                        ):
-                            source(
-                                src=f"data:{mime_type};base64,{data}", type=mime_type
-                            )
-
-                    if "image/png" in mime_type:
-                        img(src=f"data:{mime_type};base64,{data}")
-
-                    if "text" in mime_type:
-                        if "html" in mime_type:
-                            data_span = span()
-                            data_span.add_raw_string(data)
-                        elif "markdown" in mime_type:
-                            data_md = markdown.markdown(data)
-                            data_span = span()
-                            data_span.add_raw_string(data_md)
-                        else:
-                            span(data)
-
-                    if "link" in mime_type:
-                        # expected format: set( [link, label], ... )
-                        with div():
-                            for single_link in data:
-                                with a(href=single_link[0]):
-                                    span(single_link[1])
+                    self.generate_embed_content(mime_type, data)
 
     def generate_table(self):
         """
