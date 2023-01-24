@@ -535,7 +535,7 @@ a {
 
 /* SMALL SCREEN - SHOULD BE LAST TO OVERIDE PREVIOUS*/
 
-@media only screen and (max-width: 720px) {
+@media only screen and (max-width: 750px) {
   .feature-panel {
     flex-direction: column;
   }
@@ -544,11 +544,21 @@ a {
     margin-left: 0;
     margin-top: 0.25rem;
     font-size: 1rem;
+    display: block;
   }
 
   .feature-additional-info-container {
     margin-left: 0;
     margin-top: 0.25rem;
     font-size: 1rem;
+  }
+
+  .flex-left-space {
+    margin-left: unset;
+  }
+
+  .feature-summary-commentary {
+    max-width: 100%;
+    margin-right: 0;
   }
 }
