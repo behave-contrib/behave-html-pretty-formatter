@@ -553,10 +553,6 @@ a {
     font-size: 1rem;
   }
 
-  .flex-left-space {
-    margin-left: unset;
-  }
-
   .feature-summary-commentary {
     max-width: 100%;
     margin-right: 0;
