@@ -557,4 +557,9 @@ a {
     max-width: 100%;
     margin-right: 0;
   }
+
+  .feature-summary-stats {
+    margin-left: 0.2rem;
+  }
+
 }
