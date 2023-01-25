@@ -1,32 +1,26 @@
 {
-    "python.linting.pylintEnabled": false,
-    "python.linting.flake8Enabled": true,
-    "python.linting.enabled": true,
-    /* Disable flake8 errors. */
-    /* This no longer seems to be supported.*/
-    /*"python.linting.flake8Args": [
-        "--max-line-length=120",
-        "--ignore=E203,W503,F401,F403",
-    ],
-    /*Currently supported.*/
-    "flake8.args": [
-        "--max-line-length=120",
-        "--ignore=E203,W503,F401,F403",
-    ],
-    "editor.rulers": [
-        88,
-        120
-    ],
-    "workbench.colorCustomizations": {
-        "editorRuler.foreground": "#000000"
-    },
-    "autoDocstring.docstringFormat": "sphinx",
-    "autoDocstring.startOnNewLine": true,
-    /* Disable specific pylance errors that are covered by linters. */
-    "python.analysis.diagnosticSeverityOverrides": {
-        "reportUnusedImport": "warning",
-        "reportMissingImports": "none",
-        "reportGeneralTypeIssues": "information",
-        "reportWildcardImportFromLibrary": "none",
-    },
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.enabled": true,
+  /* Disable flake8 errors. */
+  "flake8.args": [
+    "--max-line-length=120",
+    "--ignore=E203,W503,F401,F403",
+  ],
+  "editor.rulers": [
+    88,
+    120
+  ],
+  "workbench.colorCustomizations": {
+    "editorRuler.foreground": "#000000"
+  },
+  "autoDocstring.docstringFormat": "sphinx",
+  "autoDocstring.startOnNewLine": true,
+  /* Disable specific pylance errors that are covered by linters. */
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportUnusedImport": "warning",
+    "reportMissingImports": "none",
+    "reportGeneralTypeIssues": "information",
+    "reportWildcardImportFromLibrary": "none",
+  },
 }
