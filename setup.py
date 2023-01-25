@@ -12,7 +12,7 @@ def read_file(filename):
 
 setuptools.setup(
     name="behave-html-pretty-formatter",
-    version="1.4",
+    version="1.5",
     author="Michal Odehnal",
     author_email="modehnal@redhat.com",
     description="""
