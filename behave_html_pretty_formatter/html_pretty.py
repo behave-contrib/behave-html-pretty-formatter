@@ -480,7 +480,6 @@ class Scenario:
 
             # Simple container for name + duration.
             with div(cls="scenario-info"):
-
                 div(
                     f"Scenario: {self.name}",
                     cls="scenario-name",
@@ -728,7 +727,6 @@ class Step:
 
         with div(cls="messages"):
             with div(cls="embed-capsule"):
-
                 # Embed Caption.
                 with div(cls="embed_button collapse"):
                     # Label to be shown.
@@ -745,7 +743,6 @@ class Step:
                     id=f"embed_{embed_data.uid}",
                     style="display: none",
                 ):
-
                     self.generate_download_button(embed_data, data, use_caption)
                     self.generate_embed_content(mime_type, data)
 
@@ -760,7 +757,6 @@ class Step:
 
         # Generate Table.
         with table(cls="table"):
-
             # Make a heading.
             with thead(
                 onclick="collapsible_toggle("
