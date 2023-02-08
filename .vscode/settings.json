@@ -23,4 +23,5 @@
     "reportGeneralTypeIssues": "information",
     "reportWildcardImportFromLibrary": "none",
   },
+  "editor.formatOnSave": true,
 }
