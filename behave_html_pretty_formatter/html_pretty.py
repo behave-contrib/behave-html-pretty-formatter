@@ -688,10 +688,9 @@ class Step:
 
         if "link" in mime_type:
             # expected format: set( [link, label], ... )
-            with div():
-                for single_link in data:
-                    with a(href=single_link[0]):
-                        span(single_link[1])
+            for single_link in data:
+                with div():
+                    a(single_link[1], href=single_link[0])
 
     def generate_embed(self, embed_data):
         """
