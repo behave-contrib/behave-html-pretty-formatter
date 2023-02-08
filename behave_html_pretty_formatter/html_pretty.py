@@ -787,12 +787,12 @@ class Step:
             return
         with table(cls="table"):
             # Do not make the table header.
-            with thead(
-                onclick="collapsible_toggle("
-                f"'table_{PrettyHTMLFormatter.table_number}')"
-            ):
-                line = tr()
-                line += th("Text")
+            # with thead(
+            #     onclick="collapsible_toggle("
+            #     f"'table_{PrettyHTMLFormatter.table_number}')"
+            # ):
+            #     line = tr()
+            #     line += th("Text")
             # Make the body.
             with tbody(id=f"table_{PrettyHTMLFormatter.table_number}"):
                 # Make rows.
