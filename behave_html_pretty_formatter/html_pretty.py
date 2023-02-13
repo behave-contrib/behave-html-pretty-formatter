@@ -728,13 +728,11 @@ class Step:
         with div(cls="messages"):
             with div(cls="embed-capsule"):
                 # Embed Caption.
-                with div(cls="embed_button collapse"):
-                    # Label to be shown.
-                    embed_id = f"embed_{embed_data.uid}"
-                    span(
-                        use_caption,
-                        onclick=f"collapsible_toggle('{embed_id}',this)",
-                    )
+                div(
+                    use_caption,
+                    cls="embed_button collapse",
+                    onclick=f"collapsible_toggle('embed_{embed_data.uid}',this)",
+                )
 
                 # Embed content.
                 with pre(
