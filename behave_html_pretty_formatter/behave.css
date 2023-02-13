@@ -609,4 +609,9 @@ a:hover {
   .feature-summary-stats {
     margin-left: 0.2rem;
   }
+
+  .scenario-capsule {
+    padding-right: 0rem;
+  }
+
 }
