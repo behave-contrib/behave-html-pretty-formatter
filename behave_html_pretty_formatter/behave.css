@@ -435,6 +435,7 @@ pre * {
   text-decoration: underline;
   color: var(--strong-color);
   font-size: 12px;
+  width: max-content;
 }
 
 .embed_button.contrast {
