@@ -589,8 +589,9 @@ class Step:
                 div(high_contrast_status[self.status], cls="step-status")
 
                 # Step decorator.
-                div(b(i(self.keyword + " ")), cls="step-decorator")
-                formatter.make_bold_text(self.name)
+                with div(cls="step-decorator"):
+                    b(i(self.keyword + " "))
+                    formatter.make_bold_text(self.name)
 
                 # Step duration.
                 short_duration = f"{self.duration:.2f}s"
