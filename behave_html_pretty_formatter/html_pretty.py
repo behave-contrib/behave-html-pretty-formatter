@@ -570,7 +570,7 @@ class Step:
             margin_top_cls = "margin-top"
 
         if self.commentary_override:
-            div(f"{self.text}", cls=f"step-capsule commentary {margin_top_cls}")
+            pre(f"{self.text}", cls=f"step-capsule commentary {margin_top_cls}")
 
         else:
             with div(cls=f"step-capsule {self.status} {margin_top_cls}"):
