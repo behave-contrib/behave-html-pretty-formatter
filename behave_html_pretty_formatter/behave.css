@@ -254,7 +254,7 @@ pre * {
 /*SCENARIO CONTENT*/
 .scenario-capsule {
   padding: 1rem;
-  padding-right: 0.1rem;
+  padding-right: 0.5rem;
   padding-top: 0.3rem;
   margin-bottom: 1rem;
   color: var(--strong-color);
