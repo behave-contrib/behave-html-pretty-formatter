@@ -162,7 +162,7 @@ pre * {
 }
 
 .feature-summary-commentary.contrast {
-  background-color: #000;
+  background-color: rgb(36, 35, 35);
   color: rgb(248, 248, 248);
   font-size: 1rem;
 }
@@ -254,6 +254,7 @@ pre * {
 /*SCENARIO CONTENT*/
 .scenario-capsule {
   padding: 1rem;
+  padding-right: 0.1rem;
   padding-top: 0.3rem;
   margin-bottom: 1rem;
   color: var(--strong-color);
@@ -372,7 +373,6 @@ pre * {
 .step-capsule.commentary {
   background-color: var(--commentary-bg);
   margin-left: 1rem;
-  margin-right: 1rem;
 }
 
 .step-capsule.contrast {
