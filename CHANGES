@@ -1,3 +1,11 @@
+behave-html-pretty-formatter 1.6
+================================
+Updating README with new image/gif examples reflecting current design.
+Improving button design. Fixes #21.
+Fixing decorator badly formatted.
+Fix embed toggle now registering on arrow and the text but not in white spaces after.
+Fixing feature commentary contrast summary.
+Adjusting step-capsule right-padding.
 
 behave-html-pretty-formatter 1.5
 ================================

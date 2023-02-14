@@ -168,101 +168,101 @@ class Feature:
         """
         Converts this object to HTML.
         """
-        # Feature Panel.
-        with div(cls="feature-panel"):
-            with div(cls="feature-title"):
-                # Generate icon if present.
-                if self.icon:
-                    with div(cls="feature-icon"):
-                        img(src=self.icon)
+        # Feature Title.
+        with div(cls="feature-title flex-gap"):
+            # Generate icon if present.
+            if self.icon:
+                with div(cls="feature-icon"):
+                    img(src=self.icon)
 
-                # Generate content of the panel.
-                if self.high_contrast_button:
-                    # Making sure there is a functioning button.
-                    span(f"Feature: {self.name}")
-                    with div(cls="flex-left-space"):
-                        # Creating High Contrast oggle which is clickable.
-                        a(
-                            "[High contrast toggle]",
-                            cls="button-toggle",
-                            onclick="toggle_contrast('embed')",
-                            href="#/",
-                        )
+            # Generate content of the feature title bar.
+            span(f"Feature: {self.name}")
 
-                        # Creating Summary which is clickable.
-                        a(
-                            "[Summary]",
-                            cls="button-toggle",
-                            onclick="collapsible_summary('feature-summary-container')",
-                            href="#/",
-                        )
+            if self.high_contrast_button:
+                # Making sure there is a functioning button.
+                # Creating High Contrast oggle which is clickable.
+                span(
+                    "High contrast toggle",
+                    cls="button flex-left-space",
+                    onclick="toggle_contrast('embed')",
+                )
 
-                # On following features do not generate the buttons.
-                else:
-                    span(f"Feature: {self.name}")
+                # Creating Summary which is clickable.
+                span(
+                    "Summary",
+                    cls="button",
+                    onclick="collapsible_summary('feature-summary-container')",
+                )
 
-            # Generate summary.
-            summary_display = "display: none"
-            if formatter.show_summary:
-                summary_display = ""
-            with div(
-                cls="feature-summary-container",
-                id=f"f{self.counter}",
-                style=summary_display,
-            ):
-                # Generating feature commentary.
-                flex_left_space = "flex-left-space" if self.description else ""
+        # Generate summary.
+        summary_display = "display: none"
+        if formatter.show_summary:
+            summary_display = ""
+        with div(
+            cls="feature-summary-container flex-gap",
+            id=f"f{self.counter}",
+            style=summary_display,
+        ):
+            # Generating feature commentary.
+            flex_left_space = "flex-left-space" if self.description else ""
 
-                # with div(cls=""):
-                if self.description:
-                    pre(
-                        self.description,
-                        cls="feature-summary-commentary",
-                    )
+            # with div(cls=""):
+            if self.description:
+                pre(
+                    self.description,
+                    cls="feature-summary-commentary",
+                )
 
-                # Generating Summary results.
-                with div(cls=f"feature-summary-stats {flex_left_space}"):
-                    stats = self.get_feature_stats()
+            # Generating Summary results.
+            with div(cls=f"feature-summary-stats {flex_left_space}"):
+                stats = self.get_feature_stats()
 
-                    for stat, value in stats.items():
-                        div(
-                            f"{stat}: {value}",
-                            cls=f"feature-summary-row {stat.lower()}",
-                        )
-
-                # Generating Started/Duration/Finished message.
-                with div(cls="feature-summary-stats flex-left-space"):
+                for stat, value in stats.items():
                     div(
-                        f"Started: {self.start_time.strftime(formatter.date_format)}",
-                        cls="feature-summary-row",
-                    )
-                    duration = (self.finish_time - self.start_time).total_seconds()
-                    div(f"Duration: {duration:.2f}", cls="feature-summary-row")
-                    div(
-                        f"Finished: {self.finish_time.strftime(formatter.date_format)}",
-                        cls="feature-summary-row",
+                        f"{stat}: {value}",
+                        cls=f"feature-summary-row {stat.lower()}",
                     )
 
-                # Generating clickable buttons for collapsing/expanding.
-                with div(cls="feature-summary-stats"):
-                    with a(onclick="expander('expand_all', this)", href="#"):
-                        div("[Expand All]", cls="feature-summary-row button")
-                    with a(onclick="expander('collapse_all', this)", href="#"):
-                        div("[Collapse All]", cls="feature-summary-row button")
-                    with a(onclick="expander('expand_all_failed', this)", href="#"):
-                        div("[Expand All Failed]", cls="feature-summary-row button")
+            # Generating Started/Duration/Finished message.
+            with div(cls="feature-summary-stats flex-left-space"):
+                div(
+                    f"Started: {self.start_time.strftime(formatter.date_format)}",
+                    cls="feature-summary-row",
+                )
+                duration = (self.finish_time - self.start_time).total_seconds()
+                div(f"Duration: {duration:.2f}", cls="feature-summary-row")
+                div(
+                    f"Finished: {self.finish_time.strftime(formatter.date_format)}",
+                    cls="feature-summary-row",
+                )
 
-                if formatter.additional_info:
-                    with div(
-                        cls="feature-additional-info-container", id="additional-info"
-                    ):
-                        # Generating Additional info results
-                        with div(cls="feature-additional-info"):
-                            for key, item in formatter.additional_info.items():
-                                div(
-                                    f"{key}: {item}",
-                                    cls=f"feature-additional-info-row {key.lower()}",
-                                )
+            # Generating clickable buttons for collapsing/expanding.
+            with div(cls="feature-summary-stats"):
+                span(
+                    "Expand All",
+                    cls="button display-block",
+                    onclick="expander('expand_all', this)",
+                )
+                span(
+                    "Collapse All",
+                    cls="button display-block",
+                    onclick="expander('collapse_all', this)",
+                )
+                span(
+                    "Expand All Failed",
+                    cls="button display-block",
+                    onclick="expander('expand_all_failed', this)",
+                )
+
+            if formatter.additional_info:
+                with div(cls="feature-additional-info-container", id="additional-info"):
+                    # Generating Additional info results
+                    with div(cls="feature-additional-info"):
+                        for key, item in formatter.additional_info.items():
+                            div(
+                                f"{key}: {item}",
+                                cls=f"feature-additional-info-row {key.lower()}",
+                            )
 
         # Feature data container.
         with div(cls="feature-container", id=f"f{self.counter}"):
@@ -570,7 +570,7 @@ class Step:
             margin_top_cls = "margin-top"
 
         if self.commentary_override:
-            div(f"{self.text}", cls=f"step-capsule commentary {margin_top_cls}")
+            pre(f"{self.text}", cls=f"step-capsule commentary {margin_top_cls}")
 
         else:
             with div(cls=f"step-capsule {self.status} {margin_top_cls}"):
@@ -589,8 +589,9 @@ class Step:
                 div(high_contrast_status[self.status], cls="step-status")
 
                 # Step decorator.
-                div(b(i(self.keyword + " ")), cls="step-decorator")
-                formatter.make_bold_text(self.name)
+                with div(cls="step-decorator"):
+                    b(i(self.keyword + " "))
+                    formatter.make_bold_text(self.name)
 
                 # Step duration.
                 short_duration = f"{self.duration:.2f}s"
@@ -599,7 +600,6 @@ class Step:
                 # Make the link only when the link is provided.
                 if self.location_link:
                     a(self.location, cls="flex-left-space", href=self.location_link)
-
                 else:
                     span(self.location, cls="flex-left-space")
 
@@ -627,12 +627,12 @@ class Step:
         def _create_download_button():
             args = f"'embed_{embed_data.uid}','{use_caption}'"
             onclick = f"download_embed({args})"
-            a(
-                "[Download]",
-                href="#/",
-                cls="embed_download margin-bottom",
-                onclick=onclick,
-            )
+            with div():
+                span(
+                    "Download",
+                    cls="button margin-bottom",
+                    onclick=onclick,
+                )
 
         # Rule for embed_data.download_button as None - default value.
         if embed_data.download_button is None:
@@ -728,14 +728,11 @@ class Step:
         with div(cls="messages"):
             with div(cls="embed-capsule"):
                 # Embed Caption.
-                with div(cls="embed_button collapse"):
-                    # Label to be shown.
-                    embed_id = f"embed_{embed_data.uid}"
-                    a(
-                        use_caption,
-                        href="#/",
-                        onclick=f"collapsible_toggle('{embed_id}',this)",
-                    )
+                div(
+                    use_caption,
+                    cls="embed_button collapse",
+                    onclick=f"collapsible_toggle('embed_{embed_data.uid}',this)",
+                )
 
                 # Embed content.
                 with pre(

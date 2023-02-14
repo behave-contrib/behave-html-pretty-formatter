@@ -1,6 +1,6 @@
 function collapsible_toggle(id, parent) {
     console.log(parent);
-    while (parent !== undefined  && !parent.classList.contains("embed_button")) {
+    while (parent !== undefined && !parent.classList.contains("embed_button")) {
         parent = parent.parentElement;
         console.log(parent);
     }
@@ -22,7 +22,7 @@ function collapsible_toggle(id, parent) {
 function collapsible_summary(classname) {
     var elem = document.getElementsByClassName(classname);
     var visible_display = "";
-    for (var i = 0; i < elem.length; i++){
+    for (var i = 0; i < elem.length; i++) {
         elem[i].style.display = (elem[i].style.display == "none" ? visible_display : "none");
     }
 };
@@ -31,8 +31,8 @@ function expander(action, summary_block) {
     var elem = Array.from(document.getElementsByClassName("scenario-capsule"));
     elem = elem.concat(Array.from(document.getElementsByClassName("scenario-header")));
     var feature_id = summary_block.parentElement.parentElement.id
-    for(var i = 0; i < elem.length; i++) {
-        if (feature_id != elem[i].parentElement.id){
+    for (var i = 0; i < elem.length; i++) {
+        if (feature_id != elem[i].parentElement.id) {
             continue
         }
         if (action == "expand_all") {
@@ -70,7 +70,7 @@ function expand_this_only(name) {
 
 function toggle_contrast_for(target_class) {
     var elements = document.getElementsByClassName(target_class);
-    for(var i = 0; i < elements.length; i++) {
+    for (var i = 0; i < elements.length; i++) {
         if (elements[i].classList.contains("contrast")) {
             elements[i].classList.remove("contrast");
         } else {
@@ -81,12 +81,13 @@ function toggle_contrast_for(target_class) {
 
 function toggle_contrast() {
     var step_status_items = document.getElementsByClassName("step-status");
-    for (var i=0; i < step_status_items.length; i++) {
+    for (var i = 0; i < step_status_items.length; i++) {
         step_status_items[i].style.display = (step_status_items[i].style.display == "block" ? "none" : "block");
     };
 
     const contrast_classes = [
         "feature-title",
+        "feature-summary-commentary",
         "feature-summary-container",
         "feature-summary-row",
         "feature-icon",
@@ -126,7 +127,7 @@ var element = document.createElement('div');
 var entity = /&(?:#x[a-f0-9]+|#[0-9]+|[a-z0-9]+);?/ig;
 
 function decodeHTMLEntities(str) {
-    str = str.replace(entity, function(m) {
+    str = str.replace(entity, function (m) {
         element.innerHTML = m;
         return element.textContent;
     });
@@ -159,5 +160,5 @@ function download_embed(id, filename) {
     document.body.appendChild(link);
     link.click()
     /* fix race in FF */
-    setTimeout(function() {document.body.removeChild(link);}, 2000);
+    setTimeout(function () { document.body.removeChild(link); }, 2000);
 };

@@ -30,6 +30,10 @@
   --commentary-bg: #b9b9b9;
   --table-bg-odd: #fff;
   --table-bg-even: #eee;
+  --button-bg: #666;
+  --button-color: #eee;
+  --button-bg-active: #898989;
+  --button-color-active: #fff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -55,6 +59,10 @@
     --commentary-bg: #5c5c5c;
     --table-bg-odd: #555;
     --table-bg-even: #444;
+    --button-bg: #555;
+    --button-color: #cdcdcd;
+    --button-bg-active: #898989;
+    --button-color-active: #fff;
   }
 }
 
@@ -78,10 +86,6 @@ body {
 pre,
 pre * {
   margin: 0;
-}
-
-.flex-left-space {
-  margin-left: auto;
 }
 
 /* ARROWS */
@@ -113,29 +117,16 @@ pre * {
 }
 
 /*FEATURE CONTENT*/
-.feature-panel {
-  margin-bottom: 5px;
-  font-size: 1rem;
-}
-
-.button-toggle {
-  margin-left: 1rem;
-  color: var(--strong-color);
-  font-weight: bold;
-  text-decoration: underline;
-}
-
-.feature-title.contrast .button-toggle {
-  color: #fff;
-}
 
 .feature-title {
+  font-size: 1rem;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   background-color: var(--feature-bg);
   color: var(--feature-color);
-  padding: 1rem;
-  margin-bottom: inherit;
+  padding: 0.5em 1rem;
+  margin-bottom: 5px;
 }
 
 .feature-icon {
@@ -171,7 +162,7 @@ pre * {
 }
 
 .feature-summary-commentary.contrast {
-  background-color: #000;
+  background-color: rgb(36, 35, 35);
   color: rgb(248, 248, 248);
   font-size: 1rem;
 }
@@ -180,6 +171,8 @@ pre * {
   display: flex;
   flex-wrap: wrap;
   padding: 5px;
+  padding-right: 1rem;
+  margin-bottom: 5px;
   background-color: var(--feature-bg);
   color: var(--feature-color);
   justify-content: start;
@@ -208,24 +201,24 @@ pre * {
 }
 
 .feature-summary-stats {
-  margin-right: 1em;
   margin-top: 0.2em;
+}
+
+.feature-summary-stats .button {
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+  margin-bottom: 0.1em;
 }
 
 .feature-summary-row {
   color: var(--feature-color);
   border-left: 0.4rem solid var(--feature-color);
   padding-left: 0.5rem;
-  margin: 1px;
-}
-
-.feature-summary-row.button {
-  color: var(--body-color);
-  font-weight: bold;
-  text-decoration: underline;
-  border-left: 0.4rem solid var(--body-color);
-  padding-left: 0.5rem;
-  margin: 1px;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+  margin-bottom: 0.1em;
 }
 
 .feature-summary-row.passed {
@@ -261,6 +254,7 @@ pre * {
 /*SCENARIO CONTENT*/
 .scenario-capsule {
   padding: 1rem;
+  padding-right: 0.5rem;
   padding-top: 0.3rem;
   margin-bottom: 1rem;
   color: var(--strong-color);
@@ -379,7 +373,6 @@ pre * {
 .step-capsule.commentary {
   background-color: var(--commentary-bg);
   margin-left: 1rem;
-  margin-right: 1rem;
 }
 
 .step-capsule.contrast {
@@ -387,14 +380,6 @@ pre * {
   color: #fff;
   font-size: 1.25rem;
   border: none;
-}
-
-.margin-top {
-  margin-top: 15px;
-}
-
-.margin-bottom {
-  margin-bottom: 15px;
 }
 
 .step-status {
@@ -445,20 +430,17 @@ pre * {
 }
 
 .embed_button {
+  cursor: pointer;
   margin: 0 1rem 0.5em 0;
   text-decoration: underline;
   color: var(--strong-color);
   font-size: 12px;
+  width: max-content;
 }
 
 .embed_button.contrast {
   color: #fff;
   font-size: 20px;
-}
-
-.embed_download {
-  font-weight: bold;
-  display: block;
 }
 
 /*TABLE FORMATTING*/
@@ -533,10 +515,72 @@ a:hover {
   margin-bottom: 1rem;
 }
 
-/* SMALL SCREEN - SHOULD BE LAST TO OVERIDE PREVIOUS*/
+/* BUTTONS andHELPER classes */
+/* Should be at bottom, to override rules above */
+.button {
+  display: inline-block;
+  color: var(--button-color);
+  background-color: var(--button-bg);
+  border-radius: 0.2em;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 0.5em 0.9em;
+  text-align: center;
+  cursor: pointer;
+}
 
+.button:hover {
+  text-decoration: none;
+  color: var(--button-color-active);
+  background-color: var(--button-bg-active);
+}
+
+.contrast .button {
+  color: #111;
+  background-color: #eee;
+}
+
+.contrast .button:hover {
+  text-decoration: none;
+}
+
+.display-flex {
+  display: flex;
+}
+
+.display-block {
+  display: block;
+}
+
+.display-inline {
+  display: inline;
+}
+
+.display-block.display-inline {
+  display: inline-block;
+}
+
+.flex-gap {
+  column-gap: 1em;
+  row-gap: 2px;
+}
+
+.flex-left-space {
+  margin-left: auto;
+}
+
+.margin-top {
+  margin-top: 15px;
+}
+
+.margin-bottom {
+  margin-bottom: 15px;
+}
+
+/* SMALL SCREEN */
+/* Should be at bottom, to override rules above */
 @media only screen and (max-width: 750px) {
-  .feature-panel {
+  .feature-title {
     flex-direction: column;
   }
 
@@ -558,8 +602,16 @@ a:hover {
     margin-right: 0;
   }
 
+  .flex-left-space {
+    margin-left: initial;
+  }
+
   .feature-summary-stats {
     margin-left: 0.2rem;
+  }
+
+  .scenario-capsule {
+    padding-right: 0rem;
   }
 
 }
