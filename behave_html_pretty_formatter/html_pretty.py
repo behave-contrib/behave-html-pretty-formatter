@@ -169,6 +169,10 @@ class Feature:
         """
         Converts this object to HTML.
         """
+        # Create unexecuted scenario, if there are unprocessed embeds.
+        if self.to_embed:
+            self._add_unexecuted_scenario()
+
         # Feature Title.
         with div(cls="feature-title flex-gap"):
             # Generate icon if present.
@@ -269,6 +273,24 @@ class Feature:
         with div(cls="feature-container", id=f"f{self.counter}"):
             for scenario in self.scenarios:
                 scenario.generate_scenario(formatter)
+
+    def _add_unexecuted_scenario(self):
+        class DummyScenario:  # pylint: disable=too-few-public-methods
+            """
+            Dummy scenario setting minimal attributes setting minimum attributes,
+            so formatter would not crash.
+            """
+
+            name = "Unknown scenario"
+            effective_tags = []
+            description = ""
+            location = None
+            steps = []
+            error_message = "Embedding done before scenario executed"
+            exception = None
+            exc_traceback = None
+
+        self.add_scenario(DummyScenario(), self.counter, pseudo_steps=True)
 
 
 class Scenario:
