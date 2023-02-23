@@ -289,10 +289,9 @@ class Feature:
             error_message = None
             exception = None
             exc_traceback = None
-
             status = Status.failed.name
-            self.before_scenario_status = Status.failed.name
 
+        self.before_scenario_status = Status.failed.name
         self.add_scenario(DummyScenario(), self.counter, pseudo_steps=True)
 
 
