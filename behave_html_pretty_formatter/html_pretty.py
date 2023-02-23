@@ -286,9 +286,12 @@ class Feature:
             description = ""
             location = None
             steps = []
-            error_message = "Embedding done before scenario executed"
+            error_message = None
             exception = None
             exc_traceback = None
+
+            status = Status.failed.name
+            self.before_scenario_status = Status.failed.name
 
         self.add_scenario(DummyScenario(), self.counter, pseudo_steps=True)
 
@@ -317,7 +320,12 @@ class Scenario:
         self.tags = [Tag(tag) for tag in scenario.effective_tags]
 
         self.location = scenario.location
-        self.status = Status.skipped.name
+
+        if self._scenario.status:
+            self.status = self._scenario.status
+        else:
+            self.status = Status.skipped.name
+
         self.duration = 0.0
         self.match_id = -1
         self.steps_finished = False
@@ -329,6 +337,7 @@ class Scenario:
 
         self.saved_matched_filename = None
         self.saved_matched_line = None
+
         # Process before_scenario errors.
         self.report_error(scenario)
 
