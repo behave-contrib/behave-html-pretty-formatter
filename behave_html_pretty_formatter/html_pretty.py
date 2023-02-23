@@ -5,6 +5,7 @@ Inspired by https://github.com/Hargne/jest-html-reporter
 
 from __future__ import absolute_import
 
+import atexit
 import base64
 import os
 import time
@@ -921,6 +922,8 @@ class PrettyHTMLFormatter(Formatter):
 
         self.suite_start_time = datetime.now()
 
+        self._closed = False
+
         # Some type of icon can be set.
         self.icon = None
 
@@ -961,6 +964,8 @@ class PrettyHTMLFormatter(Formatter):
             if key.startswith(additional_info_path):
                 short_key = key.replace(additional_info_path, "")
                 self.additional_info[short_key] = item
+
+        atexit.register(self.close)
 
     def _str_to_bool(self, value):
         assert value.lower() in ["true", "false", "yes", "no", "0", "1"]
@@ -1103,6 +1108,9 @@ class PrettyHTMLFormatter(Formatter):
         """
         Generates the entire html page with dominate.
         """
+        if self._closed:
+            return
+        self._closed = True
         # Set finish time of the last feature.
         current_feature = self.current_feature
         if current_feature:
