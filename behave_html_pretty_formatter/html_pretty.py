@@ -169,9 +169,6 @@ class Feature:
         """
         Converts this object to HTML.
         """
-        # Create unexecuted scenario, if there are unprocessed embeds.
-        if self.to_embed:
-            self._add_unexecuted_scenario()
 
         # Feature Title.
         with div(cls="feature-title flex-gap"):
@@ -273,26 +270,6 @@ class Feature:
         with div(cls="feature-container", id=f"f{self.counter}"):
             for scenario in self.scenarios:
                 scenario.generate_scenario(formatter)
-
-    def _add_unexecuted_scenario(self):
-        class DummyScenario:  # pylint: disable=too-few-public-methods
-            """
-            Dummy scenario setting minimal attributes setting minimum attributes,
-            so formatter would not crash.
-            """
-
-            name = "Unknown scenario"
-            effective_tags = []
-            description = ""
-            location = None
-            steps = []
-            error_message = None
-            exception = None
-            exc_traceback = None
-            status = Status.failed.name
-
-        self.before_scenario_status = Status.failed.name
-        self.add_scenario(DummyScenario(), self.counter, pseudo_steps=True)
 
 
 class Scenario:
@@ -995,7 +972,7 @@ class PrettyHTMLFormatter(Formatter):
                 short_key = key.replace(additional_info_path, "")
                 self.additional_info[short_key] = item
 
-        atexit.register(self.close)
+        atexit.register(self._force_close)
 
     def _str_to_bool(self, value):
         assert value.lower() in ["true", "false", "yes", "no", "0", "1"]
@@ -1133,6 +1110,64 @@ class PrettyHTMLFormatter(Formatter):
         Icon setter.
         """
         self.icon = icon
+
+    def _add_unexecuted_scenario(self):
+        class DummyStep:  # pylint: disable=too-few-public-methods
+            """
+            Dummy step setting minimum attributes,
+            so formatter would not crash.
+            """
+
+            keyword = "Before"
+            name = "scenario"
+            location = None
+            duration = None
+            error_message = None
+            text = None
+            table = None
+            status = Status.failed.name
+
+        class DummyScenario:  # pylint: disable=too-few-public-methods
+            """
+            Dummy scenario setting minimum attributes,
+            so formatter would not crash.
+            """
+
+            name = "Unknown scenario"
+            effective_tags = []
+            description = ""
+            location = None
+            steps = [DummyStep]
+            error_message = None
+            status = Status.failed.name
+
+        feature = self.current_feature
+        background = feature._background  # pylint: disable=protected-access
+        feature.add_background(None)
+        pseudo_steps = self.pseudo_steps
+        self.pseudo_steps = False
+        self.before_scenario_finish(Status.failed.name)
+        self.scenario(DummyScenario)
+        feature.add_background(background)
+        self.pseudo_steps = pseudo_steps
+
+    def _force_close(self):
+        """
+        Called by `atexit`, set status of last step to failed and `close()`.
+        """
+        feature = self.current_feature
+        scenario = self.current_scenario
+        if not scenario and feature:
+            # Create unexecuted scenario, if there are unprocessed embeds.
+            if feature.to_embed:
+                self._add_unexecuted_scenario()
+        # refresh scenario
+        scenario = self.current_scenario
+        if scenario:
+            scenario.status = Status.failed.name
+            step = scenario.current_step
+            step.status = Status.failed.name
+        self.close()
 
     def close(self):
         """
