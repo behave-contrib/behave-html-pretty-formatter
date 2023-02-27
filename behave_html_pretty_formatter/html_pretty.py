@@ -5,6 +5,7 @@ Inspired by https://github.com/Hargne/jest-html-reporter
 
 from __future__ import absolute_import
 
+import atexit
 import base64
 import os
 import time
@@ -168,6 +169,7 @@ class Feature:
         """
         Converts this object to HTML.
         """
+
         # Feature Title.
         with div(cls="feature-title flex-gap"):
             # Generate icon if present.
@@ -294,7 +296,12 @@ class Scenario:
         self.tags = [Tag(tag) for tag in scenario.effective_tags]
 
         self.location = scenario.location
-        self.status = Status.skipped.name
+
+        if self._scenario.status:
+            self.status = self._scenario.status
+        else:
+            self.status = Status.skipped.name
+
         self.duration = 0.0
         self.match_id = -1
         self.steps_finished = False
@@ -306,6 +313,7 @@ class Scenario:
 
         self.saved_matched_filename = None
         self.saved_matched_line = None
+
         # Process before_scenario errors.
         self.report_error(scenario)
 
@@ -921,6 +929,8 @@ class PrettyHTMLFormatter(Formatter):
 
         self.suite_start_time = datetime.now()
 
+        self._closed = False
+
         # Some type of icon can be set.
         self.icon = None
 
@@ -961,6 +971,8 @@ class PrettyHTMLFormatter(Formatter):
             if key.startswith(additional_info_path):
                 short_key = key.replace(additional_info_path, "")
                 self.additional_info[short_key] = item
+
+        atexit.register(self._force_close)
 
     def _str_to_bool(self, value):
         assert value.lower() in ["true", "false", "yes", "no", "0", "1"]
@@ -1099,10 +1111,71 @@ class PrettyHTMLFormatter(Formatter):
         """
         self.icon = icon
 
+    def _add_unexecuted_scenario(self):
+        class DummyStep:  # pylint: disable=too-few-public-methods
+            """
+            Dummy step setting minimum attributes,
+            so formatter would not crash.
+            """
+
+            keyword = "Before"
+            name = "scenario"
+            location = None
+            duration = None
+            error_message = None
+            text = None
+            table = None
+            status = Status.failed.name
+
+        class DummyScenario:  # pylint: disable=too-few-public-methods
+            """
+            Dummy scenario setting minimum attributes,
+            so formatter would not crash.
+            """
+
+            name = "Unknown scenario"
+            effective_tags = []
+            description = ""
+            location = None
+            steps = [DummyStep]
+            error_message = None
+            status = Status.failed.name
+
+        feature = self.current_feature
+        background = feature._background  # pylint: disable=protected-access
+        feature.add_background(None)
+        pseudo_steps = self.pseudo_steps
+        self.pseudo_steps = False
+        self.before_scenario_finish(Status.failed.name)
+        self.scenario(DummyScenario)
+        feature.add_background(background)
+        self.pseudo_steps = pseudo_steps
+
+    def _force_close(self):
+        """
+        Called by `atexit`, set status of last step to failed and `close()`.
+        """
+        feature = self.current_feature
+        scenario = self.current_scenario
+        if not scenario and feature:
+            # Create unexecuted scenario, if there are unprocessed embeds.
+            if feature.to_embed:
+                self._add_unexecuted_scenario()
+        # refresh scenario
+        scenario = self.current_scenario
+        if scenario:
+            scenario.status = Status.failed.name
+            step = scenario.current_step
+            step.status = Status.failed.name
+        self.close()
+
     def close(self):
         """
         Generates the entire html page with dominate.
         """
+        if self._closed:
+            return
+        self._closed = True
         # Set finish time of the last feature.
         current_feature = self.current_feature
         if current_feature:
