@@ -58,7 +58,7 @@ class Feature:
         self.name = feature.name
         self.description = "\n".join(feature.description)
         self.location = feature.location
-        self.status = Status.skipped.name
+        self.status = Status.skipped
         self.icon = None
         self.high_contrast_button = False
         self.start_time = datetime.now()
@@ -71,7 +71,7 @@ class Feature:
         self.scenario_finished = True
         self.scenario_begin_timestamp = time.time()
         self.before_scenario_duration = 0.0
-        self.before_scenario_status = None
+        self.before_scenario_status = Status.skipped
 
     def add_background(self, background):
         """
@@ -123,7 +123,7 @@ class Feature:
         Sets status and duration of before scenario pseudo step.
         """
         self.before_scenario_duration = time.time() - self.scenario_begin_timestamp
-        self.before_scenario_status = status
+        self.before_scenario_status = Status.from_name(status)
 
     def after_scenario_finish(self, status):
         """
@@ -143,7 +143,7 @@ class Feature:
                     - self.scenario_begin_timestamp
                     - self.before_scenario_duration
                 )
-            _step.status = status
+            _step.status = Status.from_name(status)
             self.scenario_begin_timestamp = time.time()
 
     def get_feature_stats(self):
@@ -157,7 +157,7 @@ class Feature:
         stats["Failed"] = 0
 
         for scenario in self.scenarios:
-            status = scenario.status.capitalize()
+            status = scenario.status.name.capitalize()
             if status in stats:
                 stats[status] += 1
             else:
@@ -300,7 +300,7 @@ class Scenario:
         if self._scenario.status:
             self.status = self._scenario.status
         else:
-            self.status = Status.skipped.name
+            self.status = Status.skipped
 
         self.duration = 0.0
         self.match_id = -1
@@ -420,7 +420,7 @@ class Scenario:
             or result.status == Status.skipped
             or result.status == Status.undefined
         ):
-            self.status = result.status.name
+            self.status = result.status
             self.duration = self._scenario.duration
 
         # Check if step execution finished.
@@ -460,7 +460,7 @@ class Scenario:
                     "Error Traceback",
                 )
             )
-        self.status = Status.failed.name
+        self.status = Status.failed
 
     def embed(self, embed_data):
         """
@@ -480,7 +480,7 @@ class Scenario:
         self.report_error(self._scenario)
         # Scenario container.
         with div(
-            cls=f"scenario-header {self.status}",
+            cls=f"scenario-header {self.status.name}",
             id=f"f{self.feature.counter}-s{self.counter}-h",
         ):
             for tag in self.tags:
@@ -498,7 +498,7 @@ class Scenario:
                 div(f"Scenario duration: {self.duration:.2f}s", cls="scenario-duration")
 
         with div(
-            cls=f"scenario-capsule {self.status}",
+            cls=f"scenario-capsule {self.status.name}",
             id=f"f{self.feature.counter}-s{self.counter}-c",
         ):
             steps = self.steps
@@ -514,7 +514,7 @@ class Step:
     """
 
     def __init__(self, keyword, name, text, step_table, scenario):
-        self.status = None
+        self.status = Status.untested
         self.duration = 0.0
         self.scenario = scenario
         self.keyword = keyword
@@ -532,7 +532,7 @@ class Step:
         """
         Process result of the executed step.
         """
-        self.status = result.status.name
+        self.status = result.status
         self.duration = result.duration
 
         # If the step has error message and step failed, set the error message.
@@ -568,10 +568,10 @@ class Step:
         """
         Converts Step Object into HTML.
         """
-        if self.status is None:
+        if self.status is Status.untested:
             if not formatter.show_unexecuted_steps:
                 return
-            self.status = Status.skipped.name
+            self.status = Status.skipped
 
         margin_top_cls = ""
         if self.margin_top:
@@ -581,7 +581,7 @@ class Step:
             pre(f"{self.text}", cls=f"step-capsule commentary {margin_top_cls}")
 
         else:
-            with div(cls=f"step-capsule {self.status} {margin_top_cls}"):
+            with div(cls=f"step-capsule {self.status.name} {margin_top_cls}"):
                 # Behave defined status strings are:
                 # "passed" "failed" "undefined" "skipped".
                 # Modify these values for high contrast usage.
@@ -594,7 +594,7 @@ class Step:
                     "untested": "SKIP",
                 }
 
-                div(high_contrast_status[self.status], cls="step-status")
+                div(high_contrast_status[self.status.name], cls="step-status")
 
                 # Step decorator.
                 with div(cls="step-decorator"):
@@ -619,7 +619,7 @@ class Step:
         # Add div for dashed-line last-child CSS selector.
         with div(cls="embeds"):
             for embed_data in self.embeds:
-                if embed_data.fail_only and scenario_status != "failed":
+                if embed_data.fail_only and scenario_status != Status.failed:
                     continue
                 self.generate_embed(embed_data)
 
@@ -1125,7 +1125,7 @@ class PrettyHTMLFormatter(Formatter):
             error_message = None
             text = None
             table = None
-            status = Status.failed.name
+            status = Status.failed
 
         class DummyScenario:  # pylint: disable=too-few-public-methods
             """
@@ -1139,7 +1139,7 @@ class PrettyHTMLFormatter(Formatter):
             location = None
             steps = [DummyStep]
             error_message = None
-            status = Status.failed.name
+            status = Status.failed
 
         feature = self.current_feature
         background = feature._background  # pylint: disable=protected-access
@@ -1164,9 +1164,9 @@ class PrettyHTMLFormatter(Formatter):
         # refresh scenario
         scenario = self.current_scenario
         if scenario:
-            scenario.status = Status.failed.name
+            scenario.status = Status.failed
             step = scenario.current_step
-            step.status = Status.failed.name
+            step.status = Status.failed
         self.close()
 
     def close(self):
