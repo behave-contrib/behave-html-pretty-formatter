@@ -445,7 +445,9 @@ class Scenario:
                 return
             if self.reported_error.data in behave_obj.error_message:
                 # Do not update traceback, as behave saves only first traceback.
-                self.reported_error.data = behave_obj.error_message
+                self.reported_error.set_data(
+                    "text", behave_obj.error_message, "Error Message"
+                )
                 return
         self.reported_error = Embed("text", behave_obj.error_message, "Error Message")
         self.embed(self.reported_error)
