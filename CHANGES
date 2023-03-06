@@ -1,3 +1,7 @@
+behave-html-pretty-formatter 1.8.1
+==================================
+Hotfix crash when behave reports multiple errors
+
 behave-html-pretty-formatter 1.8
 ================================
 Use Status object instead of strings - Fixing Issue #37
