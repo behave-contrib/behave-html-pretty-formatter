@@ -578,6 +578,10 @@ a:hover {
   margin-top: 15px;
 }
 
+.no-margin-top {
+  margin-top: 0px;
+}
+
 .margin-bottom {
   margin-bottom: 15px;
 }
