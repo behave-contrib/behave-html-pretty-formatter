@@ -507,7 +507,8 @@ class Scenario:
             scenario_description = "\n".join(self._scenario.description)
             if scenario_description:
                 pre(
-                    f"{scenario_description}", cls="step-capsule description margin-top"
+                    f"{scenario_description}",
+                    cls="step-capsule description no-margin-top",
                 )
 
             steps = self.steps
