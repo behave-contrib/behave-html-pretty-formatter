@@ -502,8 +502,6 @@ class Scenario:
 
                 div(f"Scenario duration: {self.duration:.2f}s", cls="scenario-duration")
 
-        
-
         with div(
             cls=f"scenario-capsule {self.status.name}",
             id=f"f{self.feature.counter}-s{self.counter}-c",
@@ -511,7 +509,9 @@ class Scenario:
             # add scenario description as "commentary":
             scenario_description = "\n".join(self._scenario.description)
             if scenario_description:
-                pre(f"{scenario_description}", cls="step-capsule commentary margin-top")
+                pre(
+                    f"{scenario_description}", cls="step-capsule description margin-top"
+                )
 
             steps = self.steps
             if self.pseudo_steps:

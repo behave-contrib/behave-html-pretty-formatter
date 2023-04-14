@@ -375,6 +375,11 @@ pre * {
   margin-left: 1rem;
 }
 
+.step-capsule.description {
+  background-color: var(--commentary-bg);
+  margin-left: 0rem;
+}
+
 .step-capsule.contrast {
   background-color: rgb(36, 35, 35);
   color: #fff;
