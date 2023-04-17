@@ -1,3 +1,7 @@
+behave-html-pretty-formatter 1.8.2
+==================================
+Add scenario description.
+
 behave-html-pretty-formatter 1.8.1
 ==================================
 Hotfix crash when behave reports multiple errors
