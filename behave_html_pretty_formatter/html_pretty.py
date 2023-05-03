@@ -10,6 +10,7 @@ import base64
 import os
 import time
 import traceback
+import uuid
 from collections import OrderedDict
 from datetime import datetime
 from pathlib import Path
@@ -186,7 +187,8 @@ class Feature:
                 span(
                     "High contrast toggle",
                     cls="button flex-left-space",
-                    onclick="toggle_contrast('embed')",
+                    id="HC",
+                    onclick="toggle_contrast()",
                 )
 
                 # Creating Summary which is clickable.
@@ -749,7 +751,8 @@ class Step:
                 div(
                     use_caption,
                     cls="embed_button collapse",
-                    onclick=f"collapsible_toggle('embed_{embed_data.uid}',this)",
+                    id=f"embed_container_{embed_data.uid}",
+                    onclick=f"collapsible_toggle('{embed_data.uid}')",
                 )
 
                 # Embed content.
@@ -824,7 +827,8 @@ class Embed:
     def __init__(
         self, mime_type, data, caption=None, fail_only=False, download_button=None
     ):
-        self._id = Embed.count
+        # Generating unique ID.
+        self._id = str(uuid.uuid4)[:4]
         Embed.count += 1
         self.set_data(mime_type, data, caption)
         self._fail_only = fail_only
