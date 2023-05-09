@@ -187,7 +187,7 @@ class Feature:
                 span(
                     "High contrast toggle",
                     cls="button flex-left-space",
-                    id="HC",
+                    id="high_contrast",
                     onclick="toggle_contrast()",
                 )
 
@@ -195,6 +195,7 @@ class Feature:
                 span(
                     "Summary",
                     cls="button",
+                    id="summary",
                     onclick="collapsible_summary('feature-summary-container')",
                 )
 
