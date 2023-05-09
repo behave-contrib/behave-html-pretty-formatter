@@ -6,10 +6,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // Trigger the high contrast.
             toggle_contrast(onload = true)
         } else if (hash_uuid_list[i] == "summary") {
+            // Trigger the summary.
             collapsible_summary("feature-summary-container", onload = true)
         } else {
             // Triggering expand/collapse of embeds.
-            onload_expander(hash_uuid_list[i]);
+            onload_embed_expander(hash_uuid_list[i]);
         }
     }
 });
@@ -76,7 +77,7 @@ function toggle_hash_to_url(id) {
 }
 
 // Making sure the container and content is changed.
-function onload_expander(id) {
+function onload_embed_expander(id) {
     // Making sure the arrow is pointing at the correct direction.
     var embed_container_id = "embed_container_" + id;
     var parent = document.getElementById(embed_container_id);
