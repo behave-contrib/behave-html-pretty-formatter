@@ -80,6 +80,10 @@ function onload_expander(id) {
     // Making sure the arrow is pointing at the correct direction.
     var embed_container_id = "embed_container_" + id;
     var parent = document.getElementById(embed_container_id);
+    if (parent == undefined) {
+        console.log("This hash was not detected: " + id);
+        return false;
+    }
     parent.classList.remove("collapse");
 
     // Always showing the content of the expanded embedded data.
