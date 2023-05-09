@@ -818,8 +818,7 @@ class Embed:
         self, mime_type, data, caption=None, fail_only=False, download_button=None
     ):
         # Generating unique ID.
-        self._id = str(uuid.uuid4)[:4]
-        Embed.count += 1
+        self.uid = str(uuid.uuid4())[:4]
         self.set_data(mime_type, data, caption)
         self._fail_only = fail_only
         self.download_button = download_button
@@ -864,13 +863,6 @@ class Embed:
     def fail_only(self):
         "Read-only fail_only access."
         return self._fail_only
-
-    @property
-    def uid(self):
-        """
-        Read-only access for embed ID.
-        """
-        return self._id
 
 
 class Tag:
