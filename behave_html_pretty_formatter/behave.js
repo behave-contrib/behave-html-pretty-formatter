@@ -55,10 +55,6 @@ function generate_hash() {
 function toggle_hash_to_url(id) {
     console.log("toggle_hash_to_url: " + id.toString())
 
-    // Check if the toggle has to go in or out of the hash.
-    console.log("Current contents of the list: " + hash_uuid_list.toString())
-    console.log("Includes the item? " + hash_uuid_list.includes(id.toString()))
-
     if (hash_uuid_list.includes(id.toString())) {
         console.log("Removing: " + id.toString())
         for (var i = 0; i < hash_uuid_list.length; i++) {
