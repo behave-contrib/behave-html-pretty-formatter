@@ -1,5 +1,6 @@
-// Handler that will call correct handlers based on what is triggered from the hash.
+// Trigger proper functions on content load.
 document.addEventListener("DOMContentLoaded", function () {
+    // Check all hashes and trigger proper function based on type.
     for (var i = 0; i < hash_uuid_list.length; i++) {
         console.log("On load trying to toggle: " + hash_uuid_list[i])
         if (hash_uuid_list[i] == "high_contrast") {
@@ -15,8 +16,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// Embed toggle identificator.
-var toggle_default_string = "#toggles"
+// Embed toggle identificators.
+var toggle_empty_string = "#toggles"
 var toggle_non_empty_string = "#toggle="
 
 // Get current url.
@@ -24,7 +25,9 @@ var current_url = new URL(document.URL);
 
 // Keeping the list of all toggled embeds.
 var hash_uuid_list = new Array();
+
 if (current_url.hash.includes(toggle_non_empty_string)) {
+    // Add parsed hashes from the URL to the list.
     list_of_hashes = current_url.hash.replace(toggle_non_empty_string, "").split(",");
     for (var i = 0; i < list_of_hashes.length; i++) {
         hash_uuid_list.push(list_of_hashes[i])
@@ -33,30 +36,33 @@ if (current_url.hash.includes(toggle_non_empty_string)) {
 
 } else {
     // Add the default string to the url to prevent reloading on hash change.
-    current_url.hash = toggle_default_string
-    var new_url = current_url.href;
-    document.location.href = new_url;
+    current_url.hash = toggle_empty_string
+    document.location.href = current_url.href;
 }
 
-
+// Generate the hash for URL from the list.
 function generate_hash() {
     console.log("generate_hash")
-
     if (hash_uuid_list.length == 0) {
-        current_url.hash = toggle_default_string
+        // Add default string to URL on empty toggles.
+        current_url.hash = toggle_empty_string
     } else {
+        // Add hashes to URL if toggles are not empty.
         current_url.hash = toggle_non_empty_string + hash_uuid_list.toString()
     }
-    var new_url = current_url.href;
-    document.location.href = new_url;
+    // Change the URL.
+    document.location.href = current_url.href;
+    // Disable history for hash changes.
+    history.replaceState(undefined, undefined, current_url.hash)
 }
 
-
+// Utility function that handles adding and removing hashes from the list.
 function toggle_hash_to_url(id) {
     console.log("toggle_hash_to_url: " + id.toString())
 
     if (hash_uuid_list.includes(id.toString())) {
         console.log("Removing: " + id.toString())
+        // Remove the hash from the list.
         for (var i = 0; i < hash_uuid_list.length; i++) {
             if (hash_uuid_list[i] === id.toString()) {
                 hash_uuid_list.splice(i, 1);
@@ -64,8 +70,8 @@ function toggle_hash_to_url(id) {
             }
         }
     } else {
-        console.log("Adding: " + id)
-
+        console.log("Adding: " + id.toString())
+        // Adding the hash to the list.
         hash_uuid_list.push(id.toString())
     }
     // Set new url.
