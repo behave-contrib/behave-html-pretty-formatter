@@ -59,7 +59,6 @@ function generate_hash() {
 // Utility function that handles adding and removing hashes from the list.
 function toggle_hash_to_url(id) {
     console.log("toggle_hash_to_url: " + id.toString())
-
     if (hash_uuid_list.includes(id.toString())) {
         console.log("Removing: " + id.toString())
         // Remove the hash from the list.
