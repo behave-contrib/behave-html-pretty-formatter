@@ -1,3 +1,9 @@
+behave-html-pretty-formatter 1.9
+================================
+Create embed with unique ID - Fixes #40
+Remember expand/collapse state in URL hash - Fixes #29
+
+
 behave-html-pretty-formatter 1.8.2
 ==================================
 Add scenario description.
