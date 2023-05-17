@@ -48,6 +48,7 @@ function generate_hash() {
         current_url.hash = toggle_non_empty_string + hash_uuid_list.toString()
     }
     var new_url = current_url.href;
+    history.replaceState(undefined, undefined, current_url.hash)
     document.location.href = new_url;
 }
 
