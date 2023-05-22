@@ -5,10 +5,10 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("On load trying to toggle: " + hash_uuid_list[i])
         if (hash_uuid_list[i] == "high_contrast") {
             // Trigger the high contrast.
-            toggle_contrast(onload = true)
+            toggle_contrast()
         } else if (hash_uuid_list[i] == "summary") {
             // Trigger the summary.
-            collapsible_summary("feature-summary-container", onload = true)
+            collapsible_summary("feature-summary-container",)
         } else {
             // Triggering expand/collapse of embeds.
             onload_embed_expander(hash_uuid_list[i]);
@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Embed toggle identificators.
-var toggle_empty_string = "#toggles"
 var toggle_non_empty_string = "#toggle="
 
 // Get current url.
@@ -33,27 +32,19 @@ if (current_url.hash.includes(toggle_non_empty_string)) {
         hash_uuid_list.push(list_of_hashes[i])
     }
     console.log("Starting ID list: " + hash_uuid_list.toString())
-
-} else {
-    // Add the default string to the url to prevent reloading on hash change.
-    current_url.hash = toggle_empty_string
-    document.location.href = current_url.href;
 }
 
 // Generate the hash for URL from the list.
 function generate_hash() {
     console.log("generate_hash")
-    if (hash_uuid_list.length == 0) {
-        // Add default string to URL on empty toggles.
-        current_url.hash = toggle_empty_string
-    } else {
-        // Add hashes to URL if toggles are not empty.
-        current_url.hash = toggle_non_empty_string + hash_uuid_list.toString()
+    var hash = "#";
+    if (hash_uuid_list.length != 0) {
+        hash = toggle_non_empty_string + hash_uuid_list.toString()
     }
-    // Change the URL.
-    document.location.href = current_url.href;
-    // Disable history for hash changes.
-    history.replaceState(undefined, undefined, current_url.hash)
+    if (hash != current_url.hash) {
+        // Change the URL hash by overwriting latest item in history (no append to the history).
+        history.replaceState(undefined, undefined, hash)
+    }
 }
 
 // Utility function that handles adding and removing hashes from the list.
@@ -91,7 +82,7 @@ function onload_embed_expander(id) {
     // Always showing the content of the expanded embedded data.
     var embed_content_id = "embed_" + id;
     var elem = document.getElementById(embed_content_id);
-    elem.style.display = "contents";
+    elem.classList.remove = "contents";
 }
 
 function collapsible_toggle(id) {
@@ -114,17 +105,12 @@ function collapsible_toggle(id) {
 
     var embed_content_id = "embed_" + id
     var elem = document.getElementById(embed_content_id);
-    var visible_display = "block";
-    if (embed_content_id.indexOf("table") >= 0) {
-        visible_display = "contents";
-    }
+
     elem.style.display = (elem.style.display == "none" ? visible_display : "none");
 };
 
-function collapsible_summary(classname, onload = false) {
-    if (!onload) {
-        toggle_hash_to_url("summary")
-    }
+function collapsible_summary(classname,) {
+    toggle_hash_to_url("summary")
 
     var elem = document.getElementsByClassName(classname);
     var visible_display = "";
@@ -185,10 +171,8 @@ function toggle_contrast_for(target_class) {
     }
 };
 
-function toggle_contrast(onload = false) {
-    if (!onload) {
-        toggle_hash_to_url("high_contrast")
-    }
+function toggle_contrast() {
+    toggle_hash_to_url("high_contrast")
 
     var step_status_items = document.getElementsByClassName("step-status");
     for (var i = 0; i < step_status_items.length; i++) {
