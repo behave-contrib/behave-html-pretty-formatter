@@ -752,7 +752,7 @@ class Step:
                 div(
                     use_caption,
                     cls="embed_button collapse",
-                    id=f"embed_container_{embed_data.uid}",
+                    id=f"embed_button_{embed_data.uid}",
                     onclick=f"collapsible_toggle('{embed_data.uid}')",
                 )
 
