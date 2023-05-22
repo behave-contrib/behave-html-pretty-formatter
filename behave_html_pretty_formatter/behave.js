@@ -80,8 +80,8 @@ function toggle_hash_to_url(id) {
 // Making sure the container and content is changed.
 function onload_embed_expander(id) {
     // Making sure the arrow is pointing at the correct direction.
-    var embed_container_id = "embed_container_" + id;
-    var parent = document.getElementById(embed_container_id);
+    var embed_button_id = "embed_button_" + id;
+    var parent = document.getElementById(embed_button_id);
     if (parent == undefined) {
         console.log("This hash was not detected: " + id);
         return false;
@@ -98,8 +98,8 @@ function collapsible_toggle(id) {
     // Adding or removing hash to/from url.
     toggle_hash_to_url(id)
 
-    var embed_container_id = "embed_container_" + id
-    var parent = document.getElementById(embed_container_id);
+    var embed_button_id = "embed_button_" + id
+    var parent = document.getElementById(embed_button_id);
     while (parent !== undefined && !parent.classList.contains("embed_button")) {
         parent = parent.parentElement;
         console.log(parent);
