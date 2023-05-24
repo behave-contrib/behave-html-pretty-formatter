@@ -188,7 +188,7 @@ class Feature:
                     "High contrast toggle",
                     cls="button flex-left-space",
                     id="high_contrast",
-                    onclick="toggle_contrast()",
+                    onclick="toggle_hash('high_contrast')",
                 )
 
                 # Creating Summary which is clickable.
@@ -196,17 +196,16 @@ class Feature:
                     "Summary",
                     cls="button",
                     id="summary",
-                    onclick="collapsible_summary('feature-summary-container')",
+                    onclick="toggle_hash('summary')",
                 )
 
         # Generate summary.
-        summary_display = "display: none"
+        summary_collapse = "collapse"
         if formatter.show_summary:
-            summary_display = ""
+            summary_collapse = ""
         with div(
-            cls="feature-summary-container flex-gap",
+            cls=f"feature-summary-container flex-gap {summary_collapse}",
             id=f"f{self.counter}",
-            style=summary_display,
         ):
             # Generating feature commentary.
             flex_left_space = "flex-left-space" if self.description else ""
@@ -753,14 +752,13 @@ class Step:
                     use_caption,
                     cls="embed_button collapse",
                     id=f"embed_button_{embed_data.uid}",
-                    onclick=f"collapsible_toggle('{embed_data.uid}')",
+                    onclick=f"toggle_hash('{embed_data.uid}')",
                 )
 
                 # Embed content.
                 with pre(
-                    cls="embed_content",
+                    cls="embed_content collapse",
                     id=f"embed_{embed_data.uid}",
-                    style="display: none",
                 ):
                     self.generate_download_button(embed_data, data, use_caption)
                     self.generate_embed_content(mime_type, data)
@@ -778,8 +776,7 @@ class Step:
         with table(cls="table"):
             # Make a heading.
             with thead(
-                onclick="collapsible_toggle("
-                f"'table_{PrettyHTMLFormatter.table_number}')"
+                onclick="toggle_hash(" f"'table_{PrettyHTMLFormatter.table_number}')"
             ):
                 line = tr()
                 for heading in table_headings:
@@ -803,7 +800,7 @@ class Step:
         with table(cls="table"):
             # Do not make the table header.
             # with thead(
-            #     onclick="collapsible_toggle("
+            #     onclick="toggle_hash("
             #     f"'table_{PrettyHTMLFormatter.table_number}')"
             # ):
             #     line = tr()

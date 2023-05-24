@@ -1,94 +1,85 @@
-// Trigger proper functions on content load.
-document.addEventListener("DOMContentLoaded", function () {
-    // Check all hashes and trigger proper function based on type.
-    for (var i = 0; i < hash_uuid_list.length; i++) {
-        console.log("On load trying to toggle: " + hash_uuid_list[i])
-        if (hash_uuid_list[i] == "high_contrast") {
-            // Trigger the high contrast.
-            toggle_contrast()
-        } else if (hash_uuid_list[i] == "summary") {
-            // Trigger the summary.
-            collapsible_summary("feature-summary-container",)
-        } else {
-            // Triggering expand/collapse of embeds.
-            onload_embed_expander(hash_uuid_list[i]);
-        }
-    }
-});
-
 // Embed toggle identificators.
-var toggle_non_empty_string = "#toggle="
-
-// Get current url.
-var current_url = new URL(document.URL);
+var toggle_non_empty_string = "#toggle=";
 
 // Keeping the list of all toggled embeds.
 var hash_uuid_list = new Array();
+// Keep the changes to be applied
+//  - this can be filled in by hash_to_state (when hash changes)
+//  - or in toggle_hash (when some element is collapsed/expanded)
+var hash_uuid_list_change = new Array();
 
-if (current_url.hash.includes(toggle_non_empty_string)) {
-    // Add parsed hashes from the URL to the list.
-    list_of_hashes = current_url.hash.replace(toggle_non_empty_string, "").split(",");
-    for (var i = 0; i < list_of_hashes.length; i++) {
-        hash_uuid_list.push(list_of_hashes[i])
+// Convert hash to state and render
+function hash_to_state() {
+    var list_of_hashes = [];
+    if (location.hash.includes(toggle_non_empty_string)) {
+        // Add parsed hashes from the URL to the list.
+        list_of_hashes = location.hash.replace(toggle_non_empty_string, "").split(",");
+        console.log("Starting ID list: " + list_of_hashes.toString());
     }
-    console.log("Starting ID list: " + hash_uuid_list.toString())
+    if (hash_uuid_list_change.length == 0) {
+        // Compute change list - hashes that were added/removed from URL
+        for (var i = 0; i < list_of_hashes.length; i++) {
+            if (!hash_uuid_list.includes(list_of_hashes[i])) {
+                hash_uuid_list_change.push(list_of_hashes[i]);
+            }
+        }
+        for (var i = 0; i < hash_uuid_list.length; i++) {
+            if (!list_of_hashes.includes(hash_uuid_list[i])) {
+                hash_uuid_list_change.push(hash_uuid_list[i]);
+            }
+        }
+    }
+    // Update hash_uuid_list to be in sync with hash
+    hash_uuid_list = list_of_hashes;
+
+    // Check all hashes and trigger proper function based on type.
+    console.log("Will toggle following IDs: " + hash_uuid_list_change.toString());
+    for (var i = 0; i < hash_uuid_list_change.length; i++) {
+        if (hash_uuid_list_change[i] == "high_contrast") {
+            // Trigger the high contrast.
+            toggle_contrast();
+        } else if (hash_uuid_list_change[i] == "summary") {
+            // Trigger the summary.
+            collapsible_summary("feature-summary-container");
+        } else {
+            // Triggering expand/collapse of embeds.
+            collapsible_toggle(hash_uuid_list_change[i]);
+        }
+    }
+    // Requested changes were applied, clear the list
+    hash_uuid_list_change = [];
 }
 
-// Generate the hash for URL from the list.
-function generate_hash() {
-    console.log("generate_hash")
+// Trigger proper functions on content load.
+document.addEventListener("DOMContentLoaded", hash_to_state);
+window.onhashchange = hash_to_state;
+
+
+// Change visibility of element and change URL
+function toggle_hash(id) {
+    console.log("Toggle ID: " + id);
+    // Save element to be changed
+    hash_uuid_list_change.push(id)
+    // Change uuid list
+    if (hash_uuid_list.includes(id)) {
+        hash_uuid_list.splice(hash_uuid_list.indexOf(id), 1);
+    }
+    else {
+        hash_uuid_list.push(id);
+    }
+    // Update URL hash
     var hash = "#";
     if (hash_uuid_list.length != 0) {
         hash = toggle_non_empty_string + hash_uuid_list.toString()
     }
-    if (hash != current_url.hash) {
-        // Change the URL hash by overwriting latest item in history (no append to the history).
-        history.replaceState(undefined, undefined, hash)
-    }
-}
-
-// Utility function that handles adding and removing hashes from the list.
-function toggle_hash_to_url(id) {
-    console.log("toggle_hash_to_url: " + id.toString())
-    if (hash_uuid_list.includes(id.toString())) {
-        console.log("Removing: " + id.toString())
-        // Remove the hash from the list.
-        for (var i = 0; i < hash_uuid_list.length; i++) {
-            if (hash_uuid_list[i] === id.toString()) {
-                hash_uuid_list.splice(i, 1);
-                i--;
-            }
-        }
-    } else {
-        console.log("Adding: " + id.toString())
-        // Adding the hash to the list.
-        hash_uuid_list.push(id.toString())
-    }
-    // Set new url.
-    generate_hash()
-}
-
-// Making sure the container and content is changed.
-function onload_embed_expander(id) {
-    // Making sure the arrow is pointing at the correct direction.
-    var embed_button_id = "embed_button_" + id;
-    var parent = document.getElementById(embed_button_id);
-    if (parent == undefined) {
-        console.log("This hash was not detected: " + id);
-        return false;
-    }
-    parent.classList.remove("collapse");
-
-    // Always showing the content of the expanded embedded data.
-    var embed_content_id = "embed_" + id;
-    var elem = document.getElementById(embed_content_id);
-    elem.classList.remove = "contents";
+    console.log("New hash: " + hash);
+    history.replaceState(undefined, undefined, hash);
+    // Need to call hash_to_state, event is not triggered for some reason
+    hash_to_state();
 }
 
 function collapsible_toggle(id) {
-    // Adding or removing hash to/from url.
-    toggle_hash_to_url(id)
-
+    console.log("Toggle embed: " + id);
     var embed_button_id = "embed_button_" + id
     var parent = document.getElementById(embed_button_id);
     while (parent !== undefined && !parent.classList.contains("embed_button")) {
@@ -96,26 +87,18 @@ function collapsible_toggle(id) {
         console.log(parent);
     }
     if (parent !== undefined) {
-        if (!parent.classList.contains("collapse")) {
-            parent.classList.add("collapse");
-        } else {
-            parent.classList.remove("collapse");
-        }
+        toggle_class(parent, "collapse");
     }
 
     var embed_content_id = "embed_" + id
     var elem = document.getElementById(embed_content_id);
-
-    elem.style.display = (elem.style.display == "none" ? visible_display : "none");
+    toggle_class(elem, "collapse");
 };
 
-function collapsible_summary(classname,) {
-    toggle_hash_to_url("summary")
-
+function collapsible_summary(classname) {
     var elem = document.getElementsByClassName(classname);
-    var visible_display = "";
     for (var i = 0; i < elem.length; i++) {
-        elem[i].style.display = (elem[i].style.display == "none" ? visible_display : "none");
+        toggle_class(elem[i], "collapse");
     }
 };
 
@@ -159,21 +142,25 @@ function expand_this_only(name) {
     }
 };
 
+// Helper function to toggle class for element
+function toggle_class(elem, class_name) {
+    if (elem.classList.contains(class_name)) {
+        elem.classList.remove(class_name);
+    }
+    else {
+        elem.classList.add(class_name)
+    }
+}
+
 
 function toggle_contrast_for(target_class) {
     var elements = document.getElementsByClassName(target_class);
     for (var i = 0; i < elements.length; i++) {
-        if (elements[i].classList.contains("contrast")) {
-            elements[i].classList.remove("contrast");
-        } else {
-            elements[i].classList.add("contrast");
-        }
+        toggle_class(elements[i], "contrast");
     }
 };
 
 function toggle_contrast() {
-    toggle_hash_to_url("high_contrast")
-
     var step_status_items = document.getElementsByClassName("step-status");
     for (var i = 0; i < step_status_items.length; i++) {
         step_status_items[i].style.display = (step_status_items[i].style.display == "block" ? "none" : "block");
