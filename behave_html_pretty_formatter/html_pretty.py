@@ -10,6 +10,7 @@ import base64
 import os
 import time
 import traceback
+import uuid
 from collections import OrderedDict
 from datetime import datetime
 from pathlib import Path
@@ -186,24 +187,25 @@ class Feature:
                 span(
                     "High contrast toggle",
                     cls="button flex-left-space",
-                    onclick="toggle_contrast('embed')",
+                    id="high_contrast",
+                    onclick="toggle_hash('high_contrast')",
                 )
 
                 # Creating Summary which is clickable.
                 span(
                     "Summary",
                     cls="button",
-                    onclick="collapsible_summary('feature-summary-container')",
+                    id="summary",
+                    onclick="toggle_hash('summary')",
                 )
 
         # Generate summary.
-        summary_display = "display: none"
+        summary_collapse = "collapse"
         if formatter.show_summary:
-            summary_display = ""
+            summary_collapse = ""
         with div(
-            cls="feature-summary-container flex-gap",
+            cls=f"feature-summary-container flex-gap {summary_collapse}",
             id=f"f{self.counter}",
-            style=summary_display,
         ):
             # Generating feature commentary.
             flex_left_space = "flex-left-space" if self.description else ""
@@ -749,14 +751,14 @@ class Step:
                 div(
                     use_caption,
                     cls="embed_button collapse",
-                    onclick=f"collapsible_toggle('embed_{embed_data.uid}',this)",
+                    id=f"embed_button_{embed_data.uid}",
+                    onclick=f"toggle_hash('{embed_data.uid}')",
                 )
 
                 # Embed content.
                 with pre(
-                    cls="embed_content",
+                    cls="embed_content collapse",
                     id=f"embed_{embed_data.uid}",
-                    style="display: none",
                 ):
                     self.generate_download_button(embed_data, data, use_caption)
                     self.generate_embed_content(mime_type, data)
@@ -774,8 +776,7 @@ class Step:
         with table(cls="table"):
             # Make a heading.
             with thead(
-                onclick="collapsible_toggle("
-                f"'table_{PrettyHTMLFormatter.table_number}')"
+                onclick="toggle_hash(" f"'table_{PrettyHTMLFormatter.table_number}')"
             ):
                 line = tr()
                 for heading in table_headings:
@@ -799,7 +800,7 @@ class Step:
         with table(cls="table"):
             # Do not make the table header.
             # with thead(
-            #     onclick="collapsible_toggle("
+            #     onclick="toggle_hash("
             #     f"'table_{PrettyHTMLFormatter.table_number}')"
             # ):
             #     line = tr()
@@ -824,8 +825,8 @@ class Embed:
     def __init__(
         self, mime_type, data, caption=None, fail_only=False, download_button=None
     ):
-        self._id = Embed.count
-        Embed.count += 1
+        # Generating unique ID.
+        self.uid = str(uuid.uuid4())[:4]
         self.set_data(mime_type, data, caption)
         self._fail_only = fail_only
         self.download_button = download_button
@@ -870,13 +871,6 @@ class Embed:
     def fail_only(self):
         "Read-only fail_only access."
         return self._fail_only
-
-    @property
-    def uid(self):
-        """
-        Read-only access for embed ID.
-        """
-        return self._id
 
 
 class Tag:
