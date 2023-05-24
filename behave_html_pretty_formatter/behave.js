@@ -82,9 +82,11 @@ function collapsible_toggle(id) {
     console.log("Toggle embed: " + id);
     var embed_button_id = "embed_button_" + id
     var parent = document.getElementById(embed_button_id);
+    if (parent === null) {
+        return;
+    }
     while (parent !== undefined && !parent.classList.contains("embed_button")) {
         parent = parent.parentElement;
-        console.log(parent);
     }
     if (parent !== undefined) {
         toggle_class(parent, "collapse");
