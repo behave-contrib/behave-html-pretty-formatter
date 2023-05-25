@@ -63,8 +63,7 @@ function toggle_hash(id) {
     // Change uuid list
     if (hash_uuid_list.includes(id)) {
         hash_uuid_list.splice(hash_uuid_list.indexOf(id), 1);
-    }
-    else {
+    } else {
         hash_uuid_list.push(id);
     }
     // Update URL hash
@@ -148,8 +147,7 @@ function expand_this_only(name) {
 function toggle_class(elem, class_name) {
     if (elem.classList.contains(class_name)) {
         elem.classList.remove(class_name);
-    }
-    else {
+    } else {
         elem.classList.add(class_name)
     }
 }

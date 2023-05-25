@@ -1,3 +1,7 @@
+behave-html-pretty-formatter 1.9.1
+==================================
+Hotfix invalid minified JS
+
 behave-html-pretty-formatter 1.9
 ================================
 Create embed with unique ID - Fixes #40
