@@ -737,13 +737,16 @@ class Step:
 
         # Check if the content of the data is a valid file - if so encode it to base64.
         if os.path.isfile(str(data)):
-            with open(data, "rb") as _file:
-                data = _file.read()
-                if "text" not in mime_type:
-                    data_base64 = base64.b64encode(data)
-                    data = data_base64.decode("utf-8").replace("\n", "")
-                else:
-                    data = data.decode("utf-8")
+            try:
+                with open(data, "rb") as _file:
+                    data = _file.read()
+                    if "text" not in mime_type:
+                        data_base64 = base64.b64encode(data)
+                        data = data_base64.decode("utf-8").replace("\n", "")
+                    else:
+                        data = data.decode("utf-8")
+            except ValueError as error:
+                data = f"data removed: ValueError: '{error}'"
 
         with div(cls="messages"):
             with div(cls="embed-capsule"):
