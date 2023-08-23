@@ -182,8 +182,8 @@ class Feature:
             span(f"Feature: {self.name}")
 
             # Adding start time based on Issue #45.
-            start_time = {self.start_time.strftime(formatter.date_format)}
-            span(f"Started: {start_time}", cls="scenario-duration", style="padding: 0")
+            start_time = self.start_time.strftime(formatter.date_format)
+            span(f"Started: {start_time}", cls="feature-started")
 
             if self.high_contrast_button:
                 # Making sure there is a functioning button.
