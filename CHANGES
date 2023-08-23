@@ -1,3 +1,8 @@
+behave-html-pretty-formatter 1.9.2
+==================================
+Replace invalid data when embeding text files. Fixes #42
+Summary timestamps: show one of them always. Fixes #45
+
 behave-html-pretty-formatter 1.9.1
 ==================================
 Hotfix invalid minified JS

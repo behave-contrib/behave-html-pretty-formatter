@@ -254,6 +254,18 @@ pre * {
   margin-bottom: 2rem;
 }
 
+.feature-started {
+  align-self: center;
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+.feature-started.contrast {
+  font-size: 1.25rem;
+  color: #fff;
+}
+
 
 /*SCENARIO CONTENT*/
 .scenario-capsule {
@@ -599,6 +611,10 @@ a:hover {
 @media only screen and (max-width: 750px) {
   .feature-title {
     flex-direction: column;
+  }
+
+  .feature-started {
+    margin-left: unset;
   }
 
   .feature-summary-container {

@@ -168,6 +168,7 @@ function toggle_contrast() {
 
     const contrast_classes = [
         "feature-title",
+        "feature-started",
         "feature-summary-commentary",
         "feature-summary-container",
         "feature-summary-row",
