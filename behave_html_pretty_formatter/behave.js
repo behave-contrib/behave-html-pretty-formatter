@@ -8,6 +8,17 @@ var hash_uuid_list = new Array();
 //  - or in toggle_hash (when some element is collapsed/expanded)
 var hash_uuid_list_change = new Array();
 
+// GZIP mime-type header
+var GZIP_HEADER = "data:application/octet-stream;base64,";
+const decompress = async (url) => {
+    const ds = new DecompressionStream('gzip');
+    const response = await fetch(url);
+    const blob_in = await response.blob();
+    const stream_in = blob_in.stream().pipeThrough(ds);
+    const blob_out = await new Response(stream_in).blob();
+    return await blob_out.text();
+};
+
 // Convert hash to state and render
 function hash_to_state() {
     var list_of_hashes = [];
@@ -77,7 +88,7 @@ function toggle_hash(id) {
     hash_to_state();
 }
 
-function collapsible_toggle(id) {
+async function collapsible_toggle(id) {
     console.log("Toggle embed: " + id);
     var embed_button_id = "embed_button_" + id
     var parent = document.getElementById(embed_button_id);
@@ -93,6 +104,34 @@ function collapsible_toggle(id) {
 
     var embed_content_id = "embed_" + id
     var elem = document.getElementById(embed_content_id);
+    // decompress compressed data
+    var compressed_data = elem.querySelector("span.to_render");
+    if (compressed_data) {
+        compressed_data.classList.remove("to_render");
+        var show = compressed_data.getAttribute("show");
+        var compressed = compressed_data.getAttribute("compressed");
+        var data = compressed_data.getAttribute("data");
+        var ds = ('DecompressionStream' in window);
+        // we can't show compressed data, if browser doesn't suport it
+        if (show == "true" && (compressed != "true" || ds)) {
+            if (compressed == "true") {
+                data = GZIP_HEADER + data;
+                data = await decompress(data);
+            } else {
+                data = atob(data);
+            }
+            compressed_data.innerHTML = data;
+        } else {
+            var msg = "click download above."
+            // data should be rendered, but browser check failed
+            if (show == "true") {
+                msg = "Browser does not support CompressionStream API, " + msg;
+            } else {
+                msg = "Compressed data are too big, " + msg;
+            }
+            compressed_data.innerHTML = msg;
+        }
+    }
     toggle_class(elem, "collapse");
 };
 
@@ -223,8 +262,13 @@ function download_embed(id, filename) {
     var value = "";
     var tag = child.tagName.toLowerCase();
     if (tag === "span") {
-        filename += ".txt";
-        value = "data:text/plain," + encodeURIComponent(decodeHTMLEntities(child.innerHTML));
+        if (child.getAttribute("compressed") == "true") {
+            filename += ".txt.gz";
+            value = GZIP_HEADER + child.getAttribute("data");
+        } else {
+            filename += ".txt";
+            value = "data:text/plain," + encodeURIComponent(decodeHTMLEntities(child.innerHTML));
+        }
     } else if (tag == "video") {
         filename += ".webm";
         value = child.children[0].src;

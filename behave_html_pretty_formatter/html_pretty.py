@@ -7,6 +7,7 @@ from __future__ import absolute_import
 
 import atexit
 import base64
+import gzip
 import time
 import traceback
 import uuid
@@ -678,7 +679,7 @@ class Step:
             # Create download for all cases.
             _create_download_button()
 
-    def generate_embed_content(self, mime_type, data):
+    def generate_embed_content(self, mime_type, data, compress):
         """
         Generate content of the embed based on the mime_type.
 
@@ -686,6 +687,9 @@ class Step:
         :type mime_type: str
 
         :param data: Data to be embedded.
+        :type data: Unspecified.
+
+        :param compres: Whether to compress the text data
         :type data: Unspecified.
         """
 
@@ -701,13 +705,23 @@ class Step:
             img(src=f"data:{mime_type};base64,{data}")
 
         if "text" in mime_type:
-            if "html" in mime_type:
-                data_span = span()
-                data_span.add_raw_string(data)
-            elif "markdown" in mime_type:
-                data_md = markdown.markdown(data)
-                data_span = span()
-                data_span.add_raw_string(data_md)
+            if "markdown" in mime_type:
+                data = markdown.markdown(data)
+            # javascript will decompress data and render them, if small enough
+            if compress == "auto":
+                compress = len(data) > 48 * 1024
+            if compress or "html" in mime_type or "markdown" in mime_type:
+                show = len(data) < 1024 * 1024
+                data = data.encode("utf-8")
+                if compress:
+                    data = gzip.compress(data)
+                data_base64 = base64.b64encode(data).decode("utf-8").replace("\n", "")
+                span(
+                    cls="to_render",
+                    data=data_base64,
+                    show=str(show).lower(),
+                    compressed=str(compress).lower(),
+                )
             else:
                 span(data)
 
@@ -729,6 +743,7 @@ class Step:
         caption = embed_data.caption
         mime_type = embed_data.mime_type
         data = embed_data.data
+        compress = embed_data.compress
 
         # If caption is user defined.
         if caption is not None:
@@ -774,7 +789,7 @@ class Step:
                 id=f"embed_{embed_data.uid}",
             ):
                 self.generate_download_button(embed_data, data, use_caption)
-                self.generate_embed_content(mime_type, data)
+                self.generate_embed_content(mime_type, data, compress)
 
     def generate_table(self):
         """
@@ -842,11 +857,13 @@ class Embed:
         caption=None,
         fail_only=False,
         download_button=None,
+        compress="auto",
     ):
         # Generating unique ID.
         self.uid = str(uuid.uuid4())[:4]
         self.set_data(mime_type, data, caption)
         self._fail_only = fail_only
+        self._compress = compress
         self.download_button = download_button
 
     def set_data(self, mime_type, data, caption=None):
@@ -870,6 +887,17 @@ class Embed:
         """
         self._fail_only = fail_only
 
+    def set_compress(self, compress):
+        """
+        Set compress flag, whether the text embed should be compressed or not.
+        True: always compress
+        'auto': compress if greater than 48kB
+        False: never compress
+
+        This is ignored for non-text files.
+        """
+        self._compress = compress
+
     @property
     def mime_type(self):
         "Read-only mime_type access."
@@ -889,6 +917,11 @@ class Embed:
     def fail_only(self):
         "Read-only fail_only access."
         return self._fail_only
+
+    @property
+    def compress(self):
+        "Read-only compress access."
+        return self._compress
 
 
 class Tag:
