@@ -93,6 +93,11 @@ async function collapsible_toggle(id) {
     var embed_button_id = "embed_button_" + id
     var parent = document.getElementById(embed_button_id);
     if (parent === null) {
+        // can be table
+        var elem = document.getElementById(id);
+        if (elem != null) {
+            toggle_class(elem, "collapse");
+        }
         return;
     }
     while (parent !== undefined && !parent.classList.contains("embed_button")) {
