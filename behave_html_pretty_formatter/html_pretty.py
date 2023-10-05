@@ -60,6 +60,7 @@ class Feature:
         self.location = feature.location
         self.status = Status.skipped
         self.icon = None
+        self.tags = feature.tags
         self.high_contrast_button = False
         self.start_time = datetime.now()
         self.finish_time = datetime.now()
@@ -298,7 +299,7 @@ class Scenario:
 
         # We need another information about a tag, to recognize if it
         # should act as a link or span.
-        self.tags = [Tag(tag) for tag in scenario.effective_tags]
+        self.tags = [Tag(tag) for tag in feature.tags + scenario.tags]
 
         self.location = scenario.location
 
