@@ -500,8 +500,9 @@ class Scenario:
         # Check for after_scenario errors.
         self.report_error(self._scenario)
         # Scenario container.
+        common_cls = f"{self.status.name} {formatter.get_collapse_cls('scenario')}"
         with div(
-            cls=f"scenario-header {self.status.name}",
+            cls=f"scenario-header {common_cls}",
             id=f"f{self.feature.counter}-s{self.counter}-h",
         ):
             for tag in self.tags:
@@ -519,7 +520,7 @@ class Scenario:
                 div(f"Scenario duration: {self.duration:.2f}s", cls="scenario-duration")
 
         with div(
-            cls=f"scenario-capsule {self.status.name}",
+            cls=f"scenario-capsule {common_cls}",
             id=f"f{self.feature.counter}-s{self.counter}-c",
         ):
             # add scenario description as "commentary":
@@ -641,8 +642,8 @@ class Step:
                     span(self.location, cls="flex-left-space")
 
             # Still in non-commentary.
-            self.generate_text()
-            self.generate_table()
+            self.generate_text(formatter)
+            self.generate_table(formatter)
 
         # Generate all embeds that are in the data structure.
         # Add div for dashed-line last-child CSS selector.
@@ -650,7 +651,7 @@ class Step:
             for embed_data in self.embeds:
                 if embed_data.fail_only and scenario_status != Status.failed:
                     continue
-                self.generate_embed(embed_data)
+                self.generate_embed(formatter, embed_data)
 
     def generate_download_button(self, embed_data, data, use_caption):
         """
@@ -742,7 +743,7 @@ class Step:
                 with div():
                     a(single_link[1], href=single_link[0])
 
-    def generate_embed(self, embed_data):
+    def generate_embed(self, formatter, embed_data):
         """
         Converts embed data into HTML.
 
@@ -789,20 +790,20 @@ class Step:
             # Embed Caption.
             div(
                 use_caption,
-                cls="embed_button collapse",
+                cls=f"embed_button {formatter.get_collapse_cls('embed')}",
                 id=f"embed_button_{embed_data.uid}",
                 onclick=f"toggle_hash('{embed_data.uid}')",
             )
 
             # Embed content.
             with pre(
-                cls="embed_content collapse",
+                cls=f"embed_content {formatter.get_collapse_cls('embed')}",
                 id=f"embed_{embed_data.uid}",
             ):
                 self.generate_download_button(embed_data, data, use_caption)
                 self.generate_embed_content(mime_type, data, compress)
 
-    def generate_table(self):
+    def generate_table(self, formatter):
         """
         Converts step table into HTML.
         """
@@ -822,7 +823,10 @@ class Step:
                     line += th(heading)
 
             # Make the body.
-            with tbody(id=f"table_{PrettyHTMLFormatter.table_number}"):
+            with tbody(
+                id=f"table_{PrettyHTMLFormatter.table_number}",
+                cls=formatter.get_collapse_cls("table"),
+            ):
                 for row in table_rows:
                     line = tr()
                     for cell in row:
@@ -830,22 +834,25 @@ class Step:
 
         PrettyHTMLFormatter.table_number += 1
 
-    def generate_text(self):
+    def generate_text(self, formatter):
         """
         Converts step text into HTML.
         """
         if not self.text:
             return
         with table(cls="table"):
-            # Do not make the table header.
-            # with thead(
-            #     onclick="toggle_hash("
-            #     f"'table_{PrettyHTMLFormatter.table_number}')"
-            # ):
-            #     line = tr()
-            #     line += th("Text")
+            if formatter.collapse_text:
+                with thead(
+                    onclick="toggle_hash("
+                    f"'table_{PrettyHTMLFormatter.table_number}')",
+                ):
+                    line = tr()
+                    line += th("Text")
             # Make the body.
-            with tbody(id=f"table_{PrettyHTMLFormatter.table_number}"):
+            with tbody(
+                id=f"table_{PrettyHTMLFormatter.table_number}",
+                cls=formatter.get_collapse_cls("text"),
+            ):
                 # Make rows.
                 for row in self.text.split("\n"):
                     line = tr()
@@ -1031,6 +1038,27 @@ class PrettyHTMLFormatter(Formatter):
             config.userdata.get(f"{config_path}.show_summary", "false"),
         )
 
+        self.collapse = [
+            i.lower()
+            for i in config.userdata.get(f"{config_path}.collapse", "auto").split(",")
+        ]
+        if "all" in self.collapse or "auto" in self.collapse or "none" in self.collapse:
+            if len(self.collapse) != 1:
+                msg = (
+                    "Can not specify 'all', 'none' or 'auto' collapse at the same time."
+                )
+                raise RuntimeError(msg)
+
+        self.collapse_scenario = "scenario" in self.collapse or "all" in self.collapse
+        # collapse embeds by default
+        self.collapse_embed = (
+            "embed" in self.collapse
+            or "all" in self.collapse
+            or "auto" in self.collapse
+        )
+        self.collapse_table = "table" in self.collapse or "all" in self.collapse
+        self.collapse_text = "text" in self.collapse or "all" in self.collapse
+
         self.show_unexecuted_steps = self._str_to_bool(
             config.userdata.get(f"{config_path}.show_unexecuted_steps", "true"),
         )
@@ -1043,6 +1071,18 @@ class PrettyHTMLFormatter(Formatter):
                 self.additional_info[short_key] = item
 
         atexit.register(self._force_close)
+
+    def get_collapse_cls(self, item_type):
+        """
+        Return collapse html class for given item type based on current config.
+
+        :param item_type: type of collapsible item
+        :type item_type: str
+        :return: "collapse" or "" based on current config.
+        :rtype: str
+        """
+        collapse = getattr(self, f"collapse_{item_type}", False)
+        return "collapse" if collapse else ""
 
     def _str_to_bool(self, value):
         accepted_values = str(["true", "false", "yes", "no", "0", "1"])

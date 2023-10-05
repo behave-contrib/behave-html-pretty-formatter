@@ -498,6 +498,10 @@ table tbody tr:nth-child(even) {
   background-color: var(--table-bg-even);
 }
 
+table tbody.collapse {
+  display: none;
+}
+
 table.contrast tbody tr {
   background-color: #fff;
   color: #000;

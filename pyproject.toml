@@ -72,6 +72,12 @@ html-pretty = "behave_html_pretty_formatter:PrettyHTMLFormatter"
 "behave.formatter.html-pretty.date_format" = "%%d-%%m-%%Y %%H:%%M:%%S"
 # Defines if the summary is expanded upon start.
 "behave.formatter.html-pretty.show_summary" = false
+# Define what to collapse by default, possible values:
+#  "auto" - show everything except embeds (default)
+#  "all" - hide everything
+#  comma separated list - specify subset of "scenario,embed,table,text"
+#  "none" - show everything, even embeds
+"behave.formatter.html-pretty.collapse" = "auto"
 # Defines if the user is interested in what steps are not executed.
 "behave.formatter.html-pretty.show_unexecuted_steps" = true
 

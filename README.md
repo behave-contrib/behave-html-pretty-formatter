@@ -37,6 +37,14 @@ behave.formatter.html-pretty.date_format = %%d-%%m-%%Y %%H:%%M:%%S
 behave.formatter.html-pretty.show_summary = false
 # Defines if the user is interested in what steps are not executed.
 behave.formatter.html-pretty.show_unexecuted_steps = true
+# Define what to collapse by default, possible values:
+#  "auto" - show everything except embeds (default)
+#  "all" - hide everything
+#  comma separated list - specify subset of "scenario,embed,table,text"
+#  "none" - show everything, even embeds
+behave.formatter.html-pretty.collapse = auto
+# Defines if the user is interested in what steps are not executed.
+behave.formatter.html-pretty.show_unexecuted_steps = true
 
 # Following will be formatted in summary section as "tester: worker1".
 behave.additional-info.tester=worker1
