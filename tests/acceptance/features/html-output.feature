@@ -38,7 +38,7 @@ Feature: Make behave generate Pretty HTML as output
       """
       </script>
       </head>
-      <body onload="detect_contrast();">
+      <body onload="body_onload();">
       """
     And the command output should contain:
       """

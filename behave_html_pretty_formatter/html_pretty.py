@@ -188,10 +188,20 @@ class Feature:
 
             if self.high_contrast_button:
                 # Making sure there is a functioning button.
-                # Creating High Contrast oggle which is clickable.
+                # Creating Dark Mode toggle which is clickable.
+                span(
+                    "Dark mode",
+                    cls="button flex-left-space",
+                    id="dark_mode_toggle",
+                    onclick="toggle_dark_mode()",
+                    data_value="auto",
+                    data_next_value="dark",
+                )
+
+                # Creating High Contrast toggle which is clickable.
                 span(
                     "High contrast toggle",
-                    cls="button flex-left-space",
+                    cls="button",
                     id="high_contrast",
                     onclick="toggle_hash('high_contrast')",
                 )
@@ -1281,7 +1291,7 @@ class PrettyHTMLFormatter(Formatter):
 
         # Iterate over the data and generate the page.
         with document.body as body:
-            body.attributes["onload"] = "detect_contrast();"
+            body.attributes["onload"] = "body_onload();"
             if self.features:
                 feature = self.features[0]
                 feature.icon = self.icon
