@@ -9,6 +9,8 @@
 python3 -m pip install behave-html-pretty-formatter
 ```
 
+[![PyPI version](https://img.shields.io/pypi/v/behave-html-pretty-formatter.svg?style=flat)](https://pypi.org/project/behave-html-pretty-formatter/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/behave-html-pretty-formatter.svg?style=flat)](https://pypi.org/project/behave-html-pretty-formatter/)
 
 ## Usage
 
@@ -67,7 +69,7 @@ You can switch between the different contrasts with the toggle button.
 ## Dark mode
 
 Stylesheet follows the browser dark theme, so it reverts background to dark and
-adjusts colors to darker shade. 
+adjusts colors to darker shade.
 
 
 ## Summary is hidden by default
