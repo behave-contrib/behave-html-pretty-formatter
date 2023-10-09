@@ -14,8 +14,8 @@ python3 -m pip install behave-html-pretty-formatter
 
 ## Usage
 
-To use it with behave create `behave.ini` file in project folder (or in home) with
-following content:
+To use it with Behave create a `behave.ini` file in your project folder
+(or in home) with the following content:
 
 ```ini
 # -- FILE: behave.ini
@@ -23,7 +23,7 @@ following content:
 [behave.formatters]
 html-pretty = behave_html_pretty_formatter:PrettyHTMLFormatter
 
-# Optional configuration of PrettyHTMLFormmater
+# Optional configuration of PrettyHTMLFormatter
 # also possible to use "behave ... -D behave.formatter.html-pretty.{setting}={value}".
 [behave.userdata]
 behave.formatter.html-pretty.title_string = Test Suite Reporter
@@ -44,7 +44,24 @@ behave.additional-info.tester=worker1
 behave.additional-info.location=lab2
 ```
 
-and then use it by running behave with `-f`/`--format` parameter, e.g.
+Alternatively, with behave >= v1.2.7.dev3, you can put the same configuration in
+`pyproject.toml`, like so:
+
+```toml
+[tool.behave.formatters]
+html-pretty = "behave_html_pretty_formatter:PrettyHTMLFormatter"
+
+# Optional configuration of PrettyHTMLFormatter
+[tool.behave.userdata]
+"behave.formatter.html-pretty.title_string" = "Test Suite Reporter"
+"behave.formatter.html-pretty.pseudo_steps" = false
+"behave.formatter.html-pretty.pretty_output" = true
+"behave.formatter.html-pretty.date_format" = "%%d-%%m-%%Y %%H:%%M:%%S"
+"behave.formatter.html-pretty.show_summary" = false
+"behave.formatter.html-pretty.show_unexecuted_steps" = true
+```
+
+Then use the formatter by running Behave with the `-f`/`--format` option, e.g.
 
 ```console
 behave -f help
@@ -53,7 +70,7 @@ behave -f html-pretty -o behave-report.html
 ```
 
 You can find information about behave and user-defined formatters in the
-[behave docs](https://behave.readthedocs.io/en/latest/formatters.html).
+[behave docs](https://behave.readthedocs.io/en/latest/formatters/).
 
 ## HTML Pretty has High contrast option
 
