@@ -7,7 +7,6 @@ from __future__ import absolute_import
 
 import atexit
 import base64
-import os
 import time
 import traceback
 import uuid
@@ -63,7 +62,7 @@ class Feature:
         self.icon = None
         self.high_contrast_button = False
         self.start_time = datetime.now()
-        self.finish_time = None
+        self.finish_time = datetime.now()
         self.counter = feature_counter
 
         self.scenarios = []
@@ -449,7 +448,9 @@ class Scenario:
             if self.reported_error.data in behave_obj.error_message:
                 # Do not update traceback, as behave saves only first traceback.
                 self.reported_error.set_data(
-                    "text", behave_obj.error_message, "Error Message"
+                    "text",
+                    behave_obj.error_message,
+                    "Error Message",
                 )
                 return
         self.reported_error = Embed("text", behave_obj.error_message, "Error Message")
@@ -466,7 +467,7 @@ class Scenario:
                         ),
                     ),
                     "Error Traceback",
-                )
+                ),
             )
         self.status = Status.failed
 
@@ -563,7 +564,7 @@ class Step:
             )
             undefined_step_message += "these snippets:\n\n"
             undefined_step_message += "\n".join(
-                make_undefined_step_snippets(undefined_steps=[result])
+                make_undefined_step_snippets(undefined_steps=[result]),
             )
 
             self.embed(Embed("text", undefined_step_message, "Error Message"))
@@ -661,7 +662,8 @@ class Step:
         # Rule for embed_data.download_button as None - default value.
         if embed_data.download_button is None:
             # Do not create button if there is mime type text with less then 20 lines.
-            if "text" in embed_data.mime_type and data.count("\n") < 20:
+            min_lines_button = 20
+            if "text" in embed_data.mime_type and data.count("\n") < min_lines_button:
                 return
 
             # Do not create button if the mime type is link.
@@ -736,13 +738,18 @@ class Step:
             use_caption = DEFAULT_CAPTION_FOR_MIME_TYPE[mime_type]
         # No caption and no default caption for given mime type.
         else:
-            use_caption = "uknown-mime-type"
+            use_caption = "unknown-mime-type"
             data = "data removed"
 
         # Check if the content of the data is a valid file - if so encode it to base64.
-        if os.path.isfile(str(data)):
+        # Most file systems have filename length limit of 255 bytes.
+        # Over that size it will throw 'OSError: [Errno 74] Bad message'.
+        embed_file = Path(str(data))
+        filesystem_filename_length_limit = 255
+        is_valid_filename = filesystem_filename_length_limit >= len(data)
+        if is_valid_filename and embed_file.exists():
             try:
-                with open(data, "rb") as _file:
+                with embed_file.open("rb") as _file:
                     data = _file.read()
                     if "text" not in mime_type:
                         data_base64 = base64.b64encode(data)
@@ -752,23 +759,22 @@ class Step:
             except ValueError as error:
                 data = f"data removed: ValueError: '{error}'"
 
-        with div(cls="messages"):
-            with div(cls="embed-capsule"):
-                # Embed Caption.
-                div(
-                    use_caption,
-                    cls="embed_button collapse",
-                    id=f"embed_button_{embed_data.uid}",
-                    onclick=f"toggle_hash('{embed_data.uid}')",
-                )
+        with div(cls="messages"), div(cls="embed-capsule"):
+            # Embed Caption.
+            div(
+                use_caption,
+                cls="embed_button collapse",
+                id=f"embed_button_{embed_data.uid}",
+                onclick=f"toggle_hash('{embed_data.uid}')",
+            )
 
-                # Embed content.
-                with pre(
-                    cls="embed_content collapse",
-                    id=f"embed_{embed_data.uid}",
-                ):
-                    self.generate_download_button(embed_data, data, use_caption)
-                    self.generate_embed_content(mime_type, data)
+            # Embed content.
+            with pre(
+                cls="embed_content collapse",
+                id=f"embed_{embed_data.uid}",
+            ):
+                self.generate_download_button(embed_data, data, use_caption)
+                self.generate_embed_content(mime_type, data)
 
     def generate_table(self):
         """
@@ -783,7 +789,7 @@ class Step:
         with table(cls="table"):
             # Make a heading.
             with thead(
-                onclick="toggle_hash(" f"'table_{PrettyHTMLFormatter.table_number}')"
+                onclick="toggle_hash(" f"'table_{PrettyHTMLFormatter.table_number}')",
             ):
                 line = tr()
                 for heading in table_headings:
@@ -792,9 +798,9 @@ class Step:
             # Make the body.
             with tbody(id=f"table_{PrettyHTMLFormatter.table_number}"):
                 for row in table_rows:
-                    with tr() as line:
-                        for cell in row:
-                            line += td(cell)
+                    line = tr()
+                    for cell in row:
+                        line += td(cell)
 
         PrettyHTMLFormatter.table_number += 1
 
@@ -816,8 +822,8 @@ class Step:
             with tbody(id=f"table_{PrettyHTMLFormatter.table_number}"):
                 # Make rows.
                 for row in self.text.split("\n"):
-                    with tr() as line:
-                        line += td(row)
+                    line = tr()
+                    line += td(row)
 
         PrettyHTMLFormatter.table_number += 1
 
@@ -830,7 +836,12 @@ class Embed:
     count = 0
 
     def __init__(
-        self, mime_type, data, caption=None, fail_only=False, download_button=None
+        self,
+        mime_type,
+        data,
+        caption=None,
+        fail_only=False,
+        download_button=None,
     ):
         # Generating unique ID.
         self.uid = str(uuid.uuid4())[:4]
@@ -893,7 +904,9 @@ class Tag:
         """
         Set link associated with tag.
         """
-        assert isinstance(link, str), f"Link must be string, got {type(link)}"
+        if not isinstance(link, str):
+            type_error = f"Link must be 'string', got type '{type(link)}'"
+            raise TypeError(type_error)
         self._link = link
 
     def has_link(self):
@@ -953,27 +966,29 @@ class PrettyHTMLFormatter(Formatter):
         additional_info_path = "behave.additional-info."
 
         self.pseudo_steps = self._str_to_bool(
-            config.userdata.get(f"{config_path}.pseudo_steps", "false")
+            config.userdata.get(f"{config_path}.pseudo_steps", "false"),
         )
 
         self.title_string = config.userdata.get(
-            f"{config_path}.title_string", "Test Suite Reporter"
+            f"{config_path}.title_string",
+            "Test Suite Reporter",
         )
 
         self.pretty_output = self._str_to_bool(
-            config.userdata.get(f"{config_path}.pretty_output", "true")
+            config.userdata.get(f"{config_path}.pretty_output", "true"),
         )
 
         self.date_format = config.userdata.get(
-            f"{config_path}.date_format", "%d-%m-%Y %H:%M:%S"
+            f"{config_path}.date_format",
+            "%d-%m-%Y %H:%M:%S",
         )
 
         self.show_summary = self._str_to_bool(
-            config.userdata.get(f"{config_path}.show_summary", "false")
+            config.userdata.get(f"{config_path}.show_summary", "false"),
         )
 
         self.show_unexecuted_steps = self._str_to_bool(
-            config.userdata.get(f"{config_path}.show_unexecuted_steps", "true")
+            config.userdata.get(f"{config_path}.show_unexecuted_steps", "true"),
         )
 
         self.additional_info = {}
@@ -986,7 +1001,13 @@ class PrettyHTMLFormatter(Formatter):
         atexit.register(self._force_close)
 
     def _str_to_bool(self, value):
-        assert value.lower() in ["true", "false", "yes", "no", "0", "1"]
+        accepted_values = str(["true", "false", "yes", "no", "0", "1"])
+        if value.lower() not in accepted_values:
+            value_error = (
+                f"Value '{value.lower()}' was not in correct format '{accepted_values}'"
+            )
+            raise ValueError(value_error)
+
         return value.lower() in ["true", "yes", "1"]
 
     def feature(self, feature):
@@ -1038,7 +1059,9 @@ class PrettyHTMLFormatter(Formatter):
         """
         self.scenario_counter += 1
         self.current_feature.add_scenario(
-            scenario, self.scenario_counter, self.pseudo_steps
+            scenario,
+            self.scenario_counter,
+            self.pseudo_steps,
         )
 
     def step(self, step):
@@ -1099,7 +1122,12 @@ class PrettyHTMLFormatter(Formatter):
         span(the_rest)
 
     def embed(
-        self, mime_type, data, caption=None, fail_only=False, download_button=None
+        self,
+        mime_type,
+        data,
+        caption=None,
+        fail_only=False,
+        download_button=None,
     ):
         """
         Prepares Embed data and append it to the currently executed (pseudo) step.
@@ -1202,9 +1230,8 @@ class PrettyHTMLFormatter(Formatter):
 
             # Load and insert css theme.
             css_fname = "behave.css" if self.pretty_output else "behave.min.css"
-            with open(
-                Path(__file__).parent / css_fname, "r", encoding="utf-8"
-            ) as _css_file:
+            css_path = Path(__file__).parent / css_fname
+            with css_path.open("r", encoding="utf-8") as _css_file:
                 css_theme = _css_file.read()
             with style(rel="stylesheet"):
                 raw(css_theme)
@@ -1212,9 +1239,8 @@ class PrettyHTMLFormatter(Formatter):
             # Load and insert javascript - important for embed toggles
             # and high contrast switch.
             js_fname = "behave.js" if self.pretty_output else "behave.min.js"
-            with open(
-                Path(__file__).parent / js_fname, "r", encoding="utf-8"
-            ) as _script_file:
+            js_path = Path(__file__).parent / js_fname
+            with js_path.open("r", encoding="utf-8") as _script_file:
                 js_script = _script_file.read()
             with script(type="text/javascript"):
                 raw(js_script)

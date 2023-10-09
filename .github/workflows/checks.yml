@@ -9,7 +9,8 @@ on:
     - main
 
 env:
-  PY_COLORS: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: '1'
+  PY_COLORS: '1'
 
 jobs:
   check:
@@ -19,19 +20,15 @@ jobs:
       matrix:
         env:
         - black
-        - flake8
-        - isort
         - minify
-        - pylint
-        - readme
+        - package
+        - ruff
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
       with:
-        python-version: '3.x'
+        python-version: '3.10'
     - name: Install build tools
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools tox wheel
+      run: python -m pip install tox wheel
     - name: Run ${{ matrix.env }}
-      run: tox -e ${{ matrix.env }}
+      run: tox run -e ${{ matrix.env }}

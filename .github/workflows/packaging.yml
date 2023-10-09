@@ -3,10 +3,11 @@ name: Publish
 on:
   push:
     tags:
-    - "*"
+    - '*'
 
 env:
-  PY_COLORS: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: '1'
+  PY_COLORS: '1'
 
 jobs:
   publish:
@@ -15,15 +16,15 @@ jobs:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
       with:
-        python-version: '3.x'
+        python-version: '3.10'
     - name: Install build tools
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools build twine wheel
-    - name: Build package
-      run: python -m build
-    - name: Upload to PyPI
+      run: python -m pip install tox wheel
+    - name: Verify package version is same as Git tag
+      env:
+        GIT_TAG: ${{ github.ref_name }}
+      run: tox run -qe ensure_version_matches -- $GIT_TAG
+    - name: Build package and upload to PyPI
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: twine upload dist/*
+      run: tox run -e package -- upload

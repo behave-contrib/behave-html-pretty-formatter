@@ -11,3 +11,5 @@ dist/
 *.pyc
 *.pyo
 *.bak
+
+tests/TESTS-*.xml
