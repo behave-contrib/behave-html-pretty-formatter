@@ -62,7 +62,7 @@ class Feature:
         self.icon = None
         self.high_contrast_button = False
         self.start_time = datetime.now()
-        self.finish_time = None
+        self.finish_time = datetime.now()
         self.counter = feature_counter
 
         self.scenarios = []
@@ -742,8 +742,12 @@ class Step:
             data = "data removed"
 
         # Check if the content of the data is a valid file - if so encode it to base64.
+        # Most file systems have filename length limit of 255 bytes.
+        # Over that size it will throw 'OSError: [Errno 74] Bad message'.
         embed_file = Path(str(data))
-        if embed_file.exists():
+        filesystem_filename_length_limit = 255
+        is_valid_filename = filesystem_filename_length_limit >= len(data)
+        if is_valid_filename and embed_file.exists():
             try:
                 with embed_file.open("rb") as _file:
                     data = _file.read()
@@ -794,9 +798,9 @@ class Step:
             # Make the body.
             with tbody(id=f"table_{PrettyHTMLFormatter.table_number}"):
                 for row in table_rows:
-                    with tr() as line:
-                        for cell in row:
-                            line += td(cell)
+                    line = tr()
+                    for cell in row:
+                        line += td(cell)
 
         PrettyHTMLFormatter.table_number += 1
 
@@ -818,8 +822,8 @@ class Step:
             with tbody(id=f"table_{PrettyHTMLFormatter.table_number}"):
                 # Make rows.
                 for row in self.text.split("\n"):
-                    with tr() as line:
-                        line += td(row)
+                    line = tr()
+                    line += td(row)
 
         PrettyHTMLFormatter.table_number += 1
 
@@ -900,7 +904,9 @@ class Tag:
         """
         Set link associated with tag.
         """
-        assert isinstance(link, str), f"Link must be string, got {type(link)}"
+        if not isinstance(link, str):
+            type_error = f"Link must be 'string', got type '{type(link)}'"
+            raise TypeError(type_error)
         self._link = link
 
     def has_link(self):
@@ -995,7 +1001,13 @@ class PrettyHTMLFormatter(Formatter):
         atexit.register(self._force_close)
 
     def _str_to_bool(self, value):
-        assert value.lower() in ["true", "false", "yes", "no", "0", "1"]
+        accepted_values = str(["true", "false", "yes", "no", "0", "1"])
+        if value.lower() not in accepted_values:
+            value_error = (
+                f"Value '{value.lower()}' was not in correct format '{accepted_values}'"
+            )
+            raise ValueError(value_error)
+
         return value.lower() in ["true", "yes", "1"]
 
     def feature(self, feature):
