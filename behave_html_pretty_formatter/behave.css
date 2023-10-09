@@ -1,6 +1,6 @@
 /* Inspired by https://github.com/Hargne/jest-html-reporter */
 
-:root {
+[data-theme="light"] {
   --body-color: #333;
   --body-bg: #fff;
   --strong-color: #000;
@@ -36,34 +36,32 @@
   --button-color-active: #fff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --body-color: #ddd;
-    --body-bg: #000;
-    --strong-color: #fff;
-    --feature-bg: #222;
-    --feature-color: #aaa;
-    --duration-color: rgb(206, 206, 206);
-    --passed-bg: #42630a;
-    --passed-step-bg: #697e41;
-    --passed-border: #91a86b;
-    --failed-bg: #69272d;
-    --failed-step-bg: #a8666c;
-    --failed-border: #df888f;
-    --undefined-bg: #665a2a;
-    --undefined-step-bg: #b6940d;
-    --undefined-border: #dbb20e;
-    --skipped-bg: #345381;
-    --skipped-step-bg: #3d659e;
-    --skipped-border: #6981a8;
-    --commentary-bg: #5c5c5c;
-    --table-bg-odd: #555;
-    --table-bg-even: #444;
-    --button-bg: #555;
-    --button-color: #cdcdcd;
-    --button-bg-active: #898989;
-    --button-color-active: #fff;
-  }
+[data-theme="dark"] {
+  --body-color: #ddd;
+  --body-bg: #000;
+  --strong-color: #fff;
+  --feature-bg: #222;
+  --feature-color: #aaa;
+  --duration-color: rgb(206, 206, 206);
+  --passed-bg: #42630a;
+  --passed-step-bg: #697e41;
+  --passed-border: #91a86b;
+  --failed-bg: #69272d;
+  --failed-step-bg: #a8666c;
+  --failed-border: #df888f;
+  --undefined-bg: #665a2a;
+  --undefined-step-bg: #b6940d;
+  --undefined-border: #dbb20e;
+  --skipped-bg: #345381;
+  --skipped-step-bg: #3d659e;
+  --skipped-border: #6981a8;
+  --commentary-bg: #5c5c5c;
+  --table-bg-odd: #555;
+  --table-bg-even: #444;
+  --button-bg: #555;
+  --button-color: #cdcdcd;
+  --button-bg-active: #898989;
+  --button-color-active: #fff;
 }
 
 /* GENERAL CONTENT */

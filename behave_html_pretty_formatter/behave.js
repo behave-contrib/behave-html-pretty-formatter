@@ -231,6 +231,85 @@ function toggle_contrast() {
     contrast_classes.forEach(toggle_contrast_for);
 };
 
+/* query browser for color scheme */
+function detect_dark_mode() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+/* switch between "dark" <--> "light" */
+function invert_thm_name(theme) {
+    if (theme == "dark") {
+        return "light";
+    }
+    if (theme == "light") {
+        return "dark";
+    }
+    return undefined;
+}
+
+/* helper function to label */
+function format_thm_name(theme) {
+    if (theme == "dark") {
+        return "Dark mode";
+    }
+    if (theme == "light") {
+        return "Light mode";
+    }
+    if (theme == "auto") {
+        return "Default mode";
+    }
+    return undefined;
+}
+
+/* render the setting */
+function set_theme(theme) {
+    document.querySelector("html").setAttribute("data-theme", theme);
+    // update in local storage
+    localStorage.setItem("theme", theme);
+}
+
+/* callback on button click - switch to next-value */
+function toggle_dark_mode() {
+    var current = detect_dark_mode() ? "dark" : "light";
+    var current_inv = invert_thm_name(current);
+    var next_thm = dark_mode_toggle.dataset.nextValue;
+    dark_mode_toggle.dataset.value = next_thm;
+    if (next_thm == "auto") {
+        dark_mode_toggle.dataset.nextValue = current_inv;
+        set_theme(current);
+    }
+    else {
+        console.log(current + " " + next_thm);
+        if (current == next_thm) {
+            dark_mode_toggle.dataset.nextValue = "auto";
+        } else {
+            next_inv = invert_thm_name(next_thm);
+            dark_mode_toggle.dataset.nextValue = next_inv;
+        }
+        set_theme(next_thm);
+    }
+    dark_mode_toggle.innerHTML = format_thm_name(dark_mode_toggle.dataset.nextValue);
+}
+
+/* callback on system dark mode change, change on auto, compute next-value otherwise */
+function dark_mode_change() {
+    console.log("called");
+    var current_thm = detect_dark_mode() ? "dark" : "light";
+    var current_inv = invert_thm_name(current_thm);
+    var value_thm = dark_mode_toggle.dataset.value;
+    if (value_thm == "auto") {
+        dark_mode_toggle.dataset.nextValue = current_inv;
+        set_theme(current_thm);
+    } else {
+        if (current_thm == value_thm) {
+            dark_mode_toggle.dataset.nextValue = "auto";
+        } else {
+            dark_mode_toggle.dataset.nextValue = invert_thm_name(value_thm);
+        }
+    }
+    dark_mode_toggle.innerHTML = format_thm_name(dark_mode_toggle.dataset.nextValue);
+}
+
 function detect_contrast() {
     var obj_div = document.createElement("div");
     obj_div.style.color = "rgb(31, 41, 59)"
@@ -242,6 +321,18 @@ function detect_contrast() {
         console.log("High Contrast theme detected.")
         toggle_contrast();
     }
+}
+
+function body_onload() {
+    detect_contrast();
+    var dark_mode_matcher = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+    if (dark_mode_matcher) { dark_mode_matcher.onchange = dark_mode_change };
+    var dark_mode_toggle = document.getElementById("dark_mode_toggle");
+    var current_thm = detect_dark_mode() ? "dark" : "light";
+    var current_inv = invert_thm_name(current_thm);
+    dark_mode_toggle.dataset.nextValue = current_inv;
+    dark_mode_toggle.innerHTML = format_thm_name(current_inv);
+    set_theme(current_thm);
 }
 
 var element = document.createElement('div');
