@@ -282,8 +282,7 @@ function toggle_dark_mode() {
     if (next_thm == "auto") {
         dark_mode_toggle.dataset.nextValue = current_inv;
         set_theme(current);
-    }
-    else {
+    } else {
         console.log(current + " " + next_thm);
         if (current == next_thm) {
             dark_mode_toggle.dataset.nextValue = "auto";
