@@ -4,6 +4,7 @@ Dark mode button
 Collapse setting in behave.ini
 Fix order of tags in upstream behave
 Compression feature for large text embeds
+Support embed filename change
 
 
 behave-html-pretty-formatter 1.9.2

@@ -373,25 +373,30 @@ function download_embed(id, filename) {
     var tag = child.tagName.toLowerCase();
     if (tag === "span") {
         if (child.getAttribute("compressed") == "true") {
-            filename += ".txt.gz";
+            extension = ".txt.gz";
             value = GZIP_HEADER + child.getAttribute("data");
         }
         else {
-            filename += ".txt";
+            extension = ".txt";
             value = "data:text/plain," + encodeURIComponent(decodeHTMLEntities(child.innerHTML));
         }
     }
     else if (tag == "video") {
-        filename += ".webm";
+        extension = ".webm";
         value = child.children[0].src;
     }
     else if (tag == "img") {
-        filename += ".png";
+        extension = ".png";
         value = child.src;
     }
     else {
-        filename += ".html";
+        extension = ".html";
         value = decodeHTMLEntities(child.innerHTML);
+    }
+    /* add filename extenstion, only if not there already */
+    var extend_filename = ! filename.match(/\.[a-zA-Z][a-zA-Z][a-zA-Z]?$/g);
+    if (extend_filename) {
+        filename += extension;
     }
     var link = document.createElement("a");
     link.style.display = "none";
