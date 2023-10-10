@@ -66,7 +66,7 @@ html-pretty = "behave_html_pretty_formatter:PrettyHTMLFormatter"
 "behave.formatter.html-pretty.pretty_output" = true
 "behave.formatter.html-pretty.date_format" = "%%d-%%m-%%Y %%H:%%M:%%S"
 "behave.formatter.html-pretty.show_summary" = false
-"behave.formatter.html-pretty.collapse" = auto
+"behave.formatter.html-pretty.collapse" = "auto"
 "behave.formatter.html-pretty.show_unexecuted_steps" = true
 ```
 
