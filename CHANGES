@@ -1,11 +1,21 @@
+behave-html-pretty-formatter 1.10
+=================================
+Dark mode button
+Collapse setting in behave.ini
+Fix order of tags in upstream behave
+Compression feature for large text embeds
+
+
 behave-html-pretty-formatter 1.9.2
 ==================================
 Replace invalid data when embeding text files. Fixes #42
 Summary timestamps: show one of them always. Fixes #45
 
+
 behave-html-pretty-formatter 1.9.1
 ==================================
 Hotfix invalid minified JS
+
 
 behave-html-pretty-formatter 1.9
 ================================
