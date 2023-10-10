@@ -49,10 +49,12 @@ function hash_to_state() {
         if (hash_uuid_list_change[i] == "high_contrast") {
             // Trigger the high contrast.
             toggle_contrast();
-        } else if (hash_uuid_list_change[i] == "summary") {
+        }
+        else if (hash_uuid_list_change[i] == "summary") {
             // Trigger the summary.
             collapsible_summary("feature-summary-container");
-        } else {
+        }
+        else {
             // Triggering expand/collapse of embeds.
             collapsible_toggle(hash_uuid_list_change[i]);
         }
@@ -74,7 +76,8 @@ function toggle_hash(id) {
     // Change uuid list
     if (hash_uuid_list.includes(id)) {
         hash_uuid_list.splice(hash_uuid_list.indexOf(id), 1);
-    } else {
+    }
+    else {
         hash_uuid_list.push(id);
     }
     // Update URL hash
@@ -122,16 +125,19 @@ async function collapsible_toggle(id) {
             if (compressed == "true") {
                 data = GZIP_HEADER + data;
                 data = await decompress(data);
-            } else {
+            }
+            else {
                 data = atob(data);
             }
             compressed_data.innerHTML = data;
-        } else {
+        }
+        else {
             var msg = "click download above."
             // data should be rendered, but browser check failed
             if (show == "true") {
                 msg = "Browser does not support CompressionStream API, " + msg;
-            } else {
+            }
+            else {
                 msg = "Compressed data are too big, " + msg;
             }
             compressed_data.innerHTML = msg;
@@ -157,14 +163,17 @@ function expander(action, summary_block) {
         }
         if (action == "expand_all") {
             elem[i].classList.remove("collapse")
-        } else if (action == "collapse_all") {
+        }
+        else if (action == "collapse_all") {
             if (!elem[i].classList.contains("collapse")) {
                 elem[i].classList.add("collapse");
             }
-        } else if (action == "expand_all_failed") {
+        }
+        else if (action == "expand_all_failed") {
             if (!elem[i].classList.contains("passed")) {
                 elem[i].classList.remove("collapse");
-            } else {
+            }
+            else {
                 if (!elem[i].classList.contains("collapse")) {
                     elem[i].classList.add("collapse");
                 }
@@ -181,7 +190,8 @@ function expand_this_only(name) {
     if (header.classList.contains("collapse")) {
         header.classList.remove("collapse");
         capsule.classList.remove("collapse");
-    } else {
+    }
+    else {
         header.classList.add("collapse");
         capsule.classList.add("collapse");
     }
@@ -191,7 +201,8 @@ function expand_this_only(name) {
 function toggle_class(elem, class_name) {
     if (elem.classList.contains(class_name)) {
         elem.classList.remove(class_name);
-    } else {
+    }
+    else {
         elem.classList.add(class_name)
     }
 }
@@ -282,11 +293,13 @@ function toggle_dark_mode() {
     if (next_thm == "auto") {
         dark_mode_toggle.dataset.nextValue = current_inv;
         set_theme(current);
-    } else {
+    }
+    else {
         console.log(current + " " + next_thm);
         if (current == next_thm) {
             dark_mode_toggle.dataset.nextValue = "auto";
-        } else {
+        }
+        else {
             next_inv = invert_thm_name(next_thm);
             dark_mode_toggle.dataset.nextValue = next_inv;
         }
@@ -304,10 +317,12 @@ function dark_mode_change() {
     if (value_thm == "auto") {
         dark_mode_toggle.dataset.nextValue = current_inv;
         set_theme(current_thm);
-    } else {
+    }
+    else {
         if (current_thm == value_thm) {
             dark_mode_toggle.dataset.nextValue = "auto";
-        } else {
+        }
+        else {
             dark_mode_toggle.dataset.nextValue = invert_thm_name(value_thm);
         }
     }
@@ -360,17 +375,21 @@ function download_embed(id, filename) {
         if (child.getAttribute("compressed") == "true") {
             filename += ".txt.gz";
             value = GZIP_HEADER + child.getAttribute("data");
-        } else {
+        }
+        else {
             filename += ".txt";
             value = "data:text/plain," + encodeURIComponent(decodeHTMLEntities(child.innerHTML));
         }
-    } else if (tag == "video") {
+    }
+    else if (tag == "video") {
         filename += ".webm";
         value = child.children[0].src;
-    } else if (tag == "img") {
+    }
+    else if (tag == "img") {
         filename += ".png";
         value = child.src;
-    } else {
+    }
+    else {
         filename += ".html";
         value = decodeHTMLEntities(child.innerHTML);
     }
