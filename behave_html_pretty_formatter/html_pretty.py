@@ -653,7 +653,7 @@ class Step:
                     continue
                 self.generate_embed(formatter, embed_data)
 
-    def generate_download_button(self, embed_data, data, use_caption):
+    def generate_download_button(self, embed_data, data, use_caption, filename):
         """
         Creates Download button in HTML.
 
@@ -663,7 +663,8 @@ class Step:
         """
 
         def _create_download_button():
-            args = f"'embed_{embed_data.uid}','{use_caption}'"
+            _filename = filename if filename else use_caption
+            args = f"'embed_{embed_data.uid}','{_filename}'"
             onclick = f"download_embed({args})"
             with div():
                 span(
@@ -756,6 +757,7 @@ class Step:
         mime_type = embed_data.mime_type
         data = embed_data.data
         compress = embed_data.compress
+        filename = embed_data.filename
 
         # If caption is user defined.
         if caption is not None:
@@ -800,7 +802,7 @@ class Step:
                 cls=f"embed_content {formatter.get_collapse_cls('embed')}",
                 id=f"embed_{embed_data.uid}",
             ):
-                self.generate_download_button(embed_data, data, use_caption)
+                self.generate_download_button(embed_data, data, use_caption, filename)
                 self.generate_embed_content(mime_type, data, compress)
 
     def generate_table(self, formatter):
@@ -875,6 +877,7 @@ class Embed:
         caption=None,
         fail_only=False,
         download_button=None,
+        filename=None,
         compress="auto",
     ):
         # Generating unique ID.
@@ -882,6 +885,7 @@ class Embed:
         self.set_data(mime_type, data, caption)
         self._fail_only = fail_only
         self._compress = compress
+        self._filename = filename
         self.download_button = download_button
 
     def set_data(self, mime_type, data, caption=None):
@@ -904,6 +908,12 @@ class Embed:
         Set fail_only flag, whether embed should be done on pass or not.
         """
         self._fail_only = fail_only
+
+    def set_filename(self, filename):
+        """
+        Set filename to be forced when download button is clicked.
+        """
+        self._filename = filename
 
     def set_compress(self, compress):
         """
@@ -935,6 +945,11 @@ class Embed:
     def fail_only(self):
         "Read-only fail_only access."
         return self._fail_only
+
+    @property
+    def filename(self):
+        "Read-only filename access."
+        return self._filename
 
     @property
     def compress(self):
@@ -1212,12 +1227,20 @@ class PrettyHTMLFormatter(Formatter):
         caption=None,
         fail_only=False,
         download_button=None,
+        filename=None,
     ):
         """
         Prepares Embed data and append it to the currently executed (pseudo) step.
         returns: Embed
         """
-        embed_data = Embed(mime_type, data, caption, fail_only, download_button)
+        embed_data = Embed(
+            mime_type,
+            data,
+            caption,
+            fail_only,
+            download_button,
+            filename,
+        )
         # Find correct scenario.
         self.current_feature.embed(embed_data)
         return embed_data
