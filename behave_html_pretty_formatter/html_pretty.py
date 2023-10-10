@@ -876,6 +876,7 @@ class Embed:
         data,
         caption=None,
         fail_only=False,
+        *,
         download_button=None,
         filename=None,
         compress="auto",
@@ -1226,8 +1227,10 @@ class PrettyHTMLFormatter(Formatter):
         data,
         caption=None,
         fail_only=False,
+        *,
         download_button=None,
         filename=None,
+        compress="auto",
     ):
         """
         Prepares Embed data and append it to the currently executed (pseudo) step.
@@ -1238,8 +1241,9 @@ class PrettyHTMLFormatter(Formatter):
             data,
             caption,
             fail_only,
-            download_button,
-            filename,
+            download_button=download_button,
+            filename=filename,
+            compress=compress,
         )
         # Find correct scenario.
         self.current_feature.embed(embed_data)
