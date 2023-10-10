@@ -66,6 +66,7 @@ html-pretty = "behave_html_pretty_formatter:PrettyHTMLFormatter"
 "behave.formatter.html-pretty.pretty_output" = true
 "behave.formatter.html-pretty.date_format" = "%%d-%%m-%%Y %%H:%%M:%%S"
 "behave.formatter.html-pretty.show_summary" = false
+"behave.formatter.html-pretty.collapse" = auto
 "behave.formatter.html-pretty.show_unexecuted_steps" = true
 ```
 
@@ -148,7 +149,7 @@ context.formatter.set_icon(icon=icon_data)
 
 Example use case - an indicator if the test is running under X11 or Wayland:
 
-![Examples](src/set_icon_examples.png)
+![Examples](design/set_icon_examples.png)
 
 ### Set Title for the HTML page
 
@@ -219,7 +220,7 @@ context.embed(mime_type="video/webm", data="/path/to/video.webm", caption="Video
 
 ### Image and Video examples:
 
-![Pretty HTML Formatter](src/image_and_video_examples.gif)
+![Pretty HTML Formatter](design/image_and_video_examples.gif)
 
 
 ### Defined MIME types and corresponding accepted data
@@ -295,16 +296,16 @@ tox -e minify
 
 ### Pretty HTML Formatter
 
-![Pretty HTML Formatter](src/full_page_example.png)
+![Pretty HTML Formatter](design/full_page_example.png)
 
 ### Pretty HTML Formatter High Contrast
 
-![Pretty HTML Formatter Summary High Contrast](src/full_page_high_contrast_example.png)
+![Pretty HTML Formatter Summary High Contrast](design/full_page_high_contrast_example.png)
 
 ### Pretty HTML Formatter With Summary Expanded and Collapsed Steps
 
-![Pretty HTML Formatter](src/summary_collapsed_example.png)
+![Pretty HTML Formatter](design/summary_collapsed_example.png)
 
 ### Pretty HTML Formatter High Contrast with Summary Expanded and Collapsed Steps
 
-![Pretty HTML Formatter Summary High Contrast](src/summary_collapsed_high_contrast_example.png)
+![Pretty HTML Formatter Summary High Contrast](design/summary_collapsed_high_contrast_example.png)
