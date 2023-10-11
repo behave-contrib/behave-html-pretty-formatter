@@ -770,15 +770,21 @@ class Step:
             use_caption = "unknown-mime-type"
             data = "data removed"
 
-        # Check if the content of the data is a valid file - if so encode it to base64.
-        # Most file systems have filename length limit of 255 bytes.
-        # Over that size it will throw 'OSError: [Errno 74] Bad message'.
-        embed_file = Path(str(data))
-        filesystem_filename_length_limit = 255
-        is_valid_filename = filesystem_filename_length_limit >= len(data)
-        if is_valid_filename and embed_file.exists():
+        file_path = None
+        # Do not try to check filename for long data
+        # Leads to OSError on some filesystems
+        filename_len_limit = 256
+        if len(data) < filename_len_limit:
             try:
-                with embed_file.open("rb") as _file:
+                file_path = Path(str(data))
+                if not file_path.is_file():
+                    file_path = None
+            except OSError:
+                file_path = None
+
+        if file_path:
+            try:
+                with file_path.open("rb") as _file:
                     data = _file.read()
                     if "text" not in mime_type:
                         data_base64 = base64.b64encode(data)
