@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "behave-html-pretty-formatter"
-version = "1.10"
+version = "1.10.1"
 description = "Pretty HTML Formatter for Behave"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -19,12 +19,13 @@ maintainers = [
   {name = "Filip Pokryvka", email = "fpokryvk@redhat.com"},
 ]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable ",
   "Framework :: Django",
   "Intended Audience :: Information Technology",
   "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.6",
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
@@ -39,7 +40,7 @@ keywords = [
   "behave",
   "formatter",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.6"
 dependencies = [
   "behave",
   "dominate",
