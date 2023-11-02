@@ -43,8 +43,6 @@ behave.formatter.html-pretty.show_unexecuted_steps = true
 #  comma separated list - specify subset of "scenario,embed,table,text"
 #  "none" - show everything, even embeds
 behave.formatter.html-pretty.collapse = auto
-# Defines if the user is interested in what steps are not executed.
-behave.formatter.html-pretty.show_unexecuted_steps = true
 
 # Following will be formatted in summary section as "tester: worker1".
 behave.additional-info.tester=worker1
