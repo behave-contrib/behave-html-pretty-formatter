@@ -81,7 +81,7 @@ html-pretty = "behave_html_pretty_formatter:PrettyHTMLFormatter"
 "behave.formatter.html-pretty.collapse" = "auto"
 # Defines if the user is interested in what steps are not executed.
 "behave.formatter.html-pretty.show_unexecuted_steps" = true
-# Defines if the user wants to see previous attempts when useing auto retry.
+# Defines if the user wants to see previous attempts when using auto retry.
 "behave.formatter.html-pretty.show_retry_attempts" = true
 
 

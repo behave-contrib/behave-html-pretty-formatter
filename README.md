@@ -43,7 +43,7 @@ behave.formatter.html-pretty.show_unexecuted_steps = true
 #  comma separated list - specify subset of "scenario,embed,table,text"
 #  "none" - show everything, even embeds
 behave.formatter.html-pretty.collapse = auto
-# Defines if the user wants to see previous attempts when useing auto retry.
+# Defines if the user wants to see previous attempts when using auto retry.
 behave.formatter.html-pretty.show_retry_attempts = true
 
 # Following will be formatted in summary section as "tester: worker1".
