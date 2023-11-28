@@ -70,6 +70,7 @@ class Feature:
         self.scenarios = []
         self._background = None
         self.to_embed = []
+        self._scenario_run_id = ""
         self.scenario_finished = True
         self.scenario_begin_timestamp = time.time()
         self.before_scenario_duration = 0.0
@@ -95,6 +96,9 @@ class Feature:
         """
         Create new scenario in feature based on behave scenario object
         """
+        # Creating run id func string to recognize auto retry.
+        self._scenario_run_id = str(scenario.run.func)
+
         self.scenario_finished = False
         _scenario = Scenario(scenario, self, scenario_counter, pseudo_steps)
         for embed_data in self.to_embed:
@@ -1060,6 +1064,10 @@ class PrettyHTMLFormatter(Formatter):
             config.userdata.get(f"{config_path}.show_summary", "false"),
         )
 
+        self.show_retry_attempts = self._str_to_bool(
+            config.userdata.get(f"{config_path}.show_retry_attempts", "true"),
+        )
+
         self.collapse = [
             i.lower()
             for i in config.userdata.get(f"{config_path}.collapse", "auto").split(",")
@@ -1163,6 +1171,22 @@ class PrettyHTMLFormatter(Formatter):
         """
         Processes new scenario. It is added to the current feature.
         """
+
+        # Check if the current scenario run id is the same.
+        # If it is the auto retry mode is in effect.
+        if str(scenario.run.func) == self.current_feature._scenario_run_id:
+            # Check against the behave.ini setup.
+            if not self.show_retry_attempts:
+                # Remove the last scenario - previous attempt.
+                self.current_feature.scenarios.pop()
+                # Add the current scenario - current attempt.
+                self.current_feature.add_scenario(
+                    scenario,
+                    self.scenario_counter,
+                    self.pseudo_steps,
+                )
+                return
+
         self.scenario_counter += 1
         self.current_feature.add_scenario(
             scenario,
