@@ -82,6 +82,7 @@ html-pretty = "behave_html_pretty_formatter:PrettyHTMLFormatter"
 # Defines if the user is interested in what steps are not executed.
 "behave.formatter.html-pretty.show_unexecuted_steps" = true
 # Defines if the user wants to see previous attempts when using auto retry.
+# Auto retry https://github.com/behave/behave/blob/main/behave/contrib/scenario_autoretry.py
 "behave.formatter.html-pretty.show_retry_attempts" = true
 
 
