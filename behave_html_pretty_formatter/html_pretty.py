@@ -100,7 +100,8 @@ class Feature:
         # str() on scenario.run.func will return <function patch_ ... at 0x7f024e9bf160>
         # Since we need just the address as an ID we can use id()
         # The hex(id(scenario.run.func)) is than equal to the 0x7f024e9bf160
-        self._scenario_run_id = id(scenario.run.func)
+        if hasattr(scenario.run, "func"):
+            self._scenario_run_id = id(scenario.run.func)
 
         self.scenario_finished = False
         _scenario = Scenario(scenario, self, scenario_counter, pseudo_steps)
@@ -1178,7 +1179,10 @@ class PrettyHTMLFormatter(Formatter):
         # Check if the current scenario run func ID is the same as the last one.
         # If it is, the auto retry mode is in effect.
         # Keeping the two ifs separated since we can add additional functionality later.
-        if id(scenario.run.func) == self.current_feature._scenario_run_id:
+        if (
+            hasattr(scenario.run, "func")
+            and id(scenario.run.func) == self.current_feature._scenario_run_id
+        ):
             # Check against the behave.ini setup.
             if not self.show_retry_attempts:
                 # Remove the last scenario - previous attempt.
