@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "behave-html-pretty-formatter"
-version = "1.10.1"
+version = "1.10.2"
 description = "Pretty HTML Formatter for Behave"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -81,6 +81,10 @@ html-pretty = "behave_html_pretty_formatter:PrettyHTMLFormatter"
 "behave.formatter.html-pretty.collapse" = "auto"
 # Defines if the user is interested in what steps are not executed.
 "behave.formatter.html-pretty.show_unexecuted_steps" = true
+# Defines if the user wants to see previous attempts when using auto retry.
+# Auto retry https://github.com/behave/behave/blob/main/behave/contrib/scenario_autoretry.py
+"behave.formatter.html-pretty.show_retry_attempts" = true
+
 
 [tool.black]
 color = false
