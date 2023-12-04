@@ -1,3 +1,8 @@
+behave-html-pretty-formatter 1.10.2
+===================================
+Enabling option to hide auto-retry runs. Fixes #63
+
+
 behave-html-pretty-formatter 1.10.1
 ===================================
 Allow installability on 3.6, we need to use it with 3.6 still.
