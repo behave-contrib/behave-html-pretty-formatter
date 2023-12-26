@@ -46,6 +46,11 @@ behave.formatter.html-pretty.collapse = auto
 # Defines if the user wants to see previous attempts when using auto retry.
 # Auto retry https://github.com/behave/behave/blob/main/behave/contrib/scenario_autoretry.py
 behave.formatter.html-pretty.show_retry_attempts = true
+# Override global summary visibility
+#  "auto" - show global summary if more than one feature executed (default)
+#  "true" - show global summary
+#  "false" - hide global summary
+behave.formatter.html-pretty.global_summary = auto
 
 # Following will be formatted in summary section as "tester: worker1".
 behave.additional-info.tester=worker1

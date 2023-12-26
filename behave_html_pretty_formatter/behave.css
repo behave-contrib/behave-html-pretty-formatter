@@ -116,7 +116,7 @@ pre * {
 
 /*FEATURE CONTENT*/
 
-.feature-title {
+.feature-title, .global-summary {
   font-size: 1rem;
   display: flex;
   flex-wrap: wrap;
@@ -139,7 +139,7 @@ pre * {
   display: none;
 }
 
-.feature-title.contrast {
+.feature-title.contrast, .global-summary.contrast {
   font-weight: bold;
   font-size: 1.25rem;
   background-color: #000;
@@ -611,7 +611,7 @@ a:hover {
 /* SMALL SCREEN */
 /* Should be at bottom, to override rules above */
 @media only screen and (max-width: 750px) {
-  .feature-title {
+  .feature-title, .global-summary {
     flex-direction: column;
   }
 

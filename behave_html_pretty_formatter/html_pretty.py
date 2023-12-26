@@ -24,6 +24,7 @@ from dominate.tags import (
     a,
     b,
     div,
+    h2,
     i,
     img,
     meta,
@@ -448,6 +449,14 @@ class Scenario:
             self.status = result.status
             self.duration = self._scenario.duration
 
+            # Check if feature status is already set
+            if self.feature.status == Status.skipped:
+                self.feature.status = result.status
+
+            # Override feature status, if step is not "skipped" or "passed"
+            if result.status not in [Status.skipped, Status.passed]:
+                self.feature.status = result.status
+
         # Check if step execution finished.
         # Embed to after_scenario_step if pseudo_steps enabled.
         if self.is_last_step or result.status != Status.passed:
@@ -490,6 +499,7 @@ class Scenario:
                 ),
             )
         self.status = Status.failed
+        self.feature.status = Status.failed
 
     def embed(self, embed_data):
         """
@@ -1097,6 +1107,14 @@ class PrettyHTMLFormatter(Formatter):
             config.userdata.get(f"{config_path}.show_unexecuted_steps", "true"),
         )
 
+        self.global_summary = config.userdata.get(
+            f"{config_path}.global_summary",
+            "auto",
+        ).lower()
+
+        if self.global_summary != "auto":
+            self.global_summary = self._str_to_bool(self.global_summary)
+
         self.additional_info = {}
 
         for key, item in config.userdata.items():
@@ -1299,6 +1317,56 @@ class PrettyHTMLFormatter(Formatter):
         """
         self.icon = icon
 
+    def _generate_global_summary(self):
+        """
+        Process and render global statistics.
+        """
+        if self.global_summary == "auto":
+            if len(self.features) <= 1:
+                return
+        elif not self.global_summary:
+            return
+
+        f_statuses, s_statuses = {}, {}
+        for feature in self.features:
+            f_status = feature.status.name.lower()
+            count = f_statuses.get(f_status, 0) + 1
+            f_statuses[f_status] = count
+            for scenario in feature.scenarios:
+                s_status = scenario.status.name.lower()
+                count = s_statuses.get(s_status, 0) + 1
+                s_statuses[s_status] = count
+
+        suite_duration = datetime.now() - self.suite_start_time
+
+        with div(cls="global-summary flex-gap"):
+            h2(self.title_string)
+            with div(cls="feature-summary-srats flex-left-space"):
+                line = ", ".join(
+                    f"{f_statuses.get(s.name.lower(), 0)} {s.name.lower()}"
+                    for s in [
+                        Status.passed,
+                        Status.failed,
+                        Status.undefined,
+                        Status.skipped,
+                    ]
+                )
+                div(f"Features: {line}.", cls="feature-summary-row")
+                line = ", ".join(
+                    f"{s_statuses.get(s.name.lower(), 0)} {s.name.lower()}"
+                    for s in [
+                        Status.passed,
+                        Status.failed,
+                        Status.undefined,
+                        Status.skipped,
+                    ]
+                )
+                div(f"Scenarios: {line}.", cls="feature-summary-row")
+                div(
+                    f"Took {suite_duration.total_seconds():.3f}s.",
+                    cls="feature-summary-row",
+                )
+
     def _add_unexecuted_scenario(self):
         class DummyStep:  # pylint: disable=too-few-public-methods
             """
@@ -1397,6 +1465,7 @@ class PrettyHTMLFormatter(Formatter):
         # Iterate over the data and generate the page.
         with document.body as body:
             body.attributes["onload"] = "body_onload();"
+            self._generate_global_summary()
             if self.features:
                 feature = self.features[0]
                 feature.icon = self.icon

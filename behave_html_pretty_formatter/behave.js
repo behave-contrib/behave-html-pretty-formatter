@@ -222,6 +222,7 @@ function toggle_contrast() {
     };
 
     const contrast_classes = [
+        "global-summary",
         "feature-title",
         "feature-started",
         "feature-summary-commentary",
