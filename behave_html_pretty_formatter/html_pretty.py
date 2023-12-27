@@ -215,13 +215,14 @@ class Feature:
                     onclick="toggle_hash('high_contrast')",
                 )
 
-                # Creating Summary which is clickable.
-                span(
-                    "Summary",
-                    cls="button",
-                    id="summary",
-                    onclick="toggle_hash('summary')",
-                )
+            # Creating Summary which is clickable.
+            left_space = " flex-left-space" if not self.high_contrast_button else ""
+            span(
+                "Summary",
+                cls=f"button{left_space}",
+                id="summary",
+                onclick=f"toggle_hash('summary-f{self.counter}')",
+            )
 
         # Generate summary.
         summary_collapse = "collapse"
@@ -229,7 +230,8 @@ class Feature:
             summary_collapse = ""
         with div(
             cls=f"feature-summary-container flex-gap {summary_collapse}",
-            id=f"f{self.counter}",
+            id=f"summary-f{self.counter}",
+            data_feature_id=f"f{self.counter}",
         ):
             # Generating feature commentary.
             flex_left_space = "flex-left-space" if self.description else ""
