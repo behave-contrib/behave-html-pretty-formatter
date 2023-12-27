@@ -43,6 +43,14 @@
   --feature-bg: #222;
   --feature-color: #aaa;
   --duration-color: rgb(206, 206, 206);
+  --summary-passed: #4f8a10;
+  --summary-passed-border: #4f8a10;
+  --summary-failed: #d8000c;
+  --summary-failed-border: #d8000c;
+  --summary-undefined: #945901;
+  --summary-undefined-border: #ffdf61;
+  --summary-skipped: #76adff;
+  --summary-skipped-border: #76adff;
   --passed-bg: #42630a;
   --passed-step-bg: #697e41;
   --passed-border: #91a86b;
