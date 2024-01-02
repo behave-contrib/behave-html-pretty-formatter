@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "behave-html-pretty-formatter"
-version = "1.10.2"
+version = "1.10.3"
 description = "Pretty HTML Formatter for Behave"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -43,7 +43,7 @@ keywords = [
 requires-python = ">=3.6"
 dependencies = [
   "behave",
-  "dominate",
+  "dominate==2.9.0",
   "markdown",
 ]
 

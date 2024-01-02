@@ -58,7 +58,7 @@ Alternatively, with behave >= v1.2.7.dev3, you can put the same configuration in
 
 ```toml
 [tool.behave.formatters]
-html-pretty = "behave_html_pretty_formatter:PrettyHTMLFormatter"
+"html-pretty" = "behave_html_pretty_formatter:PrettyHTMLFormatter"
 
 # Optional configuration of PrettyHTMLFormatter
 [tool.behave.userdata]
