@@ -196,31 +196,13 @@ class Feature:
             span(f"Started: {start_time}", cls="feature-started")
 
             if self.high_contrast_button:
-                # Making sure there is a functioning button.
-                # Creating Dark Mode toggle which is clickable.
-                span(
-                    "Dark mode",
-                    cls="button flex-left-space",
-                    id="dark_mode_toggle",
-                    onclick="toggle_dark_mode()",
-                    data_value="auto",
-                    data_next_value="dark",
-                )
-
-                # Creating High Contrast toggle which is clickable.
-                span(
-                    "High contrast toggle",
-                    cls="button",
-                    id="high_contrast",
-                    onclick="toggle_hash('high_contrast')",
-                )
+                formatter.generate_toggle_buttons()
 
             # Creating Summary which is clickable.
             left_space = " flex-left-space" if not self.high_contrast_button else ""
             span(
                 "Summary",
                 cls=f"button{left_space}",
-                id="summary",
                 onclick=f"toggle_hash('summary-f{self.counter}')",
             )
 
@@ -1319,31 +1301,83 @@ class PrettyHTMLFormatter(Formatter):
         """
         self.icon = icon
 
+    def generate_toggle_buttons(self):
+        """
+        Toggle buttons for dark mode and high contrast
+        """
+        # Making sure there is a functioning button.
+        # Creating Dark Mode toggle which is clickable.
+        span(
+            "Dark mode",
+            cls="button flex-left-space",
+            id="dark_mode_toggle",
+            onclick="toggle_dark_mode()",
+            data_value="auto",
+            data_next_value="dark",
+        )
+
+        # Creating High Contrast toggle which is clickable.
+        span(
+            "High contrast toggle",
+            cls="button",
+            id="high_contrast",
+            onclick="toggle_hash('high_contrast')",
+        )
+
     def _generate_global_summary(self):
         """
         Process and render global statistics.
         """
         if self.global_summary == "auto":
             if len(self.features) <= 1:
-                return
+                return False
         elif not self.global_summary:
-            return
+            return False
 
         f_statuses, s_statuses = {}, {}
         for feature in self.features:
             f_status = feature.status.name.lower()
             count = f_statuses.get(f_status, 0) + 1
             f_statuses[f_status] = count
+
             for scenario in feature.scenarios:
                 s_status = scenario.status.name.lower()
                 count = s_statuses.get(s_status, 0) + 1
                 s_statuses[s_status] = count
 
-        suite_duration = datetime.now() - self.suite_start_time
+        global_status = Status.passed.name.lower()
+        # If no passed scenario mark as skipped
+        if not f_statuses.get(Status.passed.name.lower(), 0):
+            global_status = Status.skipped.name.lower()
+        # If some undefined scenario, mark as undefined
+        # else remain passed or skipped
+        if f_statuses.get(Status.undefined.name.lower(), 0):
+            global_status = Status.undefined.name.lower()
+        # If some failed scenario, mark as failed
+        # else remain passed, skipped or undefined
+        if f_statuses.get(Status.failed.name.lower(), 0):
+            global_status = Status.failed.name.lower()
 
-        with div(cls="global-summary flex-gap"):
+        with div(cls=f"global-summary flex-gap {global_status}"):
+            # Generate icon if present.
+            if self.icon:
+                with div(cls="feature-icon"):
+                    img(src=self.icon)
             h2(self.title_string)
-            with div(cls="feature-summary-srats flex-left-space"):
+            self.generate_toggle_buttons()
+            # Creating Summary which is clickable.
+            span(
+                "Global Summary",
+                cls="button",
+                onclick="toggle_hash('summary-global')",
+            )
+
+        collapse = "collapse" if not self.show_summary else ""
+        with div(
+            id="summary-global",
+            cls=f"feature-summary-container flex-gap {collapse}",
+        ):
+            with div(cls="feature-summary-stats"):
                 line = ", ".join(
                     f"{f_statuses.get(s.name.lower(), 0)} {s.name.lower()}"
                     for s in [
@@ -1364,10 +1398,24 @@ class PrettyHTMLFormatter(Formatter):
                     ]
                 )
                 div(f"Scenarios: {line}.", cls="feature-summary-row")
+
+            with div(cls="feature-summary-stats flex-left-space"):
+                finish_time = datetime.now()
+                suite_duration = finish_time - self.suite_start_time
                 div(
-                    f"Took {suite_duration.total_seconds():.3f}s.",
+                    f"Started: {self.suite_start_time.strftime(self.date_format)}",
                     cls="feature-summary-row",
                 )
+                div(
+                    f"Duration: {suite_duration.total_seconds():.2f}s.",
+                    cls="feature-summary-row",
+                )
+                div(
+                    f"Finished: {finish_time.strftime(self.date_format)}",
+                    cls="feature-summary-row",
+                )
+
+        return True
 
     def _add_unexecuted_scenario(self):
         class DummyStep:  # pylint: disable=too-few-public-methods
@@ -1467,11 +1515,11 @@ class PrettyHTMLFormatter(Formatter):
         # Iterate over the data and generate the page.
         with document.body as body:
             body.attributes["onload"] = "body_onload();"
-            self._generate_global_summary()
-            if self.features:
-                feature = self.features[0]
-                feature.icon = self.icon
-                feature.high_contrast_button = True
+            if not self._generate_global_summary():
+                if self.features:
+                    feature = self.features[0]
+                    feature.icon = self.icon
+                    feature.high_contrast_button = True
             for feature in self.features:
                 feature.generate_feature(self)
 
