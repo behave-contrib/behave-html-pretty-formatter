@@ -51,11 +51,10 @@ behave.formatter.html-pretty.show_retry_attempts = true
 #  "true" - show global summary
 #  "false" - hide global summary
 behave.formatter.html-pretty.global_summary = auto
-
 # Following will be formatted in summary section as "tester: worker1".
-behave.additional-info.tester=worker1
+behave.additional-info.tester = super_worker
 # Can be used multiple times.
-behave.additional-info.location=lab2
+behave.additional-info.location = super_awesome_lab
 ```
 
 Alternatively, with behave >= v1.2.7.dev3, you can put the same configuration in
@@ -74,6 +73,10 @@ Alternatively, with behave >= v1.2.7.dev3, you can put the same configuration in
 "behave.formatter.html-pretty.show_summary" = false
 "behave.formatter.html-pretty.collapse" = "auto"
 "behave.formatter.html-pretty.show_unexecuted_steps" = true
+"behave.formatter.html-pretty.global_summary" = "auto"
+"behave.additional-info.tester" = "super_worker"
+"behave.additional-info.location" = "super_awesome_lab"
+
 ```
 
 Then use the formatter by running Behave with the `-f`/`--format` option, e.g.
