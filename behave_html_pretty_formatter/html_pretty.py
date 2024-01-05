@@ -525,7 +525,7 @@ class Scenario:
             cls=f"scenario-capsule {common_cls}",
             id=f"f{self.feature.counter}-s{self.counter}-c",
         ):
-            # add scenario description as "commentary":
+            # Add scenario description as "commentary":
             scenario_description = "\n".join(self._scenario.description)
             if scenario_description:
                 pre(
@@ -710,10 +710,7 @@ class Step:
 
         # Actual Embed.
         if "video/webm" in mime_type:
-            with video(
-                width="1024",
-                controls="",
-            ):
+            with video(width="1024", controls=""):
                 source(src=f"data:{mime_type};base64,{data}", type=mime_type)
 
         if "image/png" in mime_type:
@@ -722,14 +719,17 @@ class Step:
         if "text" in mime_type:
             if "markdown" in mime_type:
                 data = markdown.markdown(data)
-            # javascript will decompress data and render them, if small enough
+
+            # Javascript will decompress data and render them, if small enough.
             if compress == "auto":
                 compress = len(data) > 48 * 1024
+
             if compress or "html" in mime_type or "markdown" in mime_type:
                 show = len(data) < 1024 * 1024
                 data = data.encode("utf-8")
                 if compress:
                     data = gzip.compress(data)
+
                 data_base64 = base64.b64encode(data).decode("utf-8").replace("\n", "")
                 span(
                     cls="to_render",
@@ -764,17 +764,19 @@ class Step:
         # If caption is user defined.
         if caption is not None:
             use_caption = caption
+
         # If caption is not defined try to use default one for specific mime type.
         elif mime_type in DEFAULT_CAPTION_FOR_MIME_TYPE:
             use_caption = DEFAULT_CAPTION_FOR_MIME_TYPE[mime_type]
+
         # No caption and no default caption for given mime type.
         else:
             use_caption = "unknown-mime-type"
             data = "data removed"
 
         file_path = None
-        # Do not try to check filename for long data
-        # Leads to OSError on some filesystems
+        # Do not try to check filename for long data.
+        # Leads to OSError on some filesystems.
         filename_len_limit = 256
         if len(data) < filename_len_limit:
             try:
@@ -850,6 +852,7 @@ class Step:
         """
         if not self.text:
             return
+
         with table(cls="table"):
             if formatter.collapse_text:
                 with thead(
@@ -858,6 +861,7 @@ class Step:
                 ):
                     line = tr()
                     line += th("Text")
+
             # Make the body.
             with tbody(
                 id=f"table_{PrettyHTMLFormatter.table_number}",
@@ -1078,7 +1082,8 @@ class PrettyHTMLFormatter(Formatter):
                 raise RuntimeError(msg)
 
         self.collapse_scenario = "scenario" in self.collapse or "all" in self.collapse
-        # collapse embeds by default
+
+        # Collapse embeds by default.
         self.collapse_embed = (
             "embed" in self.collapse
             or "all" in self.collapse
@@ -1134,6 +1139,7 @@ class PrettyHTMLFormatter(Formatter):
         current_feature = self.current_feature
         if current_feature:
             current_feature.finish_time = datetime.now()
+
         self.feature_counter += 1
         self.scenario_counter = 0
         self.features.append(Feature(feature, self.feature_counter))
@@ -1145,6 +1151,7 @@ class PrettyHTMLFormatter(Formatter):
         """
         if len(self.features) == 0:
             return None
+
         return self.features[-1]
 
     @property
@@ -1155,6 +1162,7 @@ class PrettyHTMLFormatter(Formatter):
         _feature = self.current_feature
         if not _feature or not _feature.scenarios or _feature.scenario_finished:
             return None
+
         return _feature.scenarios[-1]
 
     def before_scenario_finish(self, status):
@@ -1331,6 +1339,7 @@ class PrettyHTMLFormatter(Formatter):
         if self.global_summary == "auto":
             if len(self.features) <= 1:
                 return False
+
         elif not self.global_summary:
             return False
 
@@ -1346,15 +1355,17 @@ class PrettyHTMLFormatter(Formatter):
                 s_statuses[s_status] = count
 
         global_status = Status.passed.name.lower()
-        # If no passed scenario mark as skipped
+        # If no passed scenario mark as skipped.
         if not f_statuses.get(Status.passed.name.lower(), 0):
             global_status = Status.skipped.name.lower()
+
         # If some undefined scenario, mark as undefined
-        # else remain passed or skipped
+        # else remain passed or skipped.
         if f_statuses.get(Status.undefined.name.lower(), 0):
             global_status = Status.undefined.name.lower()
+
         # If some failed scenario, mark as failed
-        # else remain passed, skipped or undefined
+        # else remain passed, skipped or undefined.
         if f_statuses.get(Status.failed.name.lower(), 0):
             global_status = Status.failed.name.lower()
 
@@ -1363,6 +1374,7 @@ class PrettyHTMLFormatter(Formatter):
             if self.icon:
                 with div(cls="feature-icon"):
                     img(src=self.icon)
+
             h2(self.title_string)
             self.generate_toggle_buttons()
             # Creating Summary which is clickable.
@@ -1467,7 +1479,8 @@ class PrettyHTMLFormatter(Formatter):
             # Create unexecuted scenario, if there are unprocessed embeds.
             if feature.to_embed:
                 self._add_unexecuted_scenario()
-        # refresh scenario
+
+        # Refresh scenario.
         scenario = self.current_scenario
         if scenario:
             scenario.status = Status.failed
@@ -1482,6 +1495,7 @@ class PrettyHTMLFormatter(Formatter):
         if self._closed:
             return
         self._closed = True
+
         # Set finish time of the last feature.
         current_feature = self.current_feature
         if current_feature:
