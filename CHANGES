@@ -1,3 +1,8 @@
+behave-html-pretty-formatter 1.11
+=================================
+Adding global summary
+
+
 behave-html-pretty-formatter 1.10.3
 ===================================
 Dummy hotfix for dependency issue introduced by dominate 2.9.1 version.
