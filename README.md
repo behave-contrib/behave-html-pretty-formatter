@@ -65,6 +65,7 @@ Alternatively, with behave >= v1.2.7.dev3, you can put the same configuration in
 "html-pretty" = "behave_html_pretty_formatter:PrettyHTMLFormatter"
 
 # Optional configuration of PrettyHTMLFormatter
+
 [tool.behave.userdata]
 "behave.formatter.html-pretty.title_string" = "Test Suite Reporter"
 "behave.formatter.html-pretty.pseudo_steps" = false
