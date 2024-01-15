@@ -43,6 +43,14 @@
   --feature-bg: #222;
   --feature-color: #aaa;
   --duration-color: rgb(206, 206, 206);
+  --summary-passed: #4f8a10;
+  --summary-passed-border: #4f8a10;
+  --summary-failed: #d8000c;
+  --summary-failed-border: #d8000c;
+  --summary-undefined: #945901;
+  --summary-undefined-border: #ffdf61;
+  --summary-skipped: #76adff;
+  --summary-skipped-border: #76adff;
   --passed-bg: #42630a;
   --passed-step-bg: #697e41;
   --passed-border: #91a86b;
@@ -116,15 +124,24 @@ pre * {
 
 /*FEATURE CONTENT*/
 
-.feature-title {
+.feature-title, .global-summary {
   font-size: 1rem;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   background-color: var(--feature-bg);
   color: var(--feature-color);
-  padding: 0.5em 1rem;
+  padding: 0.5em 1em;
   margin-bottom: 5px;
+}
+
+.feature-title:not(:first-child) {
+  margin-top: 1em;
+}
+
+.global-summary {
+  color: var(--strong-color);
+  margin-bottom: 0px;
 }
 
 .feature-icon {
@@ -139,7 +156,7 @@ pre * {
   display: none;
 }
 
-.feature-title.contrast {
+.feature-title.contrast, .global-summary.contrast {
   font-weight: bold;
   font-size: 1.25rem;
   background-color: #000;
@@ -290,24 +307,25 @@ pre * {
   background-color: var(--feature-bg);
 }
 
-.scenario-header.passed {
+.scenario-header.passed, .global-summary.passed {
   background-color: var(--passed-step-bg);
 }
 
-.scenario-header.failed {
+.scenario-header.failed, .global-summary.failed {
   background-color: var(--failed-step-bg);
 }
 
-.scenario-header.undefined {
+.scenario-header.undefined, .global-summary.undefined {
   background-color: var(--undefined-step-bg);
 }
 
-.scenario-header.skipped {
+.scenario-header.skipped, .global-summary.skipped {
   background-color: var(--skipped-step-bg);
 }
 
 .scenario-header.contrast,
-.scenario-capsule.contrast {
+.scenario-capsule.contrast,
+.global-summary.contrast {
   background-color: #000;
   color: #fff;
 }
@@ -544,6 +562,7 @@ a:hover {
 
 /* BUTTONS andHELPER classes */
 /* Should be at bottom, to override rules above */
+
 .button {
   display: inline-block;
   color: var(--button-color);
@@ -611,7 +630,7 @@ a:hover {
 /* SMALL SCREEN */
 /* Should be at bottom, to override rules above */
 @media only screen and (max-width: 750px) {
-  .feature-title {
+  .feature-title, .global-summary {
     flex-direction: column;
   }
 

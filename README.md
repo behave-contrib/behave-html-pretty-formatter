@@ -46,11 +46,15 @@ behave.formatter.html-pretty.collapse = auto
 # Defines if the user wants to see previous attempts when using auto retry.
 # Auto retry https://github.com/behave/behave/blob/main/behave/contrib/scenario_autoretry.py
 behave.formatter.html-pretty.show_retry_attempts = true
-
+# Override global summary visibility
+#  "auto" - show global summary if more than one feature executed (default)
+#  "true" - show global summary
+#  "false" - hide global summary
+behave.formatter.html-pretty.global_summary = auto
 # Following will be formatted in summary section as "tester: worker1".
-behave.additional-info.tester=worker1
+behave.additional-info.tester = super_worker
 # Can be used multiple times.
-behave.additional-info.location=lab2
+behave.additional-info.location = super_awesome_lab
 ```
 
 Alternatively, with behave >= v1.2.7.dev3, you can put the same configuration in
@@ -61,6 +65,7 @@ Alternatively, with behave >= v1.2.7.dev3, you can put the same configuration in
 "html-pretty" = "behave_html_pretty_formatter:PrettyHTMLFormatter"
 
 # Optional configuration of PrettyHTMLFormatter
+
 [tool.behave.userdata]
 "behave.formatter.html-pretty.title_string" = "Test Suite Reporter"
 "behave.formatter.html-pretty.pseudo_steps" = false
@@ -69,6 +74,10 @@ Alternatively, with behave >= v1.2.7.dev3, you can put the same configuration in
 "behave.formatter.html-pretty.show_summary" = false
 "behave.formatter.html-pretty.collapse" = "auto"
 "behave.formatter.html-pretty.show_unexecuted_steps" = true
+"behave.formatter.html-pretty.global_summary" = "auto"
+"behave.additional-info.tester" = "super_worker"
+"behave.additional-info.location" = "super_awesome_lab"
+
 ```
 
 Then use the formatter by running Behave with the `-f`/`--format` option, e.g.

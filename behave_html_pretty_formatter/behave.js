@@ -50,10 +50,6 @@ function hash_to_state() {
             // Trigger the high contrast.
             toggle_contrast();
         }
-        else if (hash_uuid_list_change[i] == "summary") {
-            // Trigger the summary.
-            collapsible_summary("feature-summary-container");
-        }
         else {
             // Triggering expand/collapse of embeds.
             collapsible_toggle(hash_uuid_list_change[i]);
@@ -146,17 +142,11 @@ async function collapsible_toggle(id) {
     toggle_class(elem, "collapse");
 };
 
-function collapsible_summary(classname) {
-    var elem = document.getElementsByClassName(classname);
-    for (var i = 0; i < elem.length; i++) {
-        toggle_class(elem[i], "collapse");
-    }
-};
-
 function expander(action, summary_block) {
     var elem = Array.from(document.getElementsByClassName("scenario-capsule"));
     elem = elem.concat(Array.from(document.getElementsByClassName("scenario-header")));
-    var feature_id = summary_block.parentElement.parentElement.id
+    var feature_id = summary_block.parentElement.parentElement.dataset.featureId
+    console.log("Doing " + action + " on FeatureID " + feature_id);
     for (var i = 0; i < elem.length; i++) {
         if (feature_id != elem[i].parentElement.id) {
             continue
@@ -222,6 +212,7 @@ function toggle_contrast() {
     };
 
     const contrast_classes = [
+        "global-summary",
         "feature-title",
         "feature-started",
         "feature-summary-commentary",

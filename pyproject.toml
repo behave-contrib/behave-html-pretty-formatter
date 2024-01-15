@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "behave-html-pretty-formatter"
-version = "1.10.3"
+version = "1.11"
 description = "Pretty HTML Formatter for Behave"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -58,33 +58,43 @@ show_skipped = false
 summary = false
 
 # Define ALIAS for PrettyHTMLFormatter.
+
 [tool.behave.formatters]
 html-pretty = "behave_html_pretty_formatter:PrettyHTMLFormatter"
 
 # Optional configuration of PrettyHTMLFormmater
 # also possible to use "behave ... -D behave.formatter.html-pretty.{setting}={value}".
+
 [tool.behave.userdata]
-"behave.formatter.html-pretty.title_string" = "Test Suite Reporter"
+behave.formatter.html-pretty.title_string = "Test Suite Reporter"
 # Example usecase, print {before/after}_scenarios as steps with attached data.
-"behave.formatter.html-pretty.pseudo_steps" = false
+behave.formatter.html-pretty.pseudo_steps = false
 # Structure of the result html page readable(pretty) or condensed.
-"behave.formatter.html-pretty.pretty_output" = true
+behave.formatter.html-pretty.pretty_output = true
 # The '%' must be escaped in ini format.
-"behave.formatter.html-pretty.date_format" = "%%d-%%m-%%Y %%H:%%M:%%S"
+behave.formatter.html-pretty.date_format = "%%d-%%m-%%Y %%H:%%M:%%S"
 # Defines if the summary is expanded upon start.
-"behave.formatter.html-pretty.show_summary" = false
+behave.formatter.html-pretty.show_summary = false
 # Define what to collapse by default, possible values:
 #  "auto" - show everything except embeds (default)
 #  "all" - hide everything
 #  comma separated list - specify subset of "scenario,embed,table,text"
 #  "none" - show everything, even embeds
-"behave.formatter.html-pretty.collapse" = "auto"
+behave.formatter.html-pretty.collapse = "auto"
 # Defines if the user is interested in what steps are not executed.
-"behave.formatter.html-pretty.show_unexecuted_steps" = true
+behave.formatter.html-pretty.show_unexecuted_steps = true
 # Defines if the user wants to see previous attempts when using auto retry.
 # Auto retry https://github.com/behave/behave/blob/main/behave/contrib/scenario_autoretry.py
-"behave.formatter.html-pretty.show_retry_attempts" = true
-
+behave.formatter.html-pretty.show_retry_attempts = true
+# Override global summary visibility
+#  "auto" - show global summary if more than one feature executed (default)
+#  "true" - show global summary
+#  "false" - hide global summary
+behave.formatter.html-pretty.global_summary = "auto"
+# Following will be formatted in summary section as "tester: worker1".
+behave.additional-info.tester = "super_worker"
+# Can be used multiple times.
+behave.additional-info.location = "super_awesome_lab"
 
 [tool.black]
 color = false

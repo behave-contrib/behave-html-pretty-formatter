@@ -24,6 +24,7 @@ from dominate.tags import (
     a,
     b,
     div,
+    h2,
     i,
     img,
     meta,
@@ -195,32 +196,15 @@ class Feature:
             span(f"Started: {start_time}", cls="feature-started")
 
             if self.high_contrast_button:
-                # Making sure there is a functioning button.
-                # Creating Dark Mode toggle which is clickable.
-                span(
-                    "Dark mode",
-                    cls="button flex-left-space",
-                    id="dark_mode_toggle",
-                    onclick="toggle_dark_mode()",
-                    data_value="auto",
-                    data_next_value="dark",
-                )
+                formatter.generate_toggle_buttons()
 
-                # Creating High Contrast toggle which is clickable.
-                span(
-                    "High contrast toggle",
-                    cls="button",
-                    id="high_contrast",
-                    onclick="toggle_hash('high_contrast')",
-                )
-
-                # Creating Summary which is clickable.
-                span(
-                    "Summary",
-                    cls="button",
-                    id="summary",
-                    onclick="toggle_hash('summary')",
-                )
+            # Creating Summary which is clickable.
+            left_space = " flex-left-space" if not self.high_contrast_button else ""
+            span(
+                "Summary",
+                cls=f"button{left_space}",
+                onclick=f"toggle_hash('summary-f{self.counter}')",
+            )
 
         # Generate summary.
         summary_collapse = "collapse"
@@ -228,7 +212,8 @@ class Feature:
             summary_collapse = ""
         with div(
             cls=f"feature-summary-container flex-gap {summary_collapse}",
-            id=f"f{self.counter}",
+            id=f"summary-f{self.counter}",
+            data_feature_id=f"f{self.counter}",
         ):
             # Generating feature commentary.
             flex_left_space = "flex-left-space" if self.description else ""
@@ -448,6 +433,14 @@ class Scenario:
             self.status = result.status
             self.duration = self._scenario.duration
 
+            # Check if feature status is already set
+            if self.feature.status == Status.skipped:
+                self.feature.status = result.status
+
+            # Override feature status, if step is not "skipped" or "passed"
+            if result.status not in [Status.skipped, Status.passed]:
+                self.feature.status = result.status
+
         # Check if step execution finished.
         # Embed to after_scenario_step if pseudo_steps enabled.
         if self.is_last_step or result.status != Status.passed:
@@ -490,6 +483,7 @@ class Scenario:
                 ),
             )
         self.status = Status.failed
+        self.feature.status = Status.failed
 
     def embed(self, embed_data):
         """
@@ -531,7 +525,7 @@ class Scenario:
             cls=f"scenario-capsule {common_cls}",
             id=f"f{self.feature.counter}-s{self.counter}-c",
         ):
-            # add scenario description as "commentary":
+            # Add scenario description as "commentary":
             scenario_description = "\n".join(self._scenario.description)
             if scenario_description:
                 pre(
@@ -716,10 +710,7 @@ class Step:
 
         # Actual Embed.
         if "video/webm" in mime_type:
-            with video(
-                width="1024",
-                controls="",
-            ):
+            with video(width="1024", controls=""):
                 source(src=f"data:{mime_type};base64,{data}", type=mime_type)
 
         if "image/png" in mime_type:
@@ -728,14 +719,17 @@ class Step:
         if "text" in mime_type:
             if "markdown" in mime_type:
                 data = markdown.markdown(data)
-            # javascript will decompress data and render them, if small enough
+
+            # Javascript will decompress data and render them, if small enough.
             if compress == "auto":
                 compress = len(data) > 48 * 1024
+
             if compress or "html" in mime_type or "markdown" in mime_type:
                 show = len(data) < 1024 * 1024
                 data = data.encode("utf-8")
                 if compress:
                     data = gzip.compress(data)
+
                 data_base64 = base64.b64encode(data).decode("utf-8").replace("\n", "")
                 span(
                     cls="to_render",
@@ -770,17 +764,19 @@ class Step:
         # If caption is user defined.
         if caption is not None:
             use_caption = caption
+
         # If caption is not defined try to use default one for specific mime type.
         elif mime_type in DEFAULT_CAPTION_FOR_MIME_TYPE:
             use_caption = DEFAULT_CAPTION_FOR_MIME_TYPE[mime_type]
+
         # No caption and no default caption for given mime type.
         else:
             use_caption = "unknown-mime-type"
             data = "data removed"
 
         file_path = None
-        # Do not try to check filename for long data
-        # Leads to OSError on some filesystems
+        # Do not try to check filename for long data.
+        # Leads to OSError on some filesystems.
         filename_len_limit = 256
         if len(data) < filename_len_limit:
             try:
@@ -856,6 +852,7 @@ class Step:
         """
         if not self.text:
             return
+
         with table(cls="table"):
             if formatter.collapse_text:
                 with thead(
@@ -864,6 +861,7 @@ class Step:
                 ):
                     line = tr()
                     line += th("Text")
+
             # Make the body.
             with tbody(
                 id=f"table_{PrettyHTMLFormatter.table_number}",
@@ -1084,7 +1082,8 @@ class PrettyHTMLFormatter(Formatter):
                 raise RuntimeError(msg)
 
         self.collapse_scenario = "scenario" in self.collapse or "all" in self.collapse
-        # collapse embeds by default
+
+        # Collapse embeds by default.
         self.collapse_embed = (
             "embed" in self.collapse
             or "all" in self.collapse
@@ -1096,6 +1095,14 @@ class PrettyHTMLFormatter(Formatter):
         self.show_unexecuted_steps = self._str_to_bool(
             config.userdata.get(f"{config_path}.show_unexecuted_steps", "true"),
         )
+
+        self.global_summary = config.userdata.get(
+            f"{config_path}.global_summary",
+            "auto",
+        ).lower()
+
+        if self.global_summary != "auto":
+            self.global_summary = self._str_to_bool(self.global_summary)
 
         self.additional_info = {}
 
@@ -1132,6 +1139,7 @@ class PrettyHTMLFormatter(Formatter):
         current_feature = self.current_feature
         if current_feature:
             current_feature.finish_time = datetime.now()
+
         self.feature_counter += 1
         self.scenario_counter = 0
         self.features.append(Feature(feature, self.feature_counter))
@@ -1143,6 +1151,7 @@ class PrettyHTMLFormatter(Formatter):
         """
         if len(self.features) == 0:
             return None
+
         return self.features[-1]
 
     @property
@@ -1153,6 +1162,7 @@ class PrettyHTMLFormatter(Formatter):
         _feature = self.current_feature
         if not _feature or not _feature.scenarios or _feature.scenario_finished:
             return None
+
         return _feature.scenarios[-1]
 
     def before_scenario_finish(self, status):
@@ -1299,6 +1309,126 @@ class PrettyHTMLFormatter(Formatter):
         """
         self.icon = icon
 
+    def generate_toggle_buttons(self):
+        """
+        Toggle buttons for dark mode and high contrast
+        """
+        # Making sure there is a functioning button.
+        # Creating Dark Mode toggle which is clickable.
+        span(
+            "Dark mode",
+            cls="button flex-left-space",
+            id="dark_mode_toggle",
+            onclick="toggle_dark_mode()",
+            data_value="auto",
+            data_next_value="dark",
+        )
+
+        # Creating High Contrast toggle which is clickable.
+        span(
+            "High contrast toggle",
+            cls="button",
+            id="high_contrast",
+            onclick="toggle_hash('high_contrast')",
+        )
+
+    def _generate_global_summary(self):
+        """
+        Process and render global statistics.
+        """
+        if self.global_summary == "auto":
+            if len(self.features) <= 1:
+                return False
+
+        elif not self.global_summary:
+            return False
+
+        f_statuses, s_statuses = {}, {}
+        for feature in self.features:
+            f_status = feature.status.name.lower()
+            count = f_statuses.get(f_status, 0) + 1
+            f_statuses[f_status] = count
+
+            for scenario in feature.scenarios:
+                s_status = scenario.status.name.lower()
+                count = s_statuses.get(s_status, 0) + 1
+                s_statuses[s_status] = count
+
+        global_status = Status.passed.name.lower()
+        # If no passed scenario mark as skipped.
+        if not f_statuses.get(Status.passed.name.lower(), 0):
+            global_status = Status.skipped.name.lower()
+
+        # If some undefined scenario, mark as undefined
+        # else remain passed or skipped.
+        if f_statuses.get(Status.undefined.name.lower(), 0):
+            global_status = Status.undefined.name.lower()
+
+        # If some failed scenario, mark as failed
+        # else remain passed, skipped or undefined.
+        if f_statuses.get(Status.failed.name.lower(), 0):
+            global_status = Status.failed.name.lower()
+
+        with div(cls=f"global-summary flex-gap {global_status}"):
+            # Generate icon if present.
+            if self.icon:
+                with div(cls="feature-icon"):
+                    img(src=self.icon)
+
+            h2(self.title_string)
+            self.generate_toggle_buttons()
+            # Creating Summary which is clickable.
+            span(
+                "Global Summary",
+                cls="button",
+                onclick="toggle_hash('summary-global')",
+            )
+
+        collapse = "collapse" if not self.show_summary else ""
+        with div(
+            id="summary-global",
+            cls=f"feature-summary-container flex-gap {collapse}",
+        ):
+            with div(cls="feature-summary-stats"):
+                line = ", ".join(
+                    f"{f_statuses.get(s.name.lower(), 0)} {s.name.lower()}"
+                    for s in [
+                        Status.passed,
+                        Status.failed,
+                        Status.undefined,
+                        Status.skipped,
+                    ]
+                )
+                div(f"Features: {line}.", cls="feature-summary-row")
+                line = ", ".join(
+                    f"{s_statuses.get(s.name.lower(), 0)} {s.name.lower()}"
+                    for s in [
+                        Status.passed,
+                        Status.failed,
+                        Status.undefined,
+                        Status.skipped,
+                    ]
+                )
+                div(f"Scenarios: {line}.", cls="feature-summary-row")
+
+            with div(cls="feature-summary-stats flex-left-space"):
+                finish_time = datetime.now()
+                suite_duration = finish_time - self.suite_start_time
+                div(
+                    f"Started: {self.suite_start_time.strftime(self.date_format)}",
+                    cls="feature-summary-row",
+                )
+                div(
+                    f"Duration: {suite_duration.total_seconds():.2f}s.",
+                    cls="feature-summary-row",
+                )
+                div(
+                    f"Finished: {finish_time.strftime(self.date_format)}",
+                    cls="feature-summary-row",
+                )
+
+        return True
+
     def _add_unexecuted_scenario(self):
         class DummyStep:  # pylint: disable=too-few-public-methods
             """
@@ -1349,7 +1479,8 @@ class PrettyHTMLFormatter(Formatter):
             # Create unexecuted scenario, if there are unprocessed embeds.
             if feature.to_embed:
                 self._add_unexecuted_scenario()
-        # refresh scenario
+
+        # Refresh scenario.
         scenario = self.current_scenario
         if scenario:
             scenario.status = Status.failed
@@ -1364,6 +1495,7 @@ class PrettyHTMLFormatter(Formatter):
         if self._closed:
             return
         self._closed = True
+
         # Set finish time of the last feature.
         current_feature = self.current_feature
         if current_feature:
@@ -1397,10 +1529,11 @@ class PrettyHTMLFormatter(Formatter):
         # Iterate over the data and generate the page.
         with document.body as body:
             body.attributes["onload"] = "body_onload();"
-            if self.features:
-                feature = self.features[0]
-                feature.icon = self.icon
-                feature.high_contrast_button = True
+            if not self._generate_global_summary():
+                if self.features:
+                    feature = self.features[0]
+                    feature.icon = self.icon
+                    feature.high_contrast_button = True
             for feature in self.features:
                 feature.generate_feature(self)
 
