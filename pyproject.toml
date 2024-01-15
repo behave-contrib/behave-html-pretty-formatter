@@ -92,9 +92,9 @@ behave.formatter.html-pretty.show_retry_attempts = true
 #  "false" - hide global summary
 behave.formatter.html-pretty.global_summary = "auto"
 # Following will be formatted in summary section as "tester: worker1".
-behave.additional-info.tester = "worker1"
+behave.additional-info.tester = "super_worker"
 # Can be used multiple times.
-behave.additional-info.location = "lab2"
+behave.additional-info.location = "super_awesome_lab"
 
 [tool.black]
 color = false
