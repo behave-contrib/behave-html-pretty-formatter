@@ -2,7 +2,8 @@
   "[python]": {
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.fixAll": true,
+      /* The 'true' was changed to 'explicit' by VS Code from 1.85 version.*/
+      "source.fixAll": "explicit"
     },
     "editor.defaultFormatter": "ms-python.black-formatter",
   },
