@@ -125,7 +125,13 @@ async function collapsible_toggle(id) {
             else {
                 data = atob(data);
             }
-            compressed_data.innerHTML = data;
+            var mime = compressed_data.getAttribute("mime");
+            if(mime.indexOf("html") >= 0 || mime.indexOf("markdown") >= 0) {
+                compressed_data.innerHTML = data;
+            }
+            else {
+                compressed_data.innerText = data;
+            }
         }
         else {
             var msg = "click download above."
@@ -136,7 +142,7 @@ async function collapsible_toggle(id) {
             else {
                 msg = "Compressed data are too big, " + msg;
             }
-            compressed_data.innerHTML = msg;
+            compressed_data.innerText = msg;
         }
     }
     toggle_class(elem, "collapse");
@@ -296,7 +302,7 @@ function toggle_dark_mode() {
         }
         set_theme(next_thm);
     }
-    dark_mode_toggle.innerHTML = format_thm_name(dark_mode_toggle.dataset.nextValue);
+    dark_mode_toggle.innerText = format_thm_name(dark_mode_toggle.dataset.nextValue);
 }
 
 /* callback on system dark mode change, change on auto, compute next-value otherwise */
@@ -317,7 +323,7 @@ function dark_mode_change() {
             dark_mode_toggle.dataset.nextValue = invert_thm_name(value_thm);
         }
     }
-    dark_mode_toggle.innerHTML = format_thm_name(dark_mode_toggle.dataset.nextValue);
+    dark_mode_toggle.innerText = format_thm_name(dark_mode_toggle.dataset.nextValue);
 }
 
 function detect_contrast() {
@@ -341,7 +347,7 @@ function body_onload() {
     var current_thm = detect_dark_mode() ? "dark" : "light";
     var current_inv = invert_thm_name(current_thm);
     dark_mode_toggle.dataset.nextValue = current_inv;
-    dark_mode_toggle.innerHTML = format_thm_name(current_inv);
+    dark_mode_toggle.innerText = format_thm_name(current_inv);
     set_theme(current_thm);
 }
 
