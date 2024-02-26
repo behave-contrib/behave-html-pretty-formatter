@@ -736,6 +736,7 @@ class Step:
                     data=data_base64,
                     show=str(show).lower(),
                     compressed=str(compress).lower(),
+                    mime=mime_type,
                 )
             else:
                 span(data)
