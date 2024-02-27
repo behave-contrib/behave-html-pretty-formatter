@@ -1,3 +1,8 @@
+behave-html-pretty-formatter 1.11.1
+===================================
+Fix compressed text being rendered as HTML
+
+
 behave-html-pretty-formatter 1.11
 =================================
 Adding global summary
