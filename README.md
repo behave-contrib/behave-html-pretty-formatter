@@ -4,7 +4,7 @@
 - Using project [dominate](https://github.com/Knio/dominate) to generate the page
 
 ## Why was this project created?
-Take a look at https://modehnal.github.io/ to learn why and what for we develop this project.
+Take a look at https://modehnal.github.io/ to learn why and what for we developed this project.
 
 ## Installation
 
