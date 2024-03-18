@@ -211,12 +211,35 @@ Result can be seen in the image examples.
 
 ### Basic embedding setup - save embedding function to context
 
+This is to create shortcut `context.embed()`. There are multiple ways to achieve this.
+
+If you have Basic setup, you can simply define it like this:
+
+```python
+context.embed = context.formatter.embed
+```
+
+If you don't have Basic setup, the proper way is the following code
+
 ```python
 for formatter in context._runner.formatters:
     if formatter.name == "html-pretty":
         context.embed = formatter.embed
-# Not required if you already have the Basic setup.
-# You would than use: 'context.formatter.embed' instead of 'context.embed'
+```
+
+You can also define custom embed function which does something else when behave is called without `html-pretty` formatter (i.e. for debugging purposes), and overwrite it with `formatter.embed` function only if the formatter is present.
+
+```python
+def _embed(mime_type, data, caption):
+    if "text" in mime_type:
+        # Do your logging here, for example:
+        print(f"{caption}: {data}")
+
+context.embed = _embed
+
+# This requires Basic setup
+if hasattr(context, "formatter"):
+    context.embed = context.formatter.embed
 ```
 
 ### Embed image
