@@ -3,8 +3,11 @@
 - Inspired by [jest-html-reporter](https://github.com/Hargne/jest-html-reporter)
 - Using project [dominate](https://github.com/Knio/dominate) to generate the page
 
-## Why was this project created?
-Take a look at https://modehnal.github.io/ to learn why and what for we developed this project.
+
+## This project was featured in Fedora Magazine:
+  - https://fedoramagazine.org/automation-through-accessibility/
+  - Full technical solution of our team's (Red Hat DesktopQE) automation stack https://modehnal.github.io/
+
 
 ## Installation
 
