@@ -57,6 +57,12 @@ function hash_to_state() {
     }
     // Requested changes were applied, clear the list
     hash_uuid_list_change = [];
+
+    console.log("Rendering 'to_render' elements.");
+    elements_to_render = document.getElementsByClassName("to_render")
+    for (var i = 0; i < elements_to_render.length; i++) {
+        render_content(elements_to_render[i])
+    }
 }
 
 // Trigger proper functions on content load.
@@ -87,7 +93,7 @@ function toggle_hash(id) {
     hash_to_state();
 }
 
-async function collapsible_toggle(id) {
+function collapsible_toggle(id) {
     console.log("Toggle embed: " + id);
     var embed_button_id = "embed_button_" + id
     var parent = document.getElementById(embed_button_id);
@@ -111,39 +117,7 @@ async function collapsible_toggle(id) {
     // decompress compressed data
     var compressed_data = elem.querySelector("span.to_render");
     if (compressed_data) {
-        compressed_data.classList.remove("to_render");
-        var show = compressed_data.getAttribute("show");
-        var compressed = compressed_data.getAttribute("compressed");
-        var data = compressed_data.getAttribute("data");
-        var ds = ('DecompressionStream' in window);
-        // we can't show compressed data, if browser doesn't suport it
-        if (show == "true" && (compressed != "true" || ds)) {
-            if (compressed == "true") {
-                data = GZIP_HEADER + data;
-                data = await decompress(data);
-            }
-            else {
-                data = atob(data);
-            }
-            var mime = compressed_data.getAttribute("mime");
-            if(mime.indexOf("html") >= 0 || mime.indexOf("markdown") >= 0) {
-                compressed_data.innerHTML = data;
-            }
-            else {
-                compressed_data.innerText = data;
-            }
-        }
-        else {
-            var msg = "click download above."
-            // data should be rendered, but browser check failed
-            if (show == "true") {
-                msg = "Browser does not support CompressionStream API, " + msg;
-            }
-            else {
-                msg = "Compressed data are too big, " + msg;
-            }
-            compressed_data.innerText = msg;
-        }
+       render_content(compressed_data)
     }
     toggle_class(elem, "collapse");
 };
@@ -404,3 +378,40 @@ function download_embed(id, filename) {
     /* fix race in FF */
     setTimeout(function () { document.body.removeChild(link); }, 2000);
 };
+
+
+async function render_content(element) {
+    element.classList.remove("to_render");
+    var show = element.getAttribute("show");
+    var compressed = element.getAttribute("compressed");
+    var data = element.getAttribute("data");
+    var ds = ('DecompressionStream' in window);
+    // We can't show compressed data, if browser doesn't support it
+    if (show == "true" && (compressed != "true" || ds)) {
+        if (compressed == "true") {
+            data = GZIP_HEADER + data;
+            data = await decompress(data);
+        }
+        else {
+            data = atob(data);
+        }
+        var mime = element.getAttribute("mime");
+        if(mime.indexOf("html") >= 0 || mime.indexOf("markdown") >= 0) {
+            element.innerHTML = data;
+        }
+        else {
+            element.innerText = data;
+        }
+    }
+    else {
+        var msg = "click download above."
+        // Data should be rendered, but browser check failed.
+        if (show == "true") {
+            msg = "Browser does not support CompressionStream API, " + msg;
+        }
+        else {
+            msg = "Compressed data are too big, " + msg;
+        }
+        element.innerText = msg;
+    }
+}
