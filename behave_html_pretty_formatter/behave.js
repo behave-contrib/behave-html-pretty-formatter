@@ -117,7 +117,7 @@ function collapsible_toggle(id) {
     // decompress compressed data
     var compressed_data = elem.querySelector("span.to_render");
     if (compressed_data) {
-       render_content(compressed_data)
+        render_content(compressed_data)
     }
     toggle_class(elem, "collapse");
 };
