@@ -1,7 +1,12 @@
+#!/usr/bin/env python3
 """
 HTML Pretty formatter for behave
 Inspired by https://github.com/Hargne/jest-html-reporter
 """
+
+# pylint: disable=protected-access
+# pylint: disable=too-many-lines
+
 
 from __future__ import absolute_import
 
@@ -97,11 +102,16 @@ class Feature:
         """
         Create new scenario in feature based on behave scenario object
         """
+
+        # React to fail in before_scenario, do not fail on no 'run' in scenario.
+        if not hasattr(scenario, "run"):
+            self._scenario_run_id = 0
+
         # Keeping a unique id of the object.
         # str() on scenario.run.func will return <function patch_ ... at 0x7f024e9bf160>
         # Since we need just the address as an ID we can use id()
         # The hex(id(scenario.run.func)) is than equal to the 0x7f024e9bf160
-        if hasattr(scenario.run, "func"):
+        elif hasattr(scenario.run, "func"):
             self._scenario_run_id = id(scenario.run.func)
 
         self.scenario_finished = False
@@ -109,7 +119,7 @@ class Feature:
         for embed_data in self.to_embed:
             _scenario.embed(embed_data)
         self.to_embed = []
-        # Stop embeding to before_scenario.
+        # Stop embedding to before_scenario.
         _scenario.pseudo_step_id = 1
 
         if pseudo_steps:
@@ -138,7 +148,7 @@ class Feature:
 
     def after_scenario_finish(self, status):
         """
-        Sets status and duration of after scenario presudo step.
+        Sets status and duration of after scenario pseudo step.
         Should be called at the end of behave's `after_scenario()`,
         so that next embeds are correctly assigned to next scenario.
         """
@@ -159,7 +169,7 @@ class Feature:
 
     def get_feature_stats(self):
         """
-        Compute scenario stats if trere are multiple scenarios.
+        Compute scenario stats if there are multiple scenarios.
         """
         stats = OrderedDict()
 
@@ -301,9 +311,12 @@ class Scenario:
             ]
             self.pseudo_steps[1].margin_top = True
 
+        # React to fail in before_scenario, do not fail on no 'tags' in scenario.
+        scenario_tags = [] if not hasattr(scenario, "tags") else scenario.tags
+
         # We need another information about a tag, to recognize if it
         # should act as a link or span.
-        self.tags = [Tag(tag) for tag in feature.tags + scenario.tags]
+        self.tags = [Tag(tag) for tag in feature.tags + scenario_tags]
 
         self.location = scenario.location
 
@@ -704,7 +717,7 @@ class Step:
         :param data: Data to be embedded.
         :type data: Unspecified.
 
-        :param compres: Whether to compress the text data
+        :param compress: Whether to compress the text data
         :type data: Unspecified.
         """
 
@@ -1175,7 +1188,7 @@ class PrettyHTMLFormatter(Formatter):
 
     def after_scenario_finish(self, status):
         """
-        Sets status and duration of after scenario presudo step.
+        Sets status and duration of after scenario pseudo step.
         Should be called at the end of behave's `after_scenario()`,
         so that next embeds are correctly assigned to next scenario.
         """
@@ -1191,7 +1204,8 @@ class PrettyHTMLFormatter(Formatter):
         # If it is, the auto retry mode is in effect.
         # Keeping the two ifs separated since we can add additional functionality later.
         if (
-            hasattr(scenario.run, "func")
+            hasattr(scenario, "run")
+            and hasattr(scenario.run, "func")
             and id(scenario.run.func) == self.current_feature._scenario_run_id
         ):
             # Check against the behave.ini setup.
@@ -1538,5 +1552,5 @@ class PrettyHTMLFormatter(Formatter):
             for feature in self.features:
                 feature.generate_feature(self)
 
-        # Write everything to the stream which corelates to the -o <file> behave option.
+        # Write everything to the stream which correlates to the -o <file> behave option.
         self.stream.write(document.render(pretty=self.pretty_output))

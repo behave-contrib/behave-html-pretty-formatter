@@ -7,6 +7,10 @@
     },
     "editor.defaultFormatter": "ms-python.black-formatter",
   },
+  "editor.minimap.enabled": true,
+  "editor.minimap.showSlider": "always",
+  "editor.minimap.size": "proportional",
+  "editor.stickyScroll.enabled": true,
   "editor.rulers": [
     88,
     120
