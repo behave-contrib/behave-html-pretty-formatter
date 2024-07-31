@@ -436,13 +436,14 @@ class Scenario:
         step = self.current_step
         step.add_result(result)
 
-        if (
-            self.is_last_step
-            or result.status == Status.passed
-            or result.status == Status.failed
-            or result.status == Status.skipped
-            or result.status == Status.undefined
-        ):
+        expected_statuses = (
+            Status.passed,
+            Status.failed,
+            Status.skipped,
+            Status.undefined,
+        )
+
+        if self.is_last_step or (result.status in expected_statuses):
             self.status = result.status
             self.duration = self._scenario.duration
 
