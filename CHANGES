@@ -1,3 +1,9 @@
+behave-html-pretty-formatter 1.11.3
+===================================
+Do not fail on 'behave' scenario not being initiated.
+This takes care of crashing session when exception will come from before_scenario.
+
+
 behave-html-pretty-formatter 1.11.2
 ===================================
 Fix to_render content not being rendered when using "embed" collapse option
