@@ -47,4 +47,4 @@ jobs:
     - name: Install build tools
       run: python -m pip install tox wheel
     - name: Run ${{ matrix.env }}
-      run: tox run -e ${{ matrix.env }} check
+      run: tox run -e ${{ matrix.env }} -- check
