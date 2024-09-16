@@ -1,3 +1,7 @@
+behave-html-pretty-formatter 1.11.4
+===================================
+Fixing TypeError when user does not provide str data for text mime type.
+
 behave-html-pretty-formatter 1.11.3
 ===================================
 Do not fail on 'behave' scenario not being initiated.

@@ -921,6 +921,11 @@ class Embed:
         Set data, mime_type and caption.
         """
         self._mime_type = mime_type
+
+        # Unexpected data passed with text mime type.
+        if "text" in mime_type and not isinstance(data, str):
+            data = str(data)
+
         # Check that link is in format: set([link, label], ...)
         if mime_type == "link":
             new_data = []
