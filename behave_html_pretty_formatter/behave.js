@@ -364,7 +364,7 @@ function download_embed(id, filename) {
         extension = ".html";
         value = decodeHTMLEntities(child.innerHTML);
     }
-    /* add filename extenstion, only if not there already */
+    /* add filename extension, only if not there already */
     var extend_filename = ! filename.match(/\.[a-zA-Z][a-zA-Z][a-zA-Z]?$/g);
     if (extend_filename) {
         filename += extension;
