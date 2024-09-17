@@ -669,7 +669,14 @@ class Step:
                     continue
                 self.generate_embed(formatter, embed_data)
 
-    def generate_download_button(self, embed_data, data, use_caption, filename):
+    def generate_download_button(
+        self,
+        embed_data,
+        data,
+        use_caption,
+        filename,
+        compress=False,
+    ):
         """
         Creates Download button in HTML.
 
@@ -691,9 +698,15 @@ class Step:
 
         # Rule for embed_data.download_button as None - default value.
         if embed_data.download_button is None:
-            # Do not create button if there is mime type text with less then 20 lines.
+            # Do not create button if there is mime type text with less then 20 lines (20000 chars)
+            # This length limit is still lower than 48k limit with compress="auto".
             min_lines_button = 20
-            if "text" in embed_data.mime_type and data.count("\n") < min_lines_button:
+            if (
+                "text" in embed_data.mime_type
+                and data.count("\n") < min_lines_button
+                and len(data) < 100 * min_lines_button
+                and not compress
+            ):
                 return
 
             # Do not create button if the mime type is link.
@@ -827,7 +840,13 @@ class Step:
                 cls=f"embed_content {formatter.get_collapse_cls('embed')}",
                 id=f"embed_{embed_data.uid}",
             ):
-                self.generate_download_button(embed_data, data, use_caption, filename)
+                self.generate_download_button(
+                    embed_data,
+                    data,
+                    use_caption,
+                    filename,
+                    compress,
+                )
                 self.generate_embed_content(mime_type, data, compress)
 
     def generate_table(self, formatter):
