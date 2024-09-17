@@ -176,6 +176,15 @@ context.formatter.set_title(title="Test Suite Reporter")
  - This is configurable also from the behave.ini file `behave.formatter.html-pretty.title_string = Test Suite Reporter`
 
 
+### Add custom head element for the HTML page
+
+```python
+context.formatter.add_html_head_element('<script src="https://example.js.org/my_js_lib.min.js"></script>')
+```
+
+Example use case - import custom JS library (e.g. plotly.js).
+
+
 ### Commentary step in HTML report
 
 Used as an information panel to describe or provide infomation about the page contents.
@@ -260,6 +269,46 @@ context.embed(mime_type="video/webm", data="/path/to/video.webm", caption="Video
 ### Image and Video examples:
 
 ![Pretty HTML Formatter](design/image_and_video_examples.gif)
+
+
+### Embed plotly.js graph example
+
+```python3
+# This have to be done once per report, e.g. in `before_all()`.
+context.formatter.add_html_head_element('<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>')
+
+# Example graph
+graph_js = \
+"""
+TESTER = document.getElementById('tester');
+TESTER.innerHTML = '';
+Plotly.newPlot( TESTER, [{
+x: [1, 2, 3, 4, 5],
+y: [1, 2, 4, 8, 16] }], {
+margin: { t: 0 } } );
+"""
+
+# Embed the wrapping `<div>` element togerher with JS code
+context.formatter.embed(
+    data=f'<div id="tester" style="width:600px;height:250px;"></div><script>{graph_js}</script>',
+    mime_type="text/html",
+    caption="Example Graph",
+    compress=False,
+)
+
+# Embed the same JS code gzip compressed (large graphs)
+graph_js_min = graph_js.replace("\n", "").replace("tester", "compressed_tester").strip()
+context.formatter.embed(
+    data=f'<div id="compressed_tester" style="width:600px;height:250px;" onclick="{graph_js_min}">Click me to load the graph.</div>',
+    mime_type="text/html",
+    caption="Example Compressed Graph",
+    compress=True,
+)
+```
+
+Note: with `compress=True` the decompression is done by javascript, and decompressed script is not executed by browser (additional `onclick` callback is required).
+
+![Plotly Example](design/plotly_example.gif)
 
 
 ### Defined MIME types and corresponding accepted data

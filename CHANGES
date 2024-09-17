@@ -1,6 +1,14 @@
+behave-html-pretty-formatter 1.12
+=================================
+Add add_html_header_element() call to add custom HTML header.
+Fix HTML embed compression.
+Fix download button not showing in long line HTML embed.
+
+
 behave-html-pretty-formatter 1.11.4
 ===================================
 Fixing TypeError when user does not provide str data for text mime type.
+
 
 behave-html-pretty-formatter 1.11.3
 ===================================
