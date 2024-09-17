@@ -7,7 +7,6 @@ Inspired by https://github.com/Hargne/jest-html-reporter
 # pylint: disable=protected-access
 # pylint: disable=too-many-lines
 
-
 from __future__ import absolute_import
 
 import atexit
@@ -1076,6 +1075,10 @@ class PrettyHTMLFormatter(Formatter):
         # Some type of icon can be set.
         self.icon = None
 
+        # User defined additional HTML headers to import JS/CSS
+        # Use dict to preserve order (since python3.7+) and prevent duplicit keys
+        self._additional_headers = {}
+
         # This will return a stream given in behave call -o <file_name>.html.
         self.stream = self.open()
 
@@ -1349,6 +1352,12 @@ class PrettyHTMLFormatter(Formatter):
         """
         self.icon = icon
 
+    def add_html_head_element(self, html_elem):
+        """
+        Add string to HTML head tag.
+        """
+        self._additional_headers[html_elem] = None
+
     def generate_toggle_buttons(self):
         """
         Toggle buttons for dark mode and high contrast
@@ -1565,6 +1574,9 @@ class PrettyHTMLFormatter(Formatter):
                 js_script = _script_file.read()
             with script(type="text/javascript"):
                 raw(js_script)
+
+            for elem in self._additional_headers:
+                raw(elem)
 
         # Iterate over the data and generate the page.
         with document.body as body:
