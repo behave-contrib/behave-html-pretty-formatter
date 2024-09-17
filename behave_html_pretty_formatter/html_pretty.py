@@ -750,11 +750,10 @@ class Step:
             if compress == "auto":
                 compress = len(data) > 48 * 1024
 
-            if compress or "html" in mime_type or "markdown" in mime_type:
+            if compress:
                 show = len(data) < 1024 * 1024
                 data = data.encode("utf-8")
-                if compress:
-                    data = gzip.compress(data)
+                data = gzip.compress(data)
 
                 data_base64 = base64.b64encode(data).decode("utf-8").replace("\n", "")
                 span(
@@ -764,6 +763,9 @@ class Step:
                     compressed=str(compress).lower(),
                     mime=mime_type,
                 )
+            elif "html" in mime_type or "markdown" in mime_type:
+                with span():
+                    raw(data)
             else:
                 span(data)
 
