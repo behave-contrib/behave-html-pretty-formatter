@@ -245,7 +245,7 @@ pre * {
   border-left: 0.4rem solid var(--summary-passed-border);
 }
 
-.feature-summary-row.failed {
+.feature-summary-row.failed, .feature-summary-row.error {
   color: var(--summary-failed);
   border-left: 0.4rem solid var(--summary-failed-border);
 }
@@ -311,7 +311,7 @@ pre * {
   background-color: var(--passed-step-bg);
 }
 
-.scenario-header.failed, .global-summary.failed {
+.scenario-header.failed, .global-summary.failed, .scenario-header.error, .global-summary.error {
   background-color: var(--failed-step-bg);
 }
 
@@ -386,7 +386,7 @@ pre * {
   border: 1px solid var(--passed-border);
 }
 
-.step-capsule.failed {
+.step-capsule.failed, .step-capsule.error {
   background-color: var(--failed-step-bg);
   ;
   border: 1px solid var(--failed-border);

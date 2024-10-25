@@ -634,12 +634,17 @@ class Step:
                 high_contrast_status = {
                     "passed": "PASS",
                     "failed": "FAIL",
+                    "error": "ERROR",
                     "undefined": "SKIP",
                     "skipped": "SKIP",
                     "untested": "SKIP",
                 }
 
-                div(high_contrast_status[self.status.name], cls="step-status")
+                status_name = self.status.name
+                if status_name not in high_contrast_status:
+                    status_name = "undefined"
+
+                div(high_contrast_status[status_name], cls="step-status")
 
                 # Step decorator.
                 with div(cls="step-decorator"):
