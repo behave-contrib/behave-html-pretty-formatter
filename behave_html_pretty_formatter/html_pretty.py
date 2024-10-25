@@ -921,6 +921,7 @@ class Embed:
     """
 
     count = 0
+    uids = set()
 
     def __init__(
         self,
@@ -935,6 +936,9 @@ class Embed:
     ):
         # Generating unique ID.
         self.uid = str(uuid.uuid4())[:4]
+        while self.uid in Embed.uids:
+            self.uid = str(uuid.uuid4())[:4]
+        Embed.uids.add(self.uid)
         self.set_data(mime_type, data, caption)
         self._fail_only = fail_only
         self._compress = compress
