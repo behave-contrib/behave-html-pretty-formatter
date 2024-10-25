@@ -691,7 +691,7 @@ class Step:
 
         def _create_download_button():
             _filename = filename if filename else use_caption
-            args = f"'embed_{embed_data.uid}','{_filename}'"
+            args = f"'embed_{embed_data.uuid}','{_filename}'"
             onclick = f"download_embed({args})"
             with div():
                 span(
@@ -837,14 +837,14 @@ class Step:
             div(
                 use_caption,
                 cls=f"embed_button {formatter.get_collapse_cls('embed')}",
-                id=f"embed_button_{embed_data.uid}",
-                onclick=f"toggle_hash('{embed_data.uid}')",
+                id=f"embed_button_{embed_data.uuid}",
+                onclick=f"toggle_hash('{embed_data.uuid}')",
             )
 
             # Embed content.
             with pre(
                 cls=f"embed_content {formatter.get_collapse_cls('embed')}",
-                id=f"embed_{embed_data.uid}",
+                id=f"embed_{embed_data.uuid}",
             ):
                 self.generate_download_button(
                     embed_data,
@@ -921,7 +921,7 @@ class Embed:
     """
 
     count = 0
-    uids = set()
+    uuids = set()
 
     def __init__(
         self,
@@ -935,10 +935,10 @@ class Embed:
         compress="auto",
     ):
         # Generating unique ID.
-        self.uid = str(uuid.uuid4())[:4]
-        while self.uid in Embed.uids:
-            self.uid = str(uuid.uuid4())[:4]
-        Embed.uids.add(self.uid)
+        self.uuid = str(uuid.uuid4())[:4]
+        while self.uuid in Embed.uuids:
+            self.uuid = str(uuid.uuid4())[:4]
+        Embed.uuids.add(self.uuid)
         self.set_data(mime_type, data, caption)
         self._fail_only = fail_only
         self._compress = compress
