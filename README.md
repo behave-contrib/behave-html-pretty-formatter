@@ -336,23 +336,23 @@ If the testsuite uses `before_scenario()` and `after_scenario()` and you would l
 # Example use in features.environment.py
 
 def before_scenario(context, scenario):
-  ...
-  # This requires to have html_formatter set by code above.
-  if error_found:
-    context.embed("text", str(error_found), "Error Message")
-    context.html_formatter.before_scenario_finish("failed")
-    raise error_found
-  else:
-    context.html_formatter.before_scenario_finish("passed")
+    ...
+    # This requires to have html_formatter set by code above.
+    if error_found:
+        context.embed("text", str(error_found), "Error Message")
+        context.html_formatter.before_scenario_finish("failed")
+        raise error_found
+    else:
+        context.html_formatter.before_scenario_finish("passed")
 
 def after_scenario(context, scenario):
-  ...
-  if error_found:
-    context.embed("text", str(error_found), "Error Message")
-    context.html_formatter.after_scenario_finish("failed")
-    raise error_found
-  else:
-    context.html_formatter.after_scenario_finish("passed")
+    ...
+    if error_found:
+        context.embed("text", str(error_found), "Error Message")
+        context.html_formatter.after_scenario_finish("failed")
+        raise error_found
+    else:
+        context.html_formatter.after_scenario_finish("passed")
 ```
 
 ## Contributing
