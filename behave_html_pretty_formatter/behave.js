@@ -343,13 +343,16 @@ function download_embed(id, filename) {
     var value = "";
     var tag = child.tagName.toLowerCase();
     if (tag === "span") {
+        extension = ".txt"
+        if (child.getAttribute("mime").indexOf("html") != -1 || child.getAttribute("mime").indexOf("markdown") != -1) {
+            extension = ".html"
+        }
         if (child.getAttribute("compressed") == "true") {
-            extension = ".txt.gz";
+            extension = extension + ".gz";
             value = GZIP_HEADER + child.getAttribute("data");
         }
         else {
-            extension = ".txt";
-            value = "data:text/plain," + encodeURIComponent(decodeHTMLEntities(child.innerHTML));
+            value = "data:text/html," + encodeURIComponent(decodeHTMLEntities(child.innerHTML));
         }
     }
     else if (tag == "video") {
@@ -365,7 +368,29 @@ function download_embed(id, filename) {
         value = decodeHTMLEntities(child.innerHTML);
     }
     /* add filename extension, only if not there already */
-    var extend_filename = ! filename.match(/\.[a-zA-Z][a-zA-Z][a-zA-Z]?$/g);
+    var extend_filename = !filename.match(/\.[a-zA-Z][a-zA-Z][a-zA-Z]?$/g);
+    if (extend_filename) {
+        filename += extension;
+    }
+    var link = document.createElement("a");
+    link.style.display = "none";
+    link.href = value;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click()
+    /* fix race in FF */
+    setTimeout(function () { document.body.removeChild(link); }, 2000);
+};
+
+function download_plaintext(id, filename) {
+    var elem = document.getElementById(id);
+    var child = elem.children[1];
+    var value = "";
+    var tag = child.tagName.toLowerCase();
+    extension = ".txt";
+    value = "data:text/plain," + encodeURIComponent(decodeHTMLEntities(child.textContent));
+    /* add filename extension, only if not there already */
+    var extend_filename = !filename.match(/\.[a-zA-Z][a-zA-Z][a-zA-Z]?$/g);
     if (extend_filename) {
         filename += extension;
     }
@@ -396,7 +421,7 @@ async function render_content(element) {
             data = atob(data);
         }
         var mime = element.getAttribute("mime");
-        if(mime.indexOf("html") >= 0 || mime.indexOf("markdown") >= 0) {
+        if (mime.indexOf("html") >= 0 || mime.indexOf("markdown") >= 0) {
             element.innerHTML = data;
         }
         else {
