@@ -1,3 +1,8 @@
+behave-html-pretty-formatter 1.12.2
+===================================
+Fix download of HTML embeds, add `Download Plaintext` button
+
+
 behave-html-pretty-formatter 1.12.1
 ===================================
 Add support for new statuses from upstream behave 1.2.7
