@@ -689,16 +689,15 @@ class Step:
         prevent accidental call of this.
         """
 
-        def _create_download_button():
+        def _create_download_button(label="Download", func="download_embed"):
             _filename = filename if filename else use_caption
             args = f"'embed_{embed_data.uuid}','{_filename}'"
-            onclick = f"download_embed({args})"
-            with div():
-                span(
-                    "Download",
-                    cls="button margin-bottom",
-                    onclick=onclick,
-                )
+            onclick = f"{func}({args})"
+            span(
+                label,
+                cls="button margin-bottom",
+                onclick=onclick,
+            )
 
         # Rule for embed_data.download_button as None - default value.
         if embed_data.download_button is None:
@@ -718,7 +717,12 @@ class Step:
                 return
 
             # In all other cases the button is valid.
-            _create_download_button()
+            with div(cls="display-flex flex-gap"):
+                if "html" in embed_data.mime_type or "markdown" in embed_data.mime_type:
+                    _create_download_button("Download HTML")
+                    _create_download_button("Download Plaintext", "download_plaintext")
+                else:
+                    _create_download_button()
 
         # Rule for embed_data.download_button as True.
         elif embed_data.download_button:
@@ -770,10 +774,10 @@ class Step:
                     mime=mime_type,
                 )
             elif is_html:
-                with span():
+                with span(mime=mime_type):
                     raw(data)
             else:
-                span(data)
+                span(data, mime=mime_type)
 
         if "link" in mime_type:
             # expected format: set( [link, label], ... )
