@@ -748,6 +748,7 @@ class Step:
             img(src=f"data:{mime_type};base64,{data}")
 
         if "text" in mime_type:
+            is_html = "html" in mime_type or "markdown" in mime_type
             if "markdown" in mime_type:
                 data = markdown.markdown(data)
 
@@ -756,7 +757,7 @@ class Step:
                 compress = len(data) > 48 * 1024
 
             if compress:
-                show = len(data) < 1024 * 1024
+                show = len(data) < 1024 * 1024 or is_html
                 data = data.encode("utf-8")
                 data = gzip.compress(data)
 
@@ -768,7 +769,7 @@ class Step:
                     compressed=str(compress).lower(),
                     mime=mime_type,
                 )
-            elif "html" in mime_type or "markdown" in mime_type:
+            elif is_html:
                 with span():
                     raw(data)
             else:
