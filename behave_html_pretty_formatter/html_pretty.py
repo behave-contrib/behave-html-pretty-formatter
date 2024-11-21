@@ -1450,26 +1450,35 @@ class PrettyHTMLFormatter(Formatter):
             cls=f"feature-summary-container flex-gap {collapse}",
         ):
             with div(cls="feature-summary-stats"):
-                line = ", ".join(
-                    f"{f_statuses.get(s.name.lower(), 0)} {s.name.lower()}"
-                    for s in [
-                        Status.passed,
-                        Status.failed,
-                        Status.undefined,
-                        Status.skipped,
-                    ]
-                )
-                div(f"Features: {line}.", cls="feature-summary-row")
-                line = ", ".join(
-                    f"{s_statuses.get(s.name.lower(), 0)} {s.name.lower()}"
-                    for s in [
-                        Status.passed,
-                        Status.failed,
-                        Status.undefined,
-                        Status.skipped,
-                    ]
-                )
-                div(f"Scenarios: {line}.", cls="feature-summary-row")
+                statuses = [
+                    Status.passed,
+                    Status.failed,
+                    Status.undefined,
+                    Status.skipped,
+                ]
+                with div("Features:", cls="feature-summary-row"):
+                    for status in statuses:
+                        span(
+                            " ".join(
+                                (
+                                    str(f_statuses.get(status.name.lower(), 0)),
+                                    status.name.lower(),
+                                ),
+                            ),
+                            style=f"color:var(--summary-{status.name.lower()})",
+                        )
+
+                with div("Scenarios:", cls="feature-summary-row"):
+                    for status in statuses:
+                        span(
+                            " ".join(
+                                (
+                                    str(s_statuses.get(status.name.lower(), 0)),
+                                    status.name.lower(),
+                                ),
+                            ),
+                            style=f"color:var(--summary-{status.name.lower()})",
+                        )
 
             with div(cls="feature-summary-stats flex-left-space"):
                 finish_time = datetime.now()
