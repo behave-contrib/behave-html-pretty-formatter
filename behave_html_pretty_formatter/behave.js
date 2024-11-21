@@ -193,6 +193,7 @@ function toggle_contrast() {
 
     const contrast_classes = [
         "global-summary",
+        "global-summary-status",
         "feature-title",
         "feature-started",
         "feature-summary-commentary",
