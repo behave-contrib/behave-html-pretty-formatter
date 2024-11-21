@@ -1459,10 +1459,11 @@ class PrettyHTMLFormatter(Formatter):
                 with div("Features:", cls="feature-summary-row"):
                     for status in statuses:
                         span(
-                            " ".join(
+                            "".join(
                                 (
-                                    str(f_statuses.get(status.name.lower(), 0)),
+                                    f"{f_statuses.get(status.name.lower(), 0)} ",
                                     status.name.lower(),
+                                    ", " if status != Status.skipped else ".",
                                 ),
                             ),
                             style=f"color:var(--summary-{status.name.lower()})",
@@ -1471,10 +1472,11 @@ class PrettyHTMLFormatter(Formatter):
                 with div("Scenarios:", cls="feature-summary-row"):
                     for status in statuses:
                         span(
-                            " ".join(
+                            "".join(
                                 (
-                                    str(s_statuses.get(status.name.lower(), 0)),
+                                    f"{s_statuses.get(status.name.lower(), 0)} ",
                                     status.name.lower(),
+                                    ", " if status != Status.skipped else ".",
                                 ),
                             ),
                             style=f"color:var(--summary-{status.name.lower()})",
