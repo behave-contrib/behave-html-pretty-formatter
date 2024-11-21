@@ -1406,12 +1406,26 @@ class PrettyHTMLFormatter(Formatter):
         f_statuses, s_statuses = {}, {}
         for feature in self.features:
             f_status = feature.status.name.lower()
-            count = f_statuses.get(f_status, 0) + 1
+
+            # Handle upstream Status.error status, add it to Status.failed for now.
+            if f_status == "error":
+                count = f_statuses.get(Status.failed.name.lower(), 0) + 1
+                f_status = Status.failed.name.lower()
+            else:
+                count = f_statuses.get(f_status, 0) + 1
+
             f_statuses[f_status] = count
 
             for scenario in feature.scenarios:
                 s_status = scenario.status.name.lower()
-                count = s_statuses.get(s_status, 0) + 1
+
+                # Handle upstream Status.error status, add it to Status.failed for now.
+                if s_status == "error":
+                    count = s_statuses.get(Status.failed.name.lower(), 0) + 1
+                    s_status = Status.failed.name.lower()
+                else:
+                    count = s_statuses.get(s_status, 0) + 1
+
                 s_statuses[s_status] = count
 
         global_status = Status.passed.name.lower()
