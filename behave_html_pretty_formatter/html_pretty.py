@@ -1466,7 +1466,7 @@ class PrettyHTMLFormatter(Formatter):
                                     ", " if status != Status.skipped else ".",
                                 ),
                             ),
-                            style=f"color:var(--summary-{status.name.lower()})",
+                            cls=f"global-summary-status {status.name.lower()}",
                         )
 
                 with div("Scenarios:", cls="feature-summary-row"):
@@ -1479,7 +1479,7 @@ class PrettyHTMLFormatter(Formatter):
                                     ", " if status != Status.skipped else ".",
                                 ),
                             ),
-                            style=f"color:var(--summary-{status.name.lower()})",
+                            cls=f"global-summary-status {status.name.lower()}",
                         )
 
             with div(cls="feature-summary-stats flex-left-space"):
