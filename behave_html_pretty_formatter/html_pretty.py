@@ -1397,12 +1397,11 @@ class PrettyHTMLFormatter(Formatter):
             onclick="toggle_hash('high_contrast')",
         )
 
-    def _calculate_statuses(self, behave_object):
+    def _calculate_statuses(self, behave_object, statuses):
         """
         Calculate Statuses of either Feature or Scenario behave object.
         """
 
-        statuses = {}
         status = behave_object.status.name.lower()
 
         # Handle upstream Status.error status, add it to Status.failed for now.
@@ -1413,8 +1412,6 @@ class PrettyHTMLFormatter(Formatter):
             count = statuses.get(status, 0) + 1
 
         statuses[status] = count
-
-        return statuses
 
     def _calculate_global_status_from_results(self, feature_statuses):
         """
@@ -1450,11 +1447,12 @@ class PrettyHTMLFormatter(Formatter):
         elif not self.global_summary:
             return False
 
+        feature_statuses, scenario_statuses = {}, {}
         for feature in self.features:
-            feature_statuses = self._calculate_statuses(feature)
+            self._calculate_statuses(feature, feature_statuses)
 
             for scenario in feature.scenarios:
-                scenario_statuses = self._calculate_statuses(scenario)
+                self._calculate_statuses(scenario, scenario_statuses)
 
         global_status = self._calculate_global_status_from_results(feature_statuses)
 
