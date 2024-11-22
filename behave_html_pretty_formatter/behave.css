@@ -231,6 +231,26 @@ pre * {
   margin-bottom: 0.1em;
 }
 
+.global-summary-status.passed {
+  color: var(--summary-passed);
+}
+
+.global-summary-status.failed, .global-summary-status.error {
+  color: var(--summary-failed);
+}
+
+.global-summary-status.undefined {
+  color: var(--summary-undefined);
+}
+
+.global-summary-status.skipped {
+  color: var(--summary-skipped);
+}
+
+.contrast .global-summary-status {
+  color: rgb(248, 248, 248);
+}
+
 .feature-summary-row {
   color: var(--feature-color);
   border-left: 0.4rem solid var(--feature-color);

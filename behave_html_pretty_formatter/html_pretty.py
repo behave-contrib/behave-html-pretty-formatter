@@ -1397,10 +1397,49 @@ class PrettyHTMLFormatter(Formatter):
             onclick="toggle_hash('high_contrast')",
         )
 
+    def _calculate_statuses(self, behave_object, statuses):
+        """
+        Calculate Statuses of either Feature or Scenario behave object.
+        """
+
+        status = behave_object.status.name.lower()
+
+        # Handle upstream Status.error status, add it to Status.failed for now.
+        if status == "error":
+            count = statuses.get(Status.failed.name.lower(), 0) + 1
+            status = Status.failed.name.lower()
+        else:
+            count = statuses.get(status, 0) + 1
+
+        statuses[status] = count
+
+    def _calculate_global_status_from_results(self, feature_statuses):
+        """
+        Calculate global status from Feature results.
+        """
+
+        global_status = Status.passed.name.lower()
+        # If no passed scenario mark as skipped.
+        if not feature_statuses.get(Status.passed.name.lower(), 0):
+            global_status = Status.skipped.name.lower()
+
+        # If some undefined scenario, mark as undefined
+        # else remain passed or skipped.
+        if feature_statuses.get(Status.undefined.name.lower(), 0):
+            global_status = Status.undefined.name.lower()
+
+        # If some failed scenario, mark as failed
+        # else remain passed, skipped or undefined.
+        if feature_statuses.get(Status.failed.name.lower(), 0):
+            global_status = Status.failed.name.lower()
+
+        return global_status
+
     def _generate_global_summary(self):
         """
         Process and render global statistics.
         """
+
         if self.global_summary == "auto":
             if len(self.features) <= 1:
                 return False
@@ -1408,31 +1447,14 @@ class PrettyHTMLFormatter(Formatter):
         elif not self.global_summary:
             return False
 
-        f_statuses, s_statuses = {}, {}
+        feature_statuses, scenario_statuses = {}, {}
         for feature in self.features:
-            f_status = feature.status.name.lower()
-            count = f_statuses.get(f_status, 0) + 1
-            f_statuses[f_status] = count
+            self._calculate_statuses(feature, feature_statuses)
 
             for scenario in feature.scenarios:
-                s_status = scenario.status.name.lower()
-                count = s_statuses.get(s_status, 0) + 1
-                s_statuses[s_status] = count
+                self._calculate_statuses(scenario, scenario_statuses)
 
-        global_status = Status.passed.name.lower()
-        # If no passed scenario mark as skipped.
-        if not f_statuses.get(Status.passed.name.lower(), 0):
-            global_status = Status.skipped.name.lower()
-
-        # If some undefined scenario, mark as undefined
-        # else remain passed or skipped.
-        if f_statuses.get(Status.undefined.name.lower(), 0):
-            global_status = Status.undefined.name.lower()
-
-        # If some failed scenario, mark as failed
-        # else remain passed, skipped or undefined.
-        if f_statuses.get(Status.failed.name.lower(), 0):
-            global_status = Status.failed.name.lower()
+        global_status = self._calculate_global_status_from_results(feature_statuses)
 
         with div(cls=f"global-summary flex-gap {global_status}"):
             # Generate icon if present.
@@ -1455,26 +1477,37 @@ class PrettyHTMLFormatter(Formatter):
             cls=f"feature-summary-container flex-gap {collapse}",
         ):
             with div(cls="feature-summary-stats"):
-                line = ", ".join(
-                    f"{f_statuses.get(s.name.lower(), 0)} {s.name.lower()}"
-                    for s in [
-                        Status.passed,
-                        Status.failed,
-                        Status.undefined,
-                        Status.skipped,
-                    ]
-                )
-                div(f"Features: {line}.", cls="feature-summary-row")
-                line = ", ".join(
-                    f"{s_statuses.get(s.name.lower(), 0)} {s.name.lower()}"
-                    for s in [
-                        Status.passed,
-                        Status.failed,
-                        Status.undefined,
-                        Status.skipped,
-                    ]
-                )
-                div(f"Scenarios: {line}.", cls="feature-summary-row")
+                statuses = [
+                    Status.passed,
+                    Status.failed,
+                    Status.undefined,
+                    Status.skipped,
+                ]
+                with div("Features: ", cls="feature-summary-row"):
+                    for status in statuses:
+                        span(
+                            "".join(
+                                (
+                                    f"{feature_statuses.get(status.name.lower(), 0)} ",
+                                    status.name.lower(),
+                                    ", " if status != Status.skipped else ".",
+                                ),
+                            ),
+                            cls=f"global-summary-status {status.name.lower()}",
+                        )
+
+                with div("Scenarios: ", cls="feature-summary-row"):
+                    for status in statuses:
+                        span(
+                            "".join(
+                                (
+                                    f"{scenario_statuses.get(status.name.lower(), 0)} ",
+                                    status.name.lower(),
+                                    ", " if status != Status.skipped else ".",
+                                ),
+                            ),
+                            cls=f"global-summary-status {status.name.lower()}",
+                        )
 
             with div(cls="feature-summary-stats flex-left-space"):
                 finish_time = datetime.now()
