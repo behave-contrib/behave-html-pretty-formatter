@@ -1470,7 +1470,7 @@ class PrettyHTMLFormatter(Formatter):
                     Status.undefined,
                     Status.skipped,
                 ]
-                with div("Features:", cls="feature-summary-row"):
+                with div("Features: ", cls="feature-summary-row"):
                     for status in statuses:
                         span(
                             "".join(
@@ -1483,7 +1483,7 @@ class PrettyHTMLFormatter(Formatter):
                             cls=f"global-summary-status {status.name.lower()}",
                         )
 
-                with div("Scenarios:", cls="feature-summary-row"):
+                with div("Scenarios: ", cls="feature-summary-row"):
                     for status in statuses:
                         span(
                             "".join(
