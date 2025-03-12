@@ -813,21 +813,7 @@ class Step:
             use_caption = "unknown-mime-type"
             data = "data removed"
 
-        file_path = None
-        # Do not try to check filename for long data.
-        # Leads to OSError on some filesystems.
-        filename_len_limit = 256
-
-        if isinstance(data, Path):
-            file_path = data
-
-        if isinstance(data, str) and (len(data) < filename_len_limit):
-            try:
-                file_path = Path(str(data))
-                if not file_path.is_file():
-                    file_path = None
-            except OSError:
-                file_path = None
+        file_path = self.get_file_path_from_data(data)
 
         if file_path:
             try:
@@ -928,6 +914,29 @@ class Step:
                     line += td(row)
 
         PrettyHTMLFormatter.table_number += 1
+
+    def get_file_path_from_data(self, data):
+        """
+        Get file path from data if applicable.
+        """
+
+        file_path = None
+        # Do not try to check filename for long data.
+        # Leads to OSError on some filesystems.
+        filename_len_limit = 256
+
+        if isinstance(data, Path):
+            file_path = data
+
+        if isinstance(data, str) and (len(data) < filename_len_limit):
+            try:
+                file_path = Path(str(data))
+                if not file_path.is_file():
+                    file_path = None
+            except OSError:
+                file_path = None
+
+        return file_path
 
 
 class Embed:
