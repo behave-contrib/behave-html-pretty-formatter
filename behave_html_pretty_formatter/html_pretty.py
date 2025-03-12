@@ -817,7 +817,11 @@ class Step:
         # Do not try to check filename for long data.
         # Leads to OSError on some filesystems.
         filename_len_limit = 256
-        if len(data) < filename_len_limit:
+
+        if isinstance(data, Path):
+            file_path = data
+
+        if isinstance(data, str) and (len(data) < filename_len_limit):
             try:
                 file_path = Path(str(data))
                 if not file_path.is_file():
