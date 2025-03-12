@@ -838,8 +838,14 @@ class Step:
                         data = data_base64.decode("utf-8").replace("\n", "")
                     else:
                         data = data.decode("utf-8")
+
             except ValueError as error:
+                mime_type = "text"
                 data = f"data removed: ValueError: '{error}'"
+
+            except FileNotFoundError as error:
+                mime_type = "text"
+                data = f"data removed: FileNotFoundError: '{error}'"
 
         with div(cls="messages"), div(cls="embed-capsule"):
             # Embed Caption.
