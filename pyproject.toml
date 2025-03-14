@@ -19,7 +19,7 @@ maintainers = [
   {name = "Filip Pokryvka", email = "fpokryvk@redhat.com"},
 ]
 classifiers = [
-  "Development Status :: 5 - Production/Stable ",
+  "Development Status :: 5 - Production/Stable",
   "Framework :: Django",
   "Intended Audience :: Information Technology",
   "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
