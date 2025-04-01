@@ -691,6 +691,7 @@ class Step:
 
         def _create_download_button(label="Download", func="download_embed"):
             _filename = filename if filename else use_caption
+            _filename = _filename.replace("'", "\\'")
             args = f"'embed_{embed_data.uuid}','{_filename}'"
             onclick = f"{func}({args})"
             span(
