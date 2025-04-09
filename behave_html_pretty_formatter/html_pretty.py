@@ -580,8 +580,12 @@ class Step:
         self.status = result.status
         self.duration = result.duration
 
+        # Treat hook_error from upstream behave as failed
+        if hasattr(Status, "hook_error") and self.status is Status.hook_error:
+            self.status = Status.failed
+
         # If the step has error message and step failed, set the error message.
-        if result.error_message and result.status == Status.failed:
+        if result.error_message and result.status is Status.failed:
             self.scenario.report_error(result)
 
         # If the step is undefined use the behave function to provide
