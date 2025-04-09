@@ -1,3 +1,8 @@
+behave-html-pretty-formatter 1.12.6
+===================================
+Fix hook_error status of step not being rendered properly.
+
+
 behave-html-pretty-formatter 1.12.5
 ===================================
 Fixing Issue #86
