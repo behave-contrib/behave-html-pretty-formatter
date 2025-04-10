@@ -631,7 +631,7 @@ class Step:
             self.status = Status.failed
 
         # If the step has error message and step failed, set the error message.
-        if result.error_message and result.status is Status.failed:
+        if result.error_message and self.status is Status.failed:
             self.scenario.report_error(result)
 
         # If the step is undefined use the behave function to provide
