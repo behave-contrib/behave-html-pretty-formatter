@@ -1,3 +1,8 @@
+behave-html-pretty-formatter 1.12.7
+===================================
+Fix hook_error status of step not embeddng exception.
+
+
 behave-html-pretty-formatter 1.12.6
 ===================================
 Fix hook_error status of step not being rendered properly.
