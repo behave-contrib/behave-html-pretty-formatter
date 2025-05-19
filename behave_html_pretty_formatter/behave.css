@@ -124,6 +124,10 @@ pre * {
 
 /*FEATURE CONTENT*/
 
+.feature-filter-container:not(:first-child) {
+  margin-top: 1em;
+}
+
 .feature-title, .global-summary {
   font-size: 1rem;
   display: flex;
