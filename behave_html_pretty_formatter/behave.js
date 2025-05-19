@@ -128,7 +128,7 @@ function expander(action, summary_block) {
     var feature_id = summary_block.parentElement.parentElement.dataset.featureId
     console.log("Doing " + action + " on FeatureID " + feature_id);
     for (var i = 0; i < elem.length; i++) {
-        if (feature_id != elem[i].parentElement.id) {
+        if (feature_id != elem[i].parentElement.parentElement.id) {
             continue
         }
         if (action == "expand_all") {
@@ -380,7 +380,7 @@ function download_embed(id, filename) {
     link.click()
     /* fix race in FF */
     setTimeout(function () { document.body.removeChild(link); }, 2000);
-};
+}
 
 function download_plaintext(id, filename) {
     var elem = document.getElementById(id);
@@ -402,8 +402,7 @@ function download_plaintext(id, filename) {
     link.click()
     /* fix race in FF */
     setTimeout(function () { document.body.removeChild(link); }, 2000);
-};
-
+}
 
 async function render_content(element) {
     element.classList.remove("to_render");
@@ -439,4 +438,44 @@ async function render_content(element) {
         }
         element.innerText = msg;
     }
+}
+
+function filter_features_by_status() {
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]#feature-filter');
+  const selectedClasses = Array.from(checkboxes)
+    .filter(checkbox => checkbox.checked)
+    .map(checkbox => checkbox.value);
+  console.log("Filtering Features: " + selectedClasses);
+
+
+  const items = document.querySelectorAll('.feature-filter-container');
+
+  items.forEach(item => {
+    const matches = selectedClasses.some(className => item.classList.contains(className));
+    item.style.display = selectedClasses.length === 0 || matches ? '' : 'none';
+  });
+}
+
+function filter_scenarios_by_status(this_block) {
+  var element = this_block
+  while (element && !element.dataset.featureId) {
+    element = element.parentElement
+  }
+  const feature_id = element.dataset.featureId
+
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]#scenario-filter-' + feature_id);
+  const selectedClasses = Array.from(checkboxes)
+    .filter(checkbox => checkbox.checked)
+    .map(checkbox => checkbox.value);
+  console.log("Filtering Scenarios of Feature: " + feature_id + " " + selectedClasses);
+
+  const scenario_capsule = '.scenario-capsule[id^="' + feature_id + '"], '
+  const scenario_header = '.scenario-header[id^="' + feature_id + '"]'
+
+  const items = document.querySelectorAll(scenario_capsule + scenario_header);
+
+  items.forEach(item => {
+    const matches = selectedClasses.some(className => item.classList.contains(className));
+    item.style.display = selectedClasses.length === 0 || matches ? '' : 'none';
+  });
 }
