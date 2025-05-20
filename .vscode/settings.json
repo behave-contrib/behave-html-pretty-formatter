@@ -1,6 +1,6 @@
 {
   "[python]": {
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
     "editor.codeActionsOnSave": {
       /* The 'true' was changed to 'explicit' by VS Code from 1.85 version.*/
       "source.fixAll": "explicit"

@@ -747,6 +747,10 @@ class Step:
                 onclick=onclick,
             )
 
+        # Javascript will decompress data and render them, if small enough.
+        if compress == "auto":
+            compress = len(data) > 48 * 1024
+
         # Rule for embed_data.download_button as None - default value.
         if embed_data.download_button is None:
             # Do not create button if there is mime type text with less then 20 lines (20000 chars)
