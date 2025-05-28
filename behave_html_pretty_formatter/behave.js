@@ -447,7 +447,6 @@ function filter_features_by_status() {
     .map(checkbox => checkbox.value);
   console.log("Filtering Features: " + selectedClasses);
 
-
   const items = document.querySelectorAll('.feature-filter-container');
 
   items.forEach(item => {
@@ -481,7 +480,6 @@ function filter_scenarios_by_status(this_block) {
 };
 
 function filter_global_scenarios_by_status() {
-
   const checkboxes = document.querySelectorAll('input[type="checkbox"]#scenario-filter');
   const selectedClasses = Array.from(checkboxes)
     .filter(checkbox => checkbox.checked)
