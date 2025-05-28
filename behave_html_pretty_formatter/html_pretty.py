@@ -259,10 +259,13 @@ class Feature:
                     # Filter features.
                     with div("Scenarios Filter: ", cls="feature-summary-row"):
                         for status in statuses:
-                            status_formatted = (
-                                status.name.lower(),
-                                ", " if status != Status.skipped else ".",
-                            )
+
+                            # If there is a Status with zero counter, skip it.
+                            if stats.get(status.name.capitalize(), 0) == 0:
+                                continue
+
+                            status_formatted = status.name.lower()
+
                             label(
                                 input_(
                                     type="checkbox",
@@ -1554,44 +1557,56 @@ class PrettyHTMLFormatter(Formatter):
                     Status.undefined,
                     Status.skipped,
                 ]
+
+                # Features Status with Filter.
                 with div("Features: ", cls="feature-summary-row"):
                     for status in statuses:
-                        span(
-                            "".join(
-                                (
-                                    f"{feature_statuses.get(status.name.lower(), 0)} ",
-                                    status.name.lower(),
-                                    ", " if status != Status.skipped else ".",
-                                ),
-                            ),
-                            cls=f"global-summary-status {status.name.lower()}",
-                        )
 
-                with div("Scenarios: ", cls="feature-summary-row"):
-                    for status in statuses:
-                        span(
-                            "".join(
-                                (
-                                    f"{scenario_statuses.get(status.name.lower(), 0)} ",
-                                    status.name.lower(),
-                                    ", " if status != Status.skipped else ".",
-                                ),
-                            ),
-                            cls=f"global-summary-status {status.name.lower()}",
-                        )
-                # Filter features.
-                with div("Features Filter: ", cls="feature-summary-row"):
-                    for status in statuses:
-                        status_formatted = (
+                        # Status counter.
+                        status_counter = feature_statuses.get(status.name.lower(), 0)
+
+                        # Format Status for input label.
+                        separator = ", " if status != Status.skipped else "."
+                        status_formatted = "".join((
+                            f"{status_counter} ",
                             status.name.lower(),
-                            ", " if status != Status.skipped else ".",
-                        )
+                            separator,
+                        ))
+
+                        # Create labels with checkbox inputs.
                         label(
                             input_(
                                 type="checkbox",
                                 onchange="filter_features_by_status()",
                                 value=status.name.lower(),
                                 id="feature-filter",
+                            ),
+                            status_formatted,
+                            cls=f"global-summary-status {status.name.lower()}",
+                        )
+
+                # Scenarios Status with Filter.
+                with div("Scenarios: ", cls="feature-summary-row"):
+                    for status in statuses:
+
+                        # Status counter.
+                        status_counter = scenario_statuses.get(status.name.lower(), 0)
+
+                        # Format Status for input label.
+                        separator = ", " if status != Status.skipped else "."
+                        status_formatted = "".join((
+                            f"{status_counter} ",
+                            status.name.lower(),
+                            separator,
+                        ))
+
+                        # Create labels with checkbox inputs.
+                        label(
+                            input_(
+                                type="checkbox",
+                                onchange="filter_global_scenarios_by_status()",
+                                value=status.name.lower(),
+                                id="scenario-filter",
                             ),
                             status_formatted,
                             cls=f"global-summary-status {status.name.lower()}",
