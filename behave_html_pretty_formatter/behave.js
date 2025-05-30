@@ -63,7 +63,7 @@ function hash_to_state() {
     for (var i = 0; i < elements_to_render.length; i++) {
         render_content(elements_to_render[i])
     }
-}
+};
 
 // Trigger proper functions on content load.
 document.addEventListener("DOMContentLoaded", hash_to_state);
@@ -91,7 +91,7 @@ function toggle_hash(id) {
     history.replaceState(undefined, undefined, hash);
     // Need to call hash_to_state, event is not triggered for some reason
     hash_to_state();
-}
+};
 
 function collapsible_toggle(id) {
     console.log("Toggle embed: " + id);
@@ -128,7 +128,7 @@ function expander(action, summary_block) {
     var feature_id = summary_block.parentElement.parentElement.dataset.featureId
     console.log("Doing " + action + " on FeatureID " + feature_id);
     for (var i = 0; i < elem.length; i++) {
-        if (feature_id != elem[i].parentElement.id) {
+        if (feature_id != elem[i].parentElement.parentElement.id) {
             continue
         }
         if (action == "expand_all") {
@@ -175,7 +175,7 @@ function toggle_class(elem, class_name) {
     else {
         elem.classList.add(class_name)
     }
-}
+};
 
 
 function toggle_contrast_for(target_class) {
@@ -221,7 +221,7 @@ function toggle_contrast() {
 /* query browser for color scheme */
 function detect_dark_mode() {
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-}
+};
 
 /* switch between "dark" <--> "light" */
 function invert_thm_name(theme) {
@@ -232,7 +232,7 @@ function invert_thm_name(theme) {
         return "dark";
     }
     return undefined;
-}
+};
 
 /* helper function to label */
 function format_thm_name(theme) {
@@ -246,14 +246,14 @@ function format_thm_name(theme) {
         return "Default mode";
     }
     return undefined;
-}
+};
 
 /* render the setting */
 function set_theme(theme) {
     document.querySelector("html").setAttribute("data-theme", theme);
     // update in local storage
     localStorage.setItem("theme", theme);
-}
+};
 
 /* callback on button click - switch to next-value */
 function toggle_dark_mode() {
@@ -277,7 +277,7 @@ function toggle_dark_mode() {
         set_theme(next_thm);
     }
     dark_mode_toggle.innerText = format_thm_name(dark_mode_toggle.dataset.nextValue);
-}
+};
 
 /* callback on system dark mode change, change on auto, compute next-value otherwise */
 function dark_mode_change() {
@@ -298,7 +298,7 @@ function dark_mode_change() {
         }
     }
     dark_mode_toggle.innerText = format_thm_name(dark_mode_toggle.dataset.nextValue);
-}
+};
 
 function detect_contrast() {
     var obj_div = document.createElement("div");
@@ -311,7 +311,7 @@ function detect_contrast() {
         console.log("High Contrast theme detected.")
         toggle_contrast();
     }
-}
+};
 
 function body_onload() {
     detect_contrast();
@@ -323,7 +323,7 @@ function body_onload() {
     dark_mode_toggle.dataset.nextValue = current_inv;
     dark_mode_toggle.innerText = format_thm_name(current_inv);
     set_theme(current_thm);
-}
+};
 
 var element = document.createElement('div');
 var entity = /&(?:#x[a-f0-9]+|#[0-9]+|[a-z0-9]+);?/ig;
@@ -335,7 +335,7 @@ function decodeHTMLEntities(str) {
     });
     element.textContent = '';
     return str;
-}
+};
 
 function download_embed(id, filename) {
     var elem = document.getElementById(id);
@@ -404,7 +404,6 @@ function download_plaintext(id, filename) {
     setTimeout(function () { document.body.removeChild(link); }, 2000);
 };
 
-
 async function render_content(element) {
     element.classList.remove("to_render");
     var show = element.getAttribute("show");
@@ -439,4 +438,61 @@ async function render_content(element) {
         }
         element.innerText = msg;
     }
-}
+};
+
+function filter_features_by_status() {
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]#feature-filter');
+  const selectedClasses = Array.from(checkboxes)
+    .filter(checkbox => checkbox.checked)
+    .map(checkbox => checkbox.value);
+  console.log("Filtering Features: " + selectedClasses);
+
+  const items = document.querySelectorAll('.feature-filter-container');
+
+  items.forEach(item => {
+    const matches = selectedClasses.some(className => item.classList.contains(className));
+    item.style.display = selectedClasses.length === 0 || matches ? '' : 'none';
+  });
+};
+
+function filter_scenarios_by_status(this_block) {
+  var element = this_block
+  while (element && !element.dataset.featureId) {
+    element = element.parentElement
+  }
+  const feature_id = element.dataset.featureId
+
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]#scenario-filter-' + feature_id);
+  const selectedClasses = Array.from(checkboxes)
+    .filter(checkbox => checkbox.checked)
+    .map(checkbox => checkbox.value);
+  console.log("Filtering Scenarios of Feature: " + feature_id + " " + selectedClasses);
+
+  const scenario_capsule = '.scenario-capsule[id^="' + feature_id + '"], '
+  const scenario_header = '.scenario-header[id^="' + feature_id + '"]'
+
+  const items = document.querySelectorAll(scenario_capsule + scenario_header);
+
+  items.forEach(item => {
+    const matches = selectedClasses.some(className => item.classList.contains(className));
+    item.style.display = selectedClasses.length === 0 || matches ? '' : 'none';
+  });
+};
+
+function filter_global_scenarios_by_status() {
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]#scenario-filter');
+  const selectedClasses = Array.from(checkboxes)
+    .filter(checkbox => checkbox.checked)
+    .map(checkbox => checkbox.value);
+  console.log("Filtering All Scenarios of All Features:" + selectedClasses);
+
+  const scenario_capsule = '.scenario-capsule, '
+  const scenario_header = '.scenario-header'
+
+  const items = document.querySelectorAll(scenario_capsule + scenario_header);
+
+  items.forEach(item => {
+    const matches = selectedClasses.some(className => item.classList.contains(className));
+    item.style.display = selectedClasses.length === 0 || matches ? '' : 'none';
+  });
+};

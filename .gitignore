@@ -13,3 +13,5 @@ dist/
 *.bak
 
 tests/TESTS-*.xml
+
+experiments/

@@ -31,9 +31,12 @@ from dominate.tags import (
     h2,
     i,
     img,
+    input_,
+    label,
     meta,
     pre,
     script,
+    section,
     source,
     span,
     style,
@@ -190,105 +193,141 @@ class Feature:
         Converts this object to HTML.
         """
 
-        # Feature Title.
-        with div(cls="feature-title flex-gap"):
-            # Generate icon if present.
-            if self.icon:
-                with div(cls="feature-icon"):
-                    img(src=self.icon)
-
-            # Generate content of the feature title bar.
-            span(f"Feature: {self.name}")
-
-            # Adding start time based on Issue #45.
-            start_time = self.start_time.strftime(formatter.date_format)
-            span(f"Started: {start_time}", cls="feature-started")
-
-            if self.high_contrast_button:
-                formatter.generate_toggle_buttons()
-
-            # Creating Summary which is clickable.
-            left_space = " flex-left-space" if not self.high_contrast_button else ""
-            span(
-                "Summary",
-                cls=f"button{left_space}",
-                onclick=f"toggle_hash('summary-f{self.counter}')",
-            )
-
-        # Generate summary.
-        summary_collapse = "collapse"
-        if formatter.show_summary:
-            summary_collapse = ""
-        with div(
-            cls=f"feature-summary-container flex-gap {summary_collapse}",
-            id=f"summary-f{self.counter}",
-            data_feature_id=f"f{self.counter}",
+        # For easier filtering just create a container.
+        with section(
+            cls=f"feature-filter-container {self.status.name}",
+            id=f"f{self.counter}",
         ):
-            # Generating feature commentary.
-            flex_left_space = "flex-left-space" if self.description else ""
+            # Feature Title.
+            with div(cls="feature-title flex-gap", id=f"f{self.counter}"):
+                # Generate icon if present.
+                if self.icon:
+                    with div(cls="feature-icon"):
+                        img(src=self.icon)
 
-            # with div(cls=""):
-            if self.description:
-                pre(
-                    self.description,
-                    cls="feature-summary-commentary",
+                # Generate content of the feature title bar.
+                span(f"Feature: {self.name}")
+
+                # Adding start time based on Issue #45.
+                start_time = self.start_time.strftime(formatter.date_format)
+                span(f"Started: {start_time}", cls="feature-started")
+
+                if self.high_contrast_button:
+                    formatter.generate_toggle_buttons()
+
+                # Creating Summary which is clickable.
+                left_space = " flex-left-space" if not self.high_contrast_button else ""
+                span(
+                    "Summary",
+                    cls=f"button{left_space}",
+                    onclick=f"toggle_hash('summary-f{self.counter}')",
                 )
 
-            # Generating Summary results.
-            with div(cls=f"feature-summary-stats {flex_left_space}"):
-                stats = self.get_feature_stats()
+            # Generate summary.
+            summary_collapse = "collapse"
+            if formatter.show_summary:
+                summary_collapse = ""
+            with div(
+                cls=f"feature-summary-container flex-gap {summary_collapse}",
+                id=f"summary-f{self.counter}",
+                data_feature_id=f"f{self.counter}",
+            ):
+                # Generating feature commentary.
+                flex_left_space = "flex-left-space" if self.description else ""
 
-                for stat, value in stats.items():
-                    div(
-                        f"{stat}: {value}",
-                        cls=f"feature-summary-row {stat.lower()}",
+                # with div(cls=""):
+                if self.description:
+                    pre(
+                        self.description,
+                        cls="feature-summary-commentary",
                     )
 
-            # Generating Started/Duration/Finished message.
-            with div(cls="feature-summary-stats flex-left-space"):
-                div(
-                    f"Started: {self.start_time.strftime(formatter.date_format)}",
-                    cls="feature-summary-row",
-                )
-                duration = (self.finish_time - self.start_time).total_seconds()
-                div(f"Duration: {duration:.2f}", cls="feature-summary-row")
-                div(
-                    f"Finished: {self.finish_time.strftime(formatter.date_format)}",
-                    cls="feature-summary-row",
-                )
+                # Generating Summary results.
+                with div(cls=f"feature-summary-stats {flex_left_space}"):
+                    stats = self.get_feature_stats()
 
-            # Generating clickable buttons for collapsing/expanding.
-            with div(cls="feature-summary-stats"):
-                span(
-                    "Expand All",
-                    cls="button display-block",
-                    onclick="expander('expand_all', this)",
-                )
-                span(
-                    "Collapse All",
-                    cls="button display-block",
-                    onclick="expander('collapse_all', this)",
-                )
-                span(
-                    "Expand All Failed",
-                    cls="button display-block",
-                    onclick="expander('expand_all_failed', this)",
-                )
+                    statuses = [
+                        Status.passed,
+                        Status.failed,
+                        Status.undefined,
+                        Status.skipped,
+                    ]
 
-            if formatter.additional_info:
-                with div(cls="feature-additional-info-container", id="additional-info"):
-                    # Generating Additional info results
-                    with div(cls="feature-additional-info"):
-                        for key, item in formatter.additional_info.items():
-                            div(
-                                f"{key}: {item}",
-                                cls=f"feature-additional-info-row {key.lower()}",
+                    for stat, value in stats.items():
+                        div(
+                            f"{stat}: {value}",
+                            cls=f"feature-summary-row {stat.lower()}",
+                        )
+
+                    # Filter features.
+                    with div("Scenarios Filter: ", cls="feature-summary-row"):
+                        for status in statuses:
+
+                            # If there is a Status with zero counter, skip it.
+                            if stats.get(status.name.capitalize(), 0) == 0:
+                                continue
+
+                            status_formatted = status.name.lower()
+
+                            label(
+                                input_(
+                                    type="checkbox",
+                                    onchange="filter_scenarios_by_status(this)",
+                                    value=status.name.lower(),
+                                    id=f"scenario-filter-f{self.counter}",
+                                ),
+                                status_formatted,
+                                cls=f"global-summary-status {status.name.lower()}",
                             )
 
-        # Feature data container.
-        with div(cls="feature-container", id=f"f{self.counter}"):
-            for scenario in self.scenarios:
-                scenario.generate_scenario(formatter)
+                # Generating Started/Duration/Finished message.
+                with div(cls="feature-summary-stats flex-left-space"):
+                    div(
+                        f"Started: {self.start_time.strftime(formatter.date_format)}",
+                        cls="feature-summary-row",
+                    )
+                    duration = (self.finish_time - self.start_time).total_seconds()
+                    div(f"Duration: {duration:.2f}", cls="feature-summary-row")
+                    div(
+                        f"Finished: {self.finish_time.strftime(formatter.date_format)}",
+                        cls="feature-summary-row",
+                    )
+
+                # Generating clickable buttons for collapsing/expanding.
+                with div(cls="feature-summary-stats"):
+                    span(
+                        "Expand All",
+                        cls="button display-block",
+                        onclick="expander('expand_all', this)",
+                    )
+                    span(
+                        "Collapse All",
+                        cls="button display-block",
+                        onclick="expander('collapse_all', this)",
+                    )
+                    span(
+                        "Expand All Failed",
+                        cls="button display-block",
+                        onclick="expander('expand_all_failed', this)",
+                    )
+
+                if formatter.additional_info:
+                    with div(
+                        cls="feature-additional-info-container",
+                        id="additional-info",
+                    ):
+                        # Generating Additional info results
+                        with div(cls="feature-additional-info"):
+                            for key, item in formatter.additional_info.items():
+                                div(
+                                    f"{key}: {item}",
+                                    cls=f"feature-additional-info-row {key.lower()}",
+                                )
+
+            # Feature data container.
+            with div(cls="feature-container", id=f"f{self.counter}"):
+                for scenario in self.scenarios:
+                    scenario.generate_scenario(formatter)
 
 
 class Scenario:
@@ -514,43 +553,56 @@ class Scenario:
         """
         # Check for after_scenario errors.
         self.report_error(self._scenario)
+
         # Scenario container.
         common_cls = f"{self.status.name} {formatter.get_collapse_cls('scenario')}"
-        with div(
-            cls=f"scenario-header {common_cls}",
-            id=f"f{self.feature.counter}-s{self.counter}-h",
+
+        # For easier filtering just create a container.
+        with section(
+            cls=f"scenario-filter-container {self.status.name}",
+            id=f"f{self.feature.counter}-s{self.counter}",
         ):
-            for tag in self.tags:
-                tag.generate_tag()
 
-            # Simple container for name + duration.
-            with div(cls="scenario-info"):
-                div(
-                    f"Scenario: {self.name}",
-                    cls="scenario-name",
-                    id=f"f{self.feature.counter}-s{self.counter}",
-                    onclick="expand_this_only(this)",
-                )
+            # Scenario header.
+            with div(
+                cls=f"scenario-header {common_cls}",
+                id=f"f{self.feature.counter}-s{self.counter}-h",
+            ):
+                for tag in self.tags:
+                    tag.generate_tag()
 
-                div(f"Scenario duration: {self.duration:.2f}s", cls="scenario-duration")
+                # Simple container for name + duration.
+                with div(cls="scenario-info"):
+                    div(
+                        f"Scenario: {self.name}",
+                        cls="scenario-name",
+                        id=f"f{self.feature.counter}-s{self.counter}",
+                        onclick="expand_this_only(this)",
+                    )
 
-        with div(
-            cls=f"scenario-capsule {common_cls}",
-            id=f"f{self.feature.counter}-s{self.counter}-c",
-        ):
-            # Add scenario description as "commentary":
-            scenario_description = "\n".join(self._scenario.description)
-            if scenario_description:
-                pre(
-                    f"{scenario_description}",
-                    cls="step-capsule description no-margin-top",
-                )
+                    div(
+                        f"Scenario duration: {self.duration:.2f}s",
+                        cls="scenario-duration",
+                    )
 
-            steps = self.steps
-            if self.pseudo_steps:
-                steps = [self.pseudo_steps[0]] + steps + [self.pseudo_steps[1]]
-            for step in steps:
-                step.generate_step(formatter, self.status)
+            # Scenario capsule.
+            with div(
+                cls=f"scenario-capsule {common_cls}",
+                id=f"f{self.feature.counter}-s{self.counter}-c",
+            ):
+                # Add scenario description as "commentary":
+                scenario_description = "\n".join(self._scenario.description)
+                if scenario_description:
+                    pre(
+                        f"{scenario_description}",
+                        cls="step-capsule description no-margin-top",
+                    )
+
+                steps = self.steps
+                if self.pseudo_steps:
+                    steps = [self.pseudo_steps[0]] + steps + [self.pseudo_steps[1]]
+                for step in steps:
+                    step.generate_step(formatter, self.status)
 
 
 class Step:
@@ -703,6 +755,10 @@ class Step:
                 cls="button margin-bottom",
                 onclick=onclick,
             )
+
+        # Javascript will decompress data and render them, if small enough.
+        if compress == "auto":
+            compress = len(data) > 48 * 1024
 
         # Rule for embed_data.download_button as None - default value.
         if embed_data.download_button is None:
@@ -1116,7 +1172,7 @@ class PrettyHTMLFormatter(Formatter):
         self.icon = None
 
         # User defined additional HTML headers to import JS/CSS
-        # Use dict to preserve order (since python3.7+) and prevent duplicit keys
+        # Use dict to preserve order (since python3.7+) and prevent duplicated keys
         self._additional_headers = {}
 
         # This will return a stream given in behave call -o <file_name>.html.
@@ -1507,29 +1563,62 @@ class PrettyHTMLFormatter(Formatter):
                     Status.undefined,
                     Status.skipped,
                 ]
+
+                # Features Status with Filter.
                 with div("Features: ", cls="feature-summary-row"):
                     for status in statuses:
-                        span(
-                            "".join(
-                                (
-                                    f"{feature_statuses.get(status.name.lower(), 0)} ",
-                                    status.name.lower(),
-                                    ", " if status != Status.skipped else ".",
-                                ),
+
+                        # Status counter.
+                        status_counter = feature_statuses.get(status.name.lower(), 0)
+
+                        # Format Status for input label.
+                        separator = ", " if status != Status.skipped else "."
+                        status_formatted = "".join(
+                            (
+                                f"{status_counter} ",
+                                status.name.lower(),
+                                separator,
                             ),
+                        )
+
+                        # Create labels with checkbox inputs.
+                        label(
+                            input_(
+                                type="checkbox",
+                                onchange="filter_features_by_status()",
+                                value=status.name.lower(),
+                                id="feature-filter",
+                            ),
+                            status_formatted,
                             cls=f"global-summary-status {status.name.lower()}",
                         )
 
+                # Scenarios Status with Filter.
                 with div("Scenarios: ", cls="feature-summary-row"):
                     for status in statuses:
-                        span(
-                            "".join(
-                                (
-                                    f"{scenario_statuses.get(status.name.lower(), 0)} ",
-                                    status.name.lower(),
-                                    ", " if status != Status.skipped else ".",
-                                ),
+
+                        # Status counter.
+                        status_counter = scenario_statuses.get(status.name.lower(), 0)
+
+                        # Format Status for input label.
+                        separator = ", " if status != Status.skipped else "."
+                        status_formatted = "".join(
+                            (
+                                f"{status_counter} ",
+                                status.name.lower(),
+                                separator,
                             ),
+                        )
+
+                        # Create labels with checkbox inputs.
+                        label(
+                            input_(
+                                type="checkbox",
+                                onchange="filter_global_scenarios_by_status()",
+                                value=status.name.lower(),
+                                id="scenario-filter",
+                            ),
+                            status_formatted,
                             cls=f"global-summary-status {status.name.lower()}",
                         )
 
