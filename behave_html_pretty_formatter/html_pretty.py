@@ -194,7 +194,9 @@ class Feature:
         """
 
         # For easier filtering just create a container.
-        with section(cls=f"feature-filter-container {self.status.name}", id=f"f{self.counter}"):
+        with section(
+            cls=f"feature-filter-container {self.status.name}", id=f"f{self.counter}"
+        ):
             # Feature Title.
             with div(cls="feature-title flex-gap", id=f"f{self.counter}"):
                 # Generate icon if present.
@@ -309,7 +311,9 @@ class Feature:
                     )
 
                 if formatter.additional_info:
-                    with div(cls="feature-additional-info-container", id="additional-info"):
+                    with div(
+                        cls="feature-additional-info-container", id="additional-info"
+                    ):
                         # Generating Additional info results
                         with div(cls="feature-additional-info"):
                             for key, item in formatter.additional_info.items():
@@ -1567,11 +1571,13 @@ class PrettyHTMLFormatter(Formatter):
 
                         # Format Status for input label.
                         separator = ", " if status != Status.skipped else "."
-                        status_formatted = "".join((
-                            f"{status_counter} ",
-                            status.name.lower(),
-                            separator,
-                        ))
+                        status_formatted = "".join(
+                            (
+                                f"{status_counter} ",
+                                status.name.lower(),
+                                separator,
+                            )
+                        )
 
                         # Create labels with checkbox inputs.
                         label(
@@ -1594,11 +1600,13 @@ class PrettyHTMLFormatter(Formatter):
 
                         # Format Status for input label.
                         separator = ", " if status != Status.skipped else "."
-                        status_formatted = "".join((
-                            f"{status_counter} ",
-                            status.name.lower(),
-                            separator,
-                        ))
+                        status_formatted = "".join(
+                            (
+                                f"{status_counter} ",
+                                status.name.lower(),
+                                separator,
+                            )
+                        )
 
                         # Create labels with checkbox inputs.
                         label(
