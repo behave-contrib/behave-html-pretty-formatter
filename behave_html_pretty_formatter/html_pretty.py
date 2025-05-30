@@ -195,7 +195,8 @@ class Feature:
 
         # For easier filtering just create a container.
         with section(
-            cls=f"feature-filter-container {self.status.name}", id=f"f{self.counter}"
+            cls=f"feature-filter-container {self.status.name}",
+            id=f"f{self.counter}",
         ):
             # Feature Title.
             with div(cls="feature-title flex-gap", id=f"f{self.counter}"):
@@ -312,7 +313,8 @@ class Feature:
 
                 if formatter.additional_info:
                     with div(
-                        cls="feature-additional-info-container", id="additional-info"
+                        cls="feature-additional-info-container",
+                        id="additional-info",
                     ):
                         # Generating Additional info results
                         with div(cls="feature-additional-info"):
@@ -1576,7 +1578,7 @@ class PrettyHTMLFormatter(Formatter):
                                 f"{status_counter} ",
                                 status.name.lower(),
                                 separator,
-                            )
+                            ),
                         )
 
                         # Create labels with checkbox inputs.
@@ -1605,7 +1607,7 @@ class PrettyHTMLFormatter(Formatter):
                                 f"{status_counter} ",
                                 status.name.lower(),
                                 separator,
-                            )
+                            ),
                         )
 
                         # Create labels with checkbox inputs.
