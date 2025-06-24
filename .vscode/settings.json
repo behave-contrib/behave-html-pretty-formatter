@@ -27,4 +27,7 @@
     "reportGeneralTypeIssues": "information",
     "reportWildcardImportFromLibrary": "none",
   },
+  "cSpell.words": [
+    "qecore"
+  ],
 }
