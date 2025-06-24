@@ -1705,11 +1705,11 @@ class PrettyHTMLFormatter(Formatter):
         """
 
         # Needs to be under dummy div or it won't respect contrast, strange.
-        with div(cls="return_to_the_top_dummy_div"):
+        with div(cls="return-to-the-top-dummy-div"):
             span(
                 "Return to the Top",
                 cls="return-button",
-                id="return-to-the-top-button",
+                id="return_to_the_top_button",
                 onclick="return_to_the_top()",
             )
 

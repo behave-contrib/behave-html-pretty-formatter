@@ -473,7 +473,7 @@ window.onscroll = function () { scroll_function() };
 function scroll_function() {
 
   // Get to the defined button.
-  let return_button = document.getElementById("return-to-the-top-button");
+  let return_button = document.getElementById("return_to_the_top_button");
 
   // While testing sometimes the button is not found, harmless but lets not fail.
   if (return_button == null) {
