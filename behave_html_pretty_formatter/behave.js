@@ -58,8 +58,8 @@ function hash_to_state() {
   // Requested changes were applied, clear the list
   hash_uuid_list_change = [];
 
-  console.log("Rendering 'to_render' elements.");
-  elements_to_render = document.getElementsByClassName("to_render")
+  console.log("Rendering 'to-render' elements.");
+  elements_to_render = document.getElementsByClassName("to-render")
   for (var i = 0; i < elements_to_render.length; i++) {
     render_content(elements_to_render[i])
   }
@@ -115,7 +115,7 @@ function collapsible_toggle(id) {
   var embed_content_id = "embed_" + id
   var elem = document.getElementById(embed_content_id);
   // decompress compressed data
-  var compressed_data = elem.querySelector("span.to_render");
+  var compressed_data = elem.querySelector("span.to-render");
   if (compressed_data) {
     render_content(compressed_data)
   }
@@ -375,7 +375,7 @@ function download_plaintext(id, filename) {
 };
 
 async function render_content(element) {
-  element.classList.remove("to_render");
+  element.classList.remove("to-render");
   var show = element.getAttribute("show");
   var compressed = element.getAttribute("compressed");
   var data = element.getAttribute("data");

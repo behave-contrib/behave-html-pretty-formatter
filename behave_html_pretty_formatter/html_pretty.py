@@ -828,7 +828,7 @@ class Step:
 
                 data_base64 = base64.b64encode(data).decode("utf-8").replace("\n", "")
                 span(
-                    cls="to_render",
+                    cls="to-render",
                     data=data_base64,
                     show=str(show).lower(),
                     compressed=str(compress).lower(),
