@@ -898,14 +898,14 @@ class Step:
             # Embed Caption.
             div(
                 use_caption,
-                cls=f"embed_button {formatter.get_collapse_cls('embed')}",
+                cls=f"embed-button {formatter.get_collapse_cls('embed')}",
                 id=f"embed_button_{embed_data.uuid}",
                 onclick=f"toggle_hash('{embed_data.uuid}')",
             )
 
             # Embed content.
             with pre(
-                cls=f"embed_content {formatter.get_collapse_cls('embed')}",
+                cls=f"embed-content {formatter.get_collapse_cls('embed')}",
                 id=f"embed_{embed_data.uuid}",
             ):
                 self.generate_download_button(
@@ -1699,6 +1699,20 @@ class PrettyHTMLFormatter(Formatter):
             step.status = Status.failed
         self.close()
 
+    def _generate_return_button(self):
+        """
+        Generate return button to return to the top.
+        """
+
+        # Needs to be under dummy div or it won't respect contrast, strange.
+        with div(cls="return_to_the_top_dummy_div"):
+            span(
+                "Return to the Top",
+                cls="return-button",
+                id="return-to-the-top-button",
+                onclick="return_to_the_top()",
+            )
+
     def close(self):
         """
         Generates the entire html page with dominate.
@@ -1750,6 +1764,9 @@ class PrettyHTMLFormatter(Formatter):
                     feature.high_contrast_button = True
             for feature in self.features:
                 feature.generate_feature(self)
+
+            # At the end of the document, generate return button.
+            self._generate_return_button()
 
         # Write everything to the stream which correlates to the -o <file> behave option.
         self.stream.write(document.render(pretty=self.pretty_output))
