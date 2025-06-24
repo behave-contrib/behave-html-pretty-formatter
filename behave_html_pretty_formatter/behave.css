@@ -461,6 +461,13 @@ pre * {
   font-size: 1.25rem;
 }
 
+.contrast .step-status {
+  display: block;
+  padding: 0 1rem 0 0;
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
 .step-decorator {
   padding: 0;
   padding-right: 1.5rem;

@@ -178,14 +178,12 @@ function toggle_class(elem, class_name) {
 };
 
 function toggle_contrast() {
-  var step_status_items = document.querySelectorAll(".step-status");
-  for (var i = 0; i < step_status_items.length; i++) {
-    step_status_items[i].style.display = (step_status_items[i].style.display == "block" ? "none" : "block");
-  };
-
-  document.querySelectorAll("[class]").forEach(element => {
-    toggle_class(element, "contrast")
-  });
+  if (document.body.classList.contains("contrast")) {
+    document.body.classList.remove("contrast");
+  }
+  else {
+    document.body.classList.add("contrast");
+  }
 };
 
 /* query browser for color scheme */
