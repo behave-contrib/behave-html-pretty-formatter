@@ -6,7 +6,7 @@ Main file where the python code is located for execution via behave.
 from behave import step
 
 
-@step('Dummy pass')
+@step("Dummy pass")
 def dummy_pass(context):  # pylint: disable=unused-argument
     """
     Dummy step to always PASS.
@@ -18,7 +18,7 @@ def dummy_pass(context):  # pylint: disable=unused-argument
     assert True, "This step always passes."
 
 
-@step('Dummy fail')
+@step("Dummy fail")
 def dummy_fail(context):  # pylint: disable=unused-argument
     """
     Dummy step to always FAIL.
@@ -31,7 +31,7 @@ def dummy_fail(context):  # pylint: disable=unused-argument
     raise AssertionError(error_message)
 
 
-@step('Dummy skip')
+@step("Dummy skip")
 def dummy_skip(context):  # pylint: disable=unused-argument
     """
     Dummy step to always SKIP.
@@ -43,7 +43,7 @@ def dummy_skip(context):  # pylint: disable=unused-argument
     context.scenario.skip("Scenario Skipped.")
 
 
-@step('Commentary')
+@step("Commentary")
 def commentary_step(context) -> None:
     """
     Commentary step for usage in behave feature files - html-pretty only.
@@ -66,7 +66,7 @@ def commentary_step(context) -> None:
         scenario_step.set_commentary(True)
 
 
-@step('Table Example')
+@step("Table Example")
 def table_example(context) -> None:
     """
     Table Example
@@ -75,16 +75,16 @@ def table_example(context) -> None:
     :type context: <behave.runner.Context>
     """
 
-    for row in context.table:
+    for _row in context.table:
         pass
 
-        #field = row["Field"]
-        #data = row["Data"]
+        # field = row["Field"]
+        # data = row["Data"]
 
         # do_stuff(field, data)
 
 
-@step('Text Example')
+@step("Text Example")
 def text_example(context) -> None:
     """
     Text Example
@@ -94,4 +94,3 @@ def text_example(context) -> None:
     """
 
     # do_stuff(context.text)
-

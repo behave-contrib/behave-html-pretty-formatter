@@ -27,7 +27,8 @@ def before_all(context) -> None:
         context.sandbox.change_title = False
 
         context.dummy = context.sandbox.get_application(
-            name="dummy", desktop_file_exists=False,
+            name="dummy",
+            desktop_file_exists=False,
         )
 
         for formatter in context._runner.formatters:
@@ -92,7 +93,6 @@ def after_scenario(context, scenario) -> None:
             context.html_formatter.after_scenario_finish("passed")
             context.html_formatter.pseudo_steps = False
 
-
     except Exception as error:
         print(f"Environment error: after_scenario: {error}")
         traceback.print_exc(file=sys.stdout)
@@ -100,4 +100,3 @@ def after_scenario(context, scenario) -> None:
         # Attach failed setup from After Scenario to our html-pretty report.
         embed_caption = "Failed cleanup in After Scenario"
         context.embed("text", traceback.format_exc(), embed_caption)
-
