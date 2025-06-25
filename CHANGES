@@ -2,6 +2,8 @@ behave-html-pretty-formatter 1.14
 =================================
 Adding Return to the Top button.
 Simplifying contrast switching. Fixing Issue #32
+Updating README with current page design and latest features.
+Enabling GitHub Pages to let users try a live example of a generated page.
 
 
 behave-html-pretty-formatter 1.13
