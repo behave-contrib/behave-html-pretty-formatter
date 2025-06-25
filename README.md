@@ -9,6 +9,12 @@
   - Full technical solution of our team's (Red Hat DesktopQE) automation stack https://modehnal.github.io/
 
 
+## Example in GitHub Pages:
+
+You are able to test many features of this formatter here
+  - https://behave-contrib.github.io/behave-html-pretty-formatter/
+
+
 ## Installation
 
 ```shell
@@ -97,15 +103,36 @@ behave -f html-pretty -o behave-report.html
 You can find information about behave and user-defined formatters in the
 [behave docs](https://behave.readthedocs.io/en/latest/formatters/).
 
-## HTML Pretty has High contrast option
 
-- [Default Static Example](#pretty-html-formatter):
-- [High contrast Static Example](#pretty-html-formatter-high-contrast):
-  - Colours adjusted.
-  - Extra information is added before every decorator about the status of the step.
-  - Text is bigger.
+## Filtering
 
-You can switch between the different contrasts with the toggle button.
+When having a large amount of data in one report, you can use a filter to show or hide relevant scenarios.
+
+![Filtering](design/filtering.png)
+
+## High Contrast
+
+Default page look will appear as:
+
+![No Contrast](design/no_contrast.png)
+
+While the High Contrast will adjust as follows:
+
+![High Contrast](design/high_contrast.png)
+
+The motivation for this is the following:
+  - Adjust colours.
+  - Make the text bigger.
+  - Add extra information before every decorator about the Status of the step.
+
+
+Static Examples:
+
+- [Behave HTML Pretty Formatter Full Page Example](#behave-html-pretty-formatter-full-page-example)
+- [Behave HTML Pretty Formatter Full Page High Contrast Example](#behave-html-pretty-formatter-full-page-high-contrast-example)
+
+
+You can switch between the different contrasts with the toggle button. Available to test in [GitHub Pages](#example-in-github-pages)
 
 
 ## Dark mode
@@ -113,16 +140,27 @@ You can switch between the different contrasts with the toggle button.
 Stylesheet follows the browser dark theme, so it reverts background to dark and
 adjusts colors to darker shade.
 
+![Dark Mode](design/dark_mode.png)
+
+Static Example:
+
+- [Behave HTML Pretty Formatter Full Page Dark Mode Example](#behave-html-pretty-formatter-full-page-dark-mode-example)
+
 
 ## Summary is hidden by default
 
-- [Pretty HTML Formatter With Summary Expanded and Collapsed Steps](#pretty-html-formatter-with-summary-expanded-and-collapsed-steps):
-- [Pretty HTML Formatter High contrast With Summary Expanded and Collapsed Steps](#pretty-html-formatter-high-contrast-with-summary-expanded-and-collapsed-steps):
-
-To change the setting use the .ini file.
+To change the setting use the .ini file. Also can be showed by the button `Summary` in the result page.
 ```summary
 behave.formatter.html-pretty.show_summary = true
 ```
+
+## Scenarios can be collapsed to hide not useful information
+- [Behave HTML Pretty Formatter Full Page Example Collapsed](#behave-html-pretty-formatter-full-page-example-collapsed)
+- [Behave HTML Pretty Formatter Full Page High Contrast Example Collapsed](#behave-html-pretty-formatter-full-page-high-contrast-example-collapsed)
+
+## Return to the Top
+
+In long generated pages, when users scroll down, the `Return to the Top` button will appear that will return them to the top of the page.
 
 ## HACKING
 
@@ -382,18 +420,22 @@ tox -e minify
 
 ## Image Examples
 
-### Pretty HTML Formatter
+### Behave HTML Pretty Formatter Full Page Example
 
-![Pretty HTML Formatter](design/full_page_example.png)
+![Full Page Example](design/full_page_example.png)
 
-### Pretty HTML Formatter High Contrast
+### Behave HTML Pretty Formatter Full Page High Contrast Example
 
-![Pretty HTML Formatter Summary High Contrast](design/full_page_high_contrast_example.png)
+![Full Page Example High Contrast](design/full_page_example_high_contrast.png)
 
-### Pretty HTML Formatter With Summary Expanded and Collapsed Steps
+### Behave HTML Pretty Formatter Full Page Dark Mode Example
 
-![Pretty HTML Formatter](design/summary_collapsed_example.png)
+![Full Page Example Dark Mode](design/full_page_example_dark_mode.png)
 
-### Pretty HTML Formatter High Contrast with Summary Expanded and Collapsed Steps
+### Behave HTML Pretty Formatter Full Page Example Collapsed
 
-![Pretty HTML Formatter Summary High Contrast](design/summary_collapsed_high_contrast_example.png)
+![Full Page Example Collapsed](design/full_page_example_collapsed.png)
+
+### Behave HTML Pretty Formatter Full Page High Contrast Example Collapsed
+
+![Full Page Example High Contrast Collapsed](design/full_page_example_high_contrast_collapsed.png)
