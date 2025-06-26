@@ -28,6 +28,8 @@
     "reportWildcardImportFromLibrary": "none",
   },
   "cSpell.words": [
+    "colours",
+    "plotly",
     "qecore"
   ],
 }

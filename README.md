@@ -39,7 +39,7 @@ html-pretty = behave_html_pretty_formatter:PrettyHTMLFormatter
 # also possible to use "behave ... -D behave.formatter.html-pretty.{setting}={value}".
 [behave.userdata]
 behave.formatter.html-pretty.title_string = Test Suite Reporter
-# Example usecase, print {before/after}_scenarios as steps with attached data.
+# Example use case, print {before/after}_scenarios as steps with attached data.
 behave.formatter.html-pretty.pseudo_steps = false
 # Structure of the result html page readable(pretty) or condensed.
 behave.formatter.html-pretty.pretty_output = true
@@ -120,10 +120,10 @@ While the High Contrast will adjust as follows:
 
 ![High Contrast](design/high_contrast.png)
 
-The motivation for this is the following:
-  - Adjust colours.
-  - Make the text bigger.
-  - Add extra information before every decorator about the Status of the step.
+The effects of High Contrast are:
+  - Adjusted colours.
+  - Bigger text.
+  - Extra information before every decorator about the Status of the step.
 
 
 Static Examples:
