@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dummy Test Suite</title>
+    <meta content="text/html;charset=utf-8" http-equiv="content-type">
+    <style rel="stylesheet">/* Inspired by https://github.com/Hargne/jest-html-reporter */
+
+[data-theme="light"] {
+  --body-color: #333;
+  --body-bg: #fff;
+  --strong-color: #000;
+  --feature-bg: #eee;
+  --feature-color: #777;
+  --duration-color: rgb(49, 49, 49);
+  --summary-passed: #4f8a10;
+  --summary-passed-border: #4f8a10;
+  --summary-failed: #d8000c;
+  --summary-failed-border: #d8000c;
+  --summary-undefined: #945901;
+  --summary-undefined-border: #ffdf61;
+  --summary-skipped: #76adff;
+  --summary-skipped-border: #76adff;
+  --passed-bg: #dff2bf;
+  --passed-step-bg: #c6dba3;
+  --passed-border: #b4cc8c;
+  --failed-bg: #f5c9cd;
+  --failed-step-bg: #ea868f;
+  --failed-border: #dd7a82;
+  --undefined-bg: #ffdf61;
+  --undefined-step-bg: #f1cb32;
+  --undefined-border: #917400;
+  --skipped-bg: #eef5ff;
+  --skipped-step-bg: #cfe2ff;
+  --skipped-border: #b8c9e4;
+  --commentary-bg: #b9b9b9;
+  --table-bg-odd: #fff;
+  --table-bg-even: #eee;
+  --button-bg: #666;
+  --button-color: #eee;
+  --button-bg-active: #898989;
+  --button-color-active: #fff;
+}
+
+[data-theme="dark"] {
+  --body-color: #ddd;
+  --body-bg: #000;
+  --strong-color: #fff;
+  --feature-bg: #222;
+  --feature-color: #aaa;
+  --duration-color: rgb(206, 206, 206);
+  --summary-passed: #4f8a10;
+  --summary-passed-border: #4f8a10;
+  --summary-failed: #d8000c;
+  --summary-failed-border: #d8000c;
+  --summary-undefined: #945901;
+  --summary-undefined-border: #ffdf61;
+  --summary-skipped: #76adff;
+  --summary-skipped-border: #76adff;
+  --passed-bg: #42630a;
+  --passed-step-bg: #697e41;
+  --passed-border: #91a86b;
+  --failed-bg: #69272d;
+  --failed-step-bg: #a8666c;
+  --failed-border: #df888f;
+  --undefined-bg: #665a2a;
+  --undefined-step-bg: #b6940d;
+  --undefined-border: #dbb20e;
+  --skipped-bg: #345381;
+  --skipped-step-bg: #3d659e;
+  --skipped-border: #6981a8;
+  --commentary-bg: #5c5c5c;
+  --table-bg-odd: #555;
+  --table-bg-even: #444;
+  --button-bg: #555;
+  --button-color: #cdcdcd;
+  --button-bg-active: #898989;
+  --button-color-active: #fff;
+}
+
+/* GENERAL CONTENT */
+
+html,
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+  color: var(--body-color);
+  background: var(--body-bg);
+}
+
+body {
+  padding: 1rem 1rem;
+  font-size: 0.85rem;
+}
+
+pre,
+pre * {
+  margin: 0;
+}
+
+/* ARROWS */
+.embed-button::after,
+.scenario-name::after {
+  position: absolute;
+  top: -0.5em;
+  left: -0.2em;
+  content: "\2304";
+  font-size: 1.8em;
+  transition: all 0.2s linear;
+}
+
+.embed-button.collapse::after,
+.collapse .scenario-name::after {
+  top: -0.29em;
+  left: -0.5em;
+  transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+}
+
+.embed-button,
+.scenario-name {
+  padding-left: 1.2em;
+  position: relative;
+}
+
+/*FEATURE CONTENT*/
+
+.feature-filter-container:not(:first-child) {
+  margin-top: 1em;
+}
+
+.feature-title,
+.global-summary {
+  font-size: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  background-color: var(--feature-bg);
+  color: var(--feature-color);
+  padding: 0.5em 1em;
+  margin-bottom: 5px;
+}
+
+.feature-title:not(:first-child) {
+  margin-top: 1em;
+}
+
+.global-summary {
+  color: var(--strong-color);
+  margin-bottom: 0px;
+}
+
+.feature-icon {
+  height: 1.2em;
+  display: inline-block;
+  margin-right: 0.3em;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.contrast .feature-icon {
+  display: none;
+}
+
+.contrast .feature-title,
+.contrast .global-summary {
+  font-weight: bold;
+  font-size: 1.25rem;
+  background-color: #000;
+  color: #fff;
+}
+
+.feature-summary-commentary {
+  border-left: 0.4rem solid var(--feature-color);
+  background-color: var(--commentary-bg);
+  color: var(--strong-color);
+  word-wrap: break-word;
+  max-width: 40%;
+  margin-right: 1rem;
+  margin-top: 0.2rem;
+  margin-left: 0.2rem;
+  padding: 0.5rem;
+  white-space: pre-wrap
+}
+
+.contrast .feature-summary-commentary {
+  background-color: rgb(36, 35, 35);
+  color: rgb(248, 248, 248);
+  font-size: 1rem;
+}
+
+.feature-summary-container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px;
+  padding-right: 1rem;
+  margin-bottom: 5px;
+  background-color: var(--feature-bg);
+  color: var(--feature-color);
+  justify-content: start;
+  font-size: 0.8rem;
+}
+
+.feature-summary-container.collapse {
+  display: none;
+}
+
+.contrast .feature-summary-container {
+  background-color: #000;
+  color: rgb(248, 248, 248);
+  font-size: 1rem;
+}
+
+.feature-additional-info-container {
+  padding: 5px;
+  background-color: var(--feature-bg);
+  color: var(--feature-color);
+  justify-content: start;
+  font-size: 0.8rem;
+  flex-basis: 100%;
+}
+
+.contrast .feature-additional-info-container {
+  background-color: #000;
+  color: rgb(248, 248, 248);
+  font-size: 1rem;
+}
+
+.feature-summary-stats {
+  margin-top: 0.2em;
+}
+
+.feature-summary-stats .button {
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+.global-summary-status.passed {
+  color: var(--summary-passed);
+}
+
+.global-summary-status.failed,
+.global-summary-status.error {
+  color: var(--summary-failed);
+}
+
+.global-summary-status.undefined {
+  color: var(--summary-undefined);
+}
+
+.global-summary-status.skipped {
+  color: var(--summary-skipped);
+}
+
+.contrast .global-summary-status {
+  color: rgb(248, 248, 248);
+}
+
+.feature-summary-row {
+  color: var(--feature-color);
+  border-left: 0.4rem solid var(--feature-color);
+  padding-left: 0.5rem;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+.feature-summary-row.passed {
+  color: var(--summary-passed);
+  border-left: 0.4rem solid var(--summary-passed-border);
+}
+
+.feature-summary-row.failed,
+.feature-summary-row.error {
+  color: var(--summary-failed);
+  border-left: 0.4rem solid var(--summary-failed-border);
+}
+
+.feature-summary-row.undefined {
+  color: var(--summary-undefined);
+  border-left: 0.4rem solid var(--summary-undefined-border);
+}
+
+.feature-summary-row.skipped {
+  color: var(--summary-skipped);
+  border-left: 0.4rem solid var(--summary-skipped-border);
+}
+
+.contrast .feature-summary-row {
+  color: rgb(248, 248, 248);
+  border-left: 0.4rem solid rgb(248, 248, 248);
+}
+
+.feature-container {
+  margin-bottom: 2rem;
+}
+
+.feature-started {
+  align-self: center;
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+.contrast .feature-started {
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+
+/*SCENARIO CONTENT*/
+.scenario-capsule {
+  padding: 1rem;
+  padding-right: 0.5rem;
+  padding-top: 0.3rem;
+  margin-bottom: 1rem;
+  color: var(--strong-color);
+}
+
+.scenario-header {
+  padding: 1rem;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  color: var(--strong-color);
+}
+
+.scenario-capsule:last-child {
+  border: 0;
+}
+
+.scenario-capsule {
+  background-color: var(--feature-bg);
+}
+
+.scenario-header.passed,
+.global-summary.passed {
+  background-color: var(--passed-step-bg);
+}
+
+.scenario-header.failed,
+.global-summary.failed,
+.scenario-header.error,
+.global-summary.error {
+  background-color: var(--failed-step-bg);
+}
+
+.scenario-header.undefined,
+.global-summary.undefined {
+  background-color: var(--undefined-step-bg);
+}
+
+.scenario-header.skipped,
+.global-summary.skipped {
+  background-color: var(--skipped-step-bg);
+}
+
+.contrast .scenario-header,
+.contrast .scenario-capsule,
+.contrast .global-summary {
+  background-color: #000;
+  color: #fff;
+}
+
+.scenario-info {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 1.25rem;
+}
+
+.scenario-name {
+  cursor: pointer;
+  font-weight: bold;
+  padding-bottom: 0.5em;
+}
+
+.scenario-duration {
+  align-self: center;
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-style: italic;
+  padding: 0 0.5em 0.5em 0;
+}
+
+.contrast .scenario-duration {
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+.scenario-tags {
+  color: var(--body-color);
+  font-weight: bold;
+  font-size: 0.75rem;
+  margin: 0.1rem 0.8em 0.5rem 0;
+  display: inline-block;
+}
+
+.contrast .scenario-tags {
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  margin: 0.1rem 1em 0.5rem 0;
+}
+
+
+/*STEP CONTENT*/
+.step-capsule {
+  margin: 2px 0 2px 2px;
+  padding: 0.5rem;
+  color: var(--strong-color);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+}
+
+.step-capsule.passed {
+  background-color: var(--passed-step-bg);
+  border: 1px solid var(--passed-border);
+}
+
+.step-capsule.failed,
+.step-capsule.error {
+  background-color: var(--failed-step-bg);
+  ;
+  border: 1px solid var(--failed-border);
+}
+
+.step-capsule.undefined {
+  background-color: var(--undefined-step-bg);
+  border: 1px solid var(--undefined-step-bg);
+}
+
+.step-capsule.skipped {
+  background-color: var(--skipped-step-bg);
+  border: 1px solid var(--skipped-border);
+}
+
+.step-capsule.commentary {
+  background-color: var(--commentary-bg);
+  margin-left: 1rem;
+}
+
+.step-capsule.description {
+  background-color: var(--commentary-bg);
+  margin-left: 0rem;
+}
+
+.contrast .step-capsule {
+  background-color: rgb(36, 35, 35);
+  color: #fff;
+  font-size: 1.25rem;
+  border: none;
+}
+
+.step-status {
+  display: none;
+  padding: 0 1rem 0 0;
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.contrast .step-status {
+  display: block;
+  padding: 0 1rem 0 0;
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.step-decorator {
+  padding: 0;
+  padding-right: 1.5rem;
+}
+
+.step-duration {
+  color: var(--duration-color);
+  font-style: italic;
+  padding: 0;
+  padding-right: 1.5rem;
+}
+
+.contrast .step-duration {
+  color: rgb(248, 248, 248);
+}
+
+/*EMBED CONTENT*/
+.messages {
+  margin: 0 0 4px 1em
+}
+
+.scenario-capsule .messages:last-child {
+  border-bottom: 1px dashed var(--strong-color);
+}
+
+.contrast .scenario-capsule .messages:last-child {
+  border-bottom: 1px dashed #fff;
+}
+
+.embed-capsule {
+  margin: 0.5em 0;
+}
+
+.embed-content {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 12px;
+  margin: 0.5rem;
+}
+
+.embed-content.collapse {
+  display: none;
+}
+
+.embed-button {
+  cursor: pointer;
+  margin: 0 1rem 0.5em 0;
+  text-decoration: underline;
+  color: var(--strong-color);
+  font-size: 12px;
+  width: max-content;
+}
+
+.contrast .embed-button {
+  color: #fff;
+  font-size: 20px;
+}
+
+/*TABLE FORMATTING*/
+th,
+td {
+  padding: 6px;
+}
+
+thead {
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+}
+
+table {
+  color: var(--body-color);
+  margin: 2px 1em 4px 1em;
+  border-collapse: collapse;
+  border: 1px solid #000;
+  vertical-align: middle;
+}
+
+.contrast table {
+  font-size: 1rem;
+}
+
+table tbody tr:nth-child(odd) {
+  background-color: var(--table-bg-odd);
+}
+
+table tbody tr:nth-child(even) {
+  background-color: var(--table-bg-even);
+}
+
+table tbody.collapse {
+  display: none;
+}
+
+.contrast table tbody tr {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #000;
+}
+
+
+/*IMAGE AND LINK FORMATTING*/
+img,
+video {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--strong-color);
+}
+
+.contrast a:hover {
+  color: grey;
+  text-decoration: underline;
+  text-decoration-color: grey;
+}
+
+.scenario-header.collapse .scenario-tags,
+.scenario-capsule.collapse {
+  display: none;
+}
+
+.scenario-header.collapse {
+  padding: 0.5rem 1rem 0 1rem;
+  margin-bottom: 1rem;
+}
+
+/* BUTTONS and HELPER classes */
+/* Should be at bottom, to override rules above */
+
+.button {
+  display: inline-block;
+  color: var(--button-color);
+  background-color: var(--button-bg);
+  border-radius: 0.2em;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 0.5em 0.9em;
+  text-align: center;
+  cursor: pointer;
+}
+
+.button:hover {
+  text-decoration: none;
+  color: var(--button-color-active);
+  background-color: var(--button-bg-active);
+}
+
+.contrast .button {
+  color: #111;
+  background-color: #eee;
+}
+
+.contrast .button:hover {
+  text-decoration: none;
+}
+
+.return-button {
+  display: inline-block;
+  color: var(--button-color);
+  background-color: var(--button-bg);
+  border-radius: 0.2em;
+  font-weight: bold;
+  font-size: 1rem;
+  text-decoration: none;
+  padding: 0.5em 0.9em;
+  text-align: center;
+  cursor: pointer;
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  z-index: 99;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.return-button.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.return-button:hover {
+  text-decoration: none;
+  color: var(--button-color-active);
+  background-color: var(--button-bg-active);
+}
+
+.contrast .return-button {
+  color: #111;
+  font-size: 1.25rem;
+  background-color: #eee;
+}
+
+.contrast .return-button:hover {
+  text-decoration: none;
+}
+
+.display-flex {
+  display: flex;
+}
+
+.display-block {
+  display: block;
+}
+
+.display-inline {
+  display: inline;
+}
+
+.display-block.display-inline {
+  display: inline-block;
+}
+
+.flex-gap {
+  column-gap: 1em;
+  row-gap: 2px;
+}
+
+.flex-left-space {
+  margin-left: auto;
+}
+
+.margin-top {
+  margin-top: 15px;
+}
+
+.no-margin-top {
+  margin-top: 0px;
+}
+
+.margin-bottom {
+  margin-bottom: 15px;
+}
+
+/* SMALL SCREEN */
+/* Should be at bottom, to override rules above */
+@media only screen and (max-width: 750px) {
+
+  .feature-title,
+  .global-summary {
+    flex-direction: column;
+  }
+
+  .feature-started {
+    margin-left: unset;
+  }
+
+  .feature-summary-container {
+    margin-left: 0;
+    margin-top: 0.25rem;
+    font-size: 1rem;
+    display: block;
+  }
+
+  .feature-additional-info-container {
+    margin-left: 0;
+    margin-top: 0.25rem;
+    font-size: 1rem;
+  }
+
+  .feature-summary-commentary {
+    max-width: 100%;
+    margin-right: 0;
+  }
+
+  .flex-left-space {
+    margin-left: initial;
+  }
+
+  .feature-summary-stats {
+    margin-left: 0.2rem;
+  }
+
+  .scenario-capsule {
+    padding-right: 0rem;
+  }
+
+}</style>
+    <script type="text/javascript">// Embed toggle identificators.
+var toggle_non_empty_string = "#toggle=";
+
+// Keeping the list of all toggled embeds.
+var hash_uuid_list = new Array();
+// Keep the changes to be applied
+//  - this can be filled in by hash_to_state (when hash changes)
+//  - or in toggle_hash (when some element is collapsed/expanded)
+var hash_uuid_list_change = new Array();
+
+// GZIP mime-type header
+var GZIP_HEADER = "data:application/octet-stream;base64,";
+const decompress = async (url) => {
+  const ds = new DecompressionStream('gzip');
+  const response = await fetch(url);
+  const blob_in = await response.blob();
+  const stream_in = blob_in.stream().pipeThrough(ds);
+  const blob_out = await new Response(stream_in).blob();
+  return await blob_out.text();
+};
+
+// Convert hash to state and render
+function hash_to_state() {
+  var list_of_hashes = [];
+  if (location.hash.includes(toggle_non_empty_string)) {
+    // Add parsed hashes from the URL to the list.
+    list_of_hashes = location.hash.replace(toggle_non_empty_string, "").split(",");
+    console.log("Starting ID list: " + list_of_hashes.toString());
+  }
+  if (hash_uuid_list_change.length == 0) {
+    // Compute change list - hashes that were added/removed from URL
+    for (var i = 0; i < list_of_hashes.length; i++) {
+      if (!hash_uuid_list.includes(list_of_hashes[i])) {
+        hash_uuid_list_change.push(list_of_hashes[i]);
+      }
+    }
+    for (var i = 0; i < hash_uuid_list.length; i++) {
+      if (!list_of_hashes.includes(hash_uuid_list[i])) {
+        hash_uuid_list_change.push(hash_uuid_list[i]);
+      }
+    }
+  }
+  // Update hash_uuid_list to be in sync with hash
+  hash_uuid_list = list_of_hashes;
+
+  // Check all hashes and trigger proper function based on type.
+  console.log("Will toggle following IDs: " + hash_uuid_list_change.toString());
+  for (var i = 0; i < hash_uuid_list_change.length; i++) {
+    if (hash_uuid_list_change[i] == "high_contrast") {
+      // Trigger the high contrast.
+      toggle_contrast();
+    }
+    else {
+      // Triggering expand/collapse of embeds.
+      collapsible_toggle(hash_uuid_list_change[i]);
+    }
+  }
+  // Requested changes were applied, clear the list
+  hash_uuid_list_change = [];
+
+  console.log("Rendering 'to-render' elements.");
+  elements_to_render = document.getElementsByClassName("to-render")
+  for (var i = 0; i < elements_to_render.length; i++) {
+    render_content(elements_to_render[i])
+  }
+};
+
+// Trigger proper functions on content load.
+document.addEventListener("DOMContentLoaded", hash_to_state);
+window.onhashchange = hash_to_state;
+
+
+// Change visibility of element and change URL
+function toggle_hash(id) {
+  console.log("Toggle ID: " + id);
+  // Save element to be changed
+  hash_uuid_list_change.push(id)
+  // Change uuid list
+  if (hash_uuid_list.includes(id)) {
+    hash_uuid_list.splice(hash_uuid_list.indexOf(id), 1);
+  }
+  else {
+    hash_uuid_list.push(id);
+  }
+  // Update URL hash
+  var hash = "#";
+  if (hash_uuid_list.length != 0) {
+    hash = toggle_non_empty_string + hash_uuid_list.toString()
+  }
+  console.log("New hash: " + hash);
+  history.replaceState(undefined, undefined, hash);
+  // Need to call hash_to_state, event is not triggered for some reason
+  hash_to_state();
+};
+
+function collapsible_toggle(id) {
+  console.log("Toggle embed: " + id);
+  var embed_button_id = "embed_button_" + id
+  var parent = document.getElementById(embed_button_id);
+  if (parent === null) {
+    // can be table
+    var elem = document.getElementById(id);
+    if (elem != null) {
+      toggle_class(elem, "collapse");
+    }
+    return;
+  }
+  while (parent !== undefined && !parent.classList.contains("embed-button")) {
+    parent = parent.parentElement;
+  }
+  if (parent !== undefined) {
+    toggle_class(parent, "collapse");
+  }
+
+  var embed_content_id = "embed_" + id
+  var elem = document.getElementById(embed_content_id);
+  // decompress compressed data
+  var compressed_data = elem.querySelector("span.to-render");
+  if (compressed_data) {
+    render_content(compressed_data)
+  }
+  toggle_class(elem, "collapse");
+};
+
+function expander(action, summary_block) {
+  var elem = Array.from(document.getElementsByClassName("scenario-capsule"));
+  elem = elem.concat(Array.from(document.getElementsByClassName("scenario-header")));
+  var feature_id = summary_block.parentElement.parentElement.dataset.featureId
+  console.log("Doing " + action + " on FeatureID " + feature_id);
+  for (var i = 0; i < elem.length; i++) {
+    if (feature_id != elem[i].parentElement.parentElement.id) {
+      continue
+    }
+    if (action == "expand_all") {
+      elem[i].classList.remove("collapse")
+    }
+    else if (action == "collapse_all") {
+      if (!elem[i].classList.contains("collapse")) {
+        elem[i].classList.add("collapse");
+      }
+    }
+    else if (action == "expand_all_failed") {
+      if (!elem[i].classList.contains("passed")) {
+        elem[i].classList.remove("collapse");
+      }
+      else {
+        if (!elem[i].classList.contains("collapse")) {
+          elem[i].classList.add("collapse");
+        }
+      }
+    }
+  }
+};
+
+
+function expand_this_only(name) {
+  var id = name.id;
+  var capsule = document.getElementById(id + "-c");
+  var header = document.getElementById(id + "-h");
+  if (header.classList.contains("collapse")) {
+    header.classList.remove("collapse");
+    capsule.classList.remove("collapse");
+  }
+  else {
+    header.classList.add("collapse");
+    capsule.classList.add("collapse");
+  }
+};
+
+// Helper function to toggle class for element
+function toggle_class(elem, class_name) {
+  if (elem.classList.contains(class_name)) {
+    elem.classList.remove(class_name);
+  }
+  else {
+    elem.classList.add(class_name)
+  }
+};
+
+function toggle_contrast() {
+  if (document.body.classList.contains("contrast")) {
+    document.body.classList.remove("contrast");
+  }
+  else {
+    document.body.classList.add("contrast");
+  }
+};
+
+/* query browser for color scheme */
+function detect_dark_mode() {
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+};
+
+/* switch between "dark" <--> "light" */
+function invert_thm_name(theme) {
+  if (theme == "dark") {
+    return "light";
+  }
+  if (theme == "light") {
+    return "dark";
+  }
+  return undefined;
+};
+
+/* helper function to label */
+function format_thm_name(theme) {
+  if (theme == "dark") {
+    return "Dark mode";
+  }
+  if (theme == "light") {
+    return "Light mode";
+  }
+  if (theme == "auto") {
+    return "Default mode";
+  }
+  return undefined;
+};
+
+/* render the setting */
+function set_theme(theme) {
+  document.querySelector("html").setAttribute("data-theme", theme);
+  // update in local storage
+  localStorage.setItem("theme", theme);
+};
+
+/* callback on button click - switch to next-value */
+function toggle_dark_mode() {
+  var current = detect_dark_mode() ? "dark" : "light";
+  var current_inv = invert_thm_name(current);
+  var next_thm = dark_mode_toggle.dataset.nextValue;
+  dark_mode_toggle.dataset.value = next_thm;
+  if (next_thm == "auto") {
+    dark_mode_toggle.dataset.nextValue = current_inv;
+    set_theme(current);
+  }
+  else {
+    console.log(current + " " + next_thm);
+    if (current == next_thm) {
+      dark_mode_toggle.dataset.nextValue = "auto";
+    }
+    else {
+      next_inv = invert_thm_name(next_thm);
+      dark_mode_toggle.dataset.nextValue = next_inv;
+    }
+    set_theme(next_thm);
+  }
+  dark_mode_toggle.innerText = format_thm_name(dark_mode_toggle.dataset.nextValue);
+};
+
+/* callback on system dark mode change, change on auto, compute next-value otherwise */
+function dark_mode_change() {
+  console.log("called");
+  var current_thm = detect_dark_mode() ? "dark" : "light";
+  var current_inv = invert_thm_name(current_thm);
+  var value_thm = dark_mode_toggle.dataset.value;
+  if (value_thm == "auto") {
+    dark_mode_toggle.dataset.nextValue = current_inv;
+    set_theme(current_thm);
+  }
+  else {
+    if (current_thm == value_thm) {
+      dark_mode_toggle.dataset.nextValue = "auto";
+    }
+    else {
+      dark_mode_toggle.dataset.nextValue = invert_thm_name(value_thm);
+    }
+  }
+  dark_mode_toggle.innerText = format_thm_name(dark_mode_toggle.dataset.nextValue);
+};
+
+function detect_contrast() {
+  var obj_div = document.createElement("div");
+  obj_div.style.color = "rgb(31, 41, 59)"
+  document.body.appendChild(obj_div);
+  var col = document.defaultView ? document.defaultView.getComputedStyle(obj_div, null).color : obj_div.currentStyle.color;
+  document.body.removeChild(obj_div);
+  col = col.replace(/ /g, "");
+  if (col !== "rgb(31,41,59)") {
+    console.log("High Contrast theme detected.")
+    toggle_contrast();
+  }
+};
+
+function body_onload() {
+  detect_contrast();
+  var dark_mode_matcher = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  if (dark_mode_matcher) { dark_mode_matcher.onchange = dark_mode_change };
+  var dark_mode_toggle = document.getElementById("dark_mode_toggle");
+  var current_thm = detect_dark_mode() ? "dark" : "light";
+  var current_inv = invert_thm_name(current_thm);
+  dark_mode_toggle.dataset.nextValue = current_inv;
+  dark_mode_toggle.innerText = format_thm_name(current_inv);
+  set_theme(current_thm);
+};
+
+var element = document.createElement('div');
+var entity = /&(?:#x[a-f0-9]+|#[0-9]+|[a-z0-9]+);?/ig;
+
+function decodeHTMLEntities(str) {
+  str = str.replace(entity, function (m) {
+    element.innerHTML = m;
+    return element.textContent;
+  });
+  element.textContent = '';
+  return str;
+};
+
+function download_embed(id, filename) {
+  var elem = document.getElementById(id);
+  var child = elem.children[1];
+  var value = "";
+  var tag = child.tagName.toLowerCase();
+  if (tag === "span") {
+    extension = ".txt"
+    if (child.getAttribute("mime").indexOf("html") != -1 || child.getAttribute("mime").indexOf("markdown") != -1) {
+      extension = ".html"
+    }
+    if (child.getAttribute("compressed") == "true") {
+      extension = extension + ".gz";
+      value = GZIP_HEADER + child.getAttribute("data");
+    }
+    else {
+      value = "data:text/html," + encodeURIComponent(decodeHTMLEntities(child.innerHTML));
+    }
+  }
+  else if (tag == "video") {
+    extension = ".webm";
+    value = child.children[0].src;
+  }
+  else if (tag == "img") {
+    extension = ".png";
+    value = child.src;
+  }
+  else {
+    extension = ".html";
+    value = decodeHTMLEntities(child.innerHTML);
+  }
+  /* add filename extension, only if not there already */
+  var extend_filename = !filename.match(/\.[a-zA-Z][a-zA-Z][a-zA-Z]?$/g);
+  if (extend_filename) {
+    filename += extension;
+  }
+  var link = document.createElement("a");
+  link.style.display = "none";
+  link.href = value;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click()
+  /* fix race in FF */
+  setTimeout(function () { document.body.removeChild(link); }, 2000);
+};
+
+function download_plaintext(id, filename) {
+  var elem = document.getElementById(id);
+  var child = elem.children[1];
+  var value = "";
+  var tag = child.tagName.toLowerCase();
+  extension = ".txt";
+  value = "data:text/plain," + encodeURIComponent(decodeHTMLEntities(child.textContent));
+  /* add filename extension, only if not there already */
+  var extend_filename = !filename.match(/\.[a-zA-Z][a-zA-Z][a-zA-Z]?$/g);
+  if (extend_filename) {
+    filename += extension;
+  }
+  var link = document.createElement("a");
+  link.style.display = "none";
+  link.href = value;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click()
+  /* fix race in FF */
+  setTimeout(function () { document.body.removeChild(link); }, 2000);
+};
+
+async function render_content(element) {
+  element.classList.remove("to-render");
+  var show = element.getAttribute("show");
+  var compressed = element.getAttribute("compressed");
+  var data = element.getAttribute("data");
+  var ds = ('DecompressionStream' in window);
+  // We can't show compressed data, if browser doesn't support it
+  if (show == "true" && (compressed != "true" || ds)) {
+    if (compressed == "true") {
+      data = GZIP_HEADER + data;
+      data = await decompress(data);
+    }
+    else {
+      data = atob(data);
+    }
+    var mime = element.getAttribute("mime");
+    if (mime.indexOf("html") >= 0 || mime.indexOf("markdown") >= 0) {
+      element.innerHTML = data;
+    }
+    else {
+      element.innerText = data;
+    }
+  }
+  else {
+    var msg = "click download above."
+    // Data should be rendered, but browser check failed.
+    if (show == "true") {
+      msg = "Browser does not support CompressionStream API, " + msg;
+    }
+    else {
+      msg = "Compressed data are too big, " + msg;
+    }
+    element.innerText = msg;
+  }
+};
+
+function filter_features_by_status() {
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]#feature-filter');
+  const selectedClasses = Array.from(checkboxes)
+    .filter(checkbox => checkbox.checked)
+    .map(checkbox => checkbox.value);
+  console.log("Filtering Features: " + selectedClasses);
+
+  const items = document.querySelectorAll('.feature-filter-container');
+
+  items.forEach(item => {
+    const matches = selectedClasses.some(className => item.classList.contains(className));
+    item.style.display = selectedClasses.length === 0 || matches ? '' : 'none';
+  });
+};
+
+function filter_scenarios_by_status(this_block) {
+  var element = this_block
+  while (element && !element.dataset.featureId) {
+    element = element.parentElement
+  }
+  const feature_id = element.dataset.featureId
+
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]#scenario-filter-' + feature_id);
+  const selectedClasses = Array.from(checkboxes)
+    .filter(checkbox => checkbox.checked)
+    .map(checkbox => checkbox.value);
+  console.log("Filtering Scenarios of Feature: " + feature_id + " " + selectedClasses);
+
+  const scenario_capsule = '.scenario-capsule[id^="' + feature_id + '"], '
+  const scenario_header = '.scenario-header[id^="' + feature_id + '"]'
+
+  const items = document.querySelectorAll(scenario_capsule + scenario_header);
+
+  items.forEach(item => {
+    const matches = selectedClasses.some(className => item.classList.contains(className));
+    item.style.display = selectedClasses.length === 0 || matches ? '' : 'none';
+  });
+};
+
+function filter_global_scenarios_by_status() {
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]#scenario-filter');
+  const selectedClasses = Array.from(checkboxes)
+    .filter(checkbox => checkbox.checked)
+    .map(checkbox => checkbox.value);
+  console.log("Filtering All Scenarios of All Features:" + selectedClasses);
+
+  const scenario_capsule = '.scenario-capsule, '
+  const scenario_header = '.scenario-header'
+
+  const items = document.querySelectorAll(scenario_capsule + scenario_header);
+
+  items.forEach(item => {
+    const matches = selectedClasses.some(className => item.classList.contains(className));
+    item.style.display = selectedClasses.length === 0 || matches ? '' : 'none';
+  });
+};
+
+// When scrolling down 300px from the top of the document, show the button.
+window.onscroll = function () { scroll_function() };
+
+function scroll_function() {
+
+  // Get to the defined button.
+  let return_button = document.getElementById("return_to_the_top_button");
+
+  // While testing sometimes the button is not found, harmless but lets not fail.
+  if (return_button == null) {
+    return;
+  }
+
+  if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+    return_button.classList.add("show");
+  } else {
+    return_button.classList.remove("show");
+  }
+};
+
+// When the user clicks on the button, scroll to the top of the document.
+function return_to_the_top() {
+  document.body.scrollTo({ top: 0, behavior: 'smooth' }); // For Safari.
+  document.documentElement.scrollTo({ top: 0, behavior: 'smooth' }); // For Chrome, Firefox, IE and Opera.
+};
+</script>
+  </head>
+  <body onload="body_onload();">
+    <section class="feature-filter-container failed" id="f1">
+      <div class="feature-title flex-gap" id="f1">
+        <span>Feature: Dummy Feature</span>
+        <span class="feature-started">Started: 24-06-2025 16:46:06 (1750776366)</span>
+        <span class="button flex-left-space" data-next-value="dark" data-value="auto" id="dark_mode_toggle" onclick="toggle_dark_mode()">Dark mode</span>
+        <span class="button" id="high_contrast" onclick="toggle_hash('high_contrast')">High contrast toggle</span>
+        <span class="button" onclick="toggle_hash('summary-f1')">Summary</span>
+      </div>
+      <div class="feature-summary-container flex-gap " data-feature-id="f1" id="summary-f1">
+        <div class="feature-summary-stats ">
+          <div class="feature-summary-row passed">Passed: 4</div>
+          <div class="feature-summary-row failed">Failed: 1</div>
+          <div class="feature-summary-row undefined">Undefined: 1</div>
+          <div class="feature-summary-row skipped">Skipped: 1</div>
+          <div class="feature-summary-row">Scenarios Filter: 
+            <label class="global-summary-status passed">
+              <input id="scenario-filter-f1" onchange="filter_scenarios_by_status(this)" type="checkbox" value="passed">passed
+            </label>
+            <label class="global-summary-status failed">
+              <input id="scenario-filter-f1" onchange="filter_scenarios_by_status(this)" type="checkbox" value="failed">failed
+            </label>
+            <label class="global-summary-status undefined">
+              <input id="scenario-filter-f1" onchange="filter_scenarios_by_status(this)" type="checkbox" value="undefined">undefined
+            </label>
+            <label class="global-summary-status skipped">
+              <input id="scenario-filter-f1" onchange="filter_scenarios_by_status(this)" type="checkbox" value="skipped">skipped
+            </label>
+          </div>
+        </div>
+        <div class="feature-summary-stats flex-left-space">
+          <div class="feature-summary-row">Started: 24-06-2025 16:46:06 (1750776366)</div>
+          <div class="feature-summary-row">Duration: 4.53</div>
+          <div class="feature-summary-row">Finished: 24-06-2025 16:46:10 (1750776370)</div>
+        </div>
+        <div class="feature-summary-stats">
+          <span class="button display-block" onclick="expander('expand_all', this)">Expand All</span>
+          <span class="button display-block" onclick="expander('collapse_all', this)">Collapse All</span>
+          <span class="button display-block" onclick="expander('expand_all_failed', this)">Expand All Failed</span>
+        </div>
+      </div>
+      <div class="feature-container" id="f1">
+        <section class="scenario-filter-container passed" id="f1-s1">
+          <div class="scenario-header passed " id="f1-s1-h">
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L6">@dummy_feature</a>
+            </div>
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L6">@dummy_scenario_pass</a>
+            </div>
+            <div class="scenario-info">
+              <div class="scenario-name" id="f1-s1" onclick="expand_this_only(this)">Scenario: Dummy Scenario Pass</div>
+              <div class="scenario-duration">Scenario duration: 0.00s</div>
+            </div>
+          </div>
+          <div class="scenario-capsule passed " id="f1-s1-c">
+            <div class="step-capsule passed ">
+              <div class="step-status">PASS</div>
+              <div class="step-decorator">
+                <b><i>* </i></b>
+                <span>Dummy pass</span>
+              </div>
+              <div class="step-duration">(0.00s)</div>
+              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
+            </div>
+            <div class="embeds"></div>
+          </div>
+        </section>
+        <section class="scenario-filter-container passed" id="f1-s2">
+          <div class="scenario-header passed " id="f1-s2-h">
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L11">@dummy_feature</a>
+            </div>
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L11">@dummy_scenario_pass_pseudo_steps</a>
+            </div>
+            <div class="scenario-info">
+              <div class="scenario-name" id="f1-s2" onclick="expand_this_only(this)">Scenario: Dummy Scenario Pass Pseudo Steps</div>
+              <div class="scenario-duration">Scenario duration: 0.00s</div>
+            </div>
+          </div>
+          <div class="scenario-capsule passed " id="f1-s2-c">
+            <div class="step-capsule passed ">
+              <div class="step-status">PASS</div>
+              <div class="step-decorator">
+                <b><i>Before </i></b>
+                <span>scenario</span>
+              </div>
+              <div class="step-duration">(1.00s)</div>
+              <span class="flex-left-space"></span>
+            </div>
+            <div class="embeds"></div>
+            <div class="step-capsule passed margin-top">
+              <div class="step-status">PASS</div>
+              <div class="step-decorator">
+                <b><i>* </i></b>
+                <span>Dummy pass</span>
+              </div>
+              <div class="step-duration">(0.00s)</div>
+              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
+            </div>
+            <div class="embeds"></div>
+            <div class="step-capsule passed margin-top">
+              <div class="step-status">PASS</div>
+              <div class="step-decorator">
+                <b><i>After </i></b>
+                <span>scenario</span>
+              </div>
+              <div class="step-duration">(0.31s)</div>
+              <span class="flex-left-space"></span>
+            </div>
+            <div class="embeds"></div>
+          </div>
+        </section>
+        <section class="scenario-filter-container undefined" id="f1-s3">
+          <div class="scenario-header undefined " id="f1-s3-h">
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L16">@dummy_feature</a>
+            </div>
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L16">@dummy_scenario_undefined</a>
+            </div>
+            <div class="scenario-info">
+              <div class="scenario-name" id="f1-s3" onclick="expand_this_only(this)">Scenario: Dummy Scenario Undefined</div>
+              <div class="scenario-duration">Scenario duration: 0.00s</div>
+            </div>
+          </div>
+          <div class="scenario-capsule undefined " id="f1-s3-c">
+            <div class="step-capsule undefined ">
+              <div class="step-status">SKIP</div>
+              <div class="step-decorator">
+                <b><i>* </i></b>
+                <span>Dummy undefined</span>
+              </div>
+              <div class="step-duration">(0.00s)</div>
+              <span class="flex-left-space"></span>
+            </div>
+            <div class="embeds">
+              <div class="messages">
+                <div class="embed-capsule">
+                  <div class="embed-button " id="embed_button_24a8" onclick="toggle_hash('24a8')">Error Message</div>
+                  <pre class="embed-content " id="embed_24a8"><span mime="text">
+You can implement step definitions for undefined steps with these snippets:
+
+@given(u'Dummy undefined')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Given Dummy undefined')
+
+</span></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="scenario-filter-container skipped" id="f1-s4">
+          <div class="scenario-header skipped " id="f1-s4-h">
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L21">@dummy_feature</a>
+            </div>
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L21">@dummy_scenario_skip</a>
+            </div>
+            <div class="scenario-info">
+              <div class="scenario-name" id="f1-s4" onclick="expand_this_only(this)">Scenario: Dummy Scenario Skip</div>
+              <div class="scenario-duration">Scenario duration: 0.00s</div>
+            </div>
+          </div>
+          <div class="scenario-capsule skipped " id="f1-s4-c">
+            <div class="step-capsule skipped ">
+              <div class="step-status">SKIP</div>
+              <div class="step-decorator">
+                <b><i>* </i></b>
+                <span>Dummy skip</span>
+              </div>
+              <div class="step-duration">(0.00s)</div>
+              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L34">features/steps/steps.py:34</a>
+            </div>
+            <div class="embeds"></div>
+          </div>
+        </section>
+        <section class="scenario-filter-container passed" id="f1-s5">
+          <div class="scenario-header passed " id="f1-s5-h">
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L26">@dummy_feature</a>
+            </div>
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L26">@dummy_scenario_commentary</a>
+            </div>
+            <div class="scenario-info">
+              <div class="scenario-name" id="f1-s5" onclick="expand_this_only(this)">Scenario: Dummy Scenario Commentary</div>
+              <div class="scenario-duration">Scenario duration: 0.00s</div>
+            </div>
+          </div>
+          <div class="scenario-capsule passed " id="f1-s5-c">
+            <div class="step-capsule passed ">
+              <div class="step-status">PASS</div>
+              <div class="step-decorator">
+                <b><i>* </i></b>
+                <span>Dummy pass</span>
+              </div>
+              <div class="step-duration">(0.00s)</div>
+              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
+            </div>
+            <div class="embeds"></div>
+            <pre class="step-capsule commentary ">This field is generated from decorator 'Commentary'
+Where you insert text and override step to not print its decorator.
+The text will get printed and will be seen, as you can see.</pre>
+            <div class="embeds"></div>
+            <div class="step-capsule passed ">
+              <div class="step-status">PASS</div>
+              <div class="step-decorator">
+                <b><i>* </i></b>
+                <span>Dummy pass</span>
+              </div>
+              <div class="step-duration">(0.00s)</div>
+              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
+            </div>
+            <div class="embeds"></div>
+          </div>
+        </section>
+        <section class="scenario-filter-container passed" id="f1-s6">
+          <div class="scenario-header passed " id="f1-s6-h">
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L38">@dummy_feature</a>
+            </div>
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L38">@dummy_scenario_table_and_text</a>
+            </div>
+            <div class="scenario-info">
+              <div class="scenario-name" id="f1-s6" onclick="expand_this_only(this)">Scenario: Dummy Scenario Table and Text</div>
+              <div class="scenario-duration">Scenario duration: 0.00s</div>
+            </div>
+          </div>
+          <div class="scenario-capsule passed " id="f1-s6-c">
+            <div class="step-capsule passed ">
+              <div class="step-status">PASS</div>
+              <div class="step-decorator">
+                <b><i>* </i></b>
+                <span>Dummy pass</span>
+              </div>
+              <div class="step-duration">(0.00s)</div>
+              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
+            </div>
+            <div class="embeds"></div>
+            <div class="step-capsule passed ">
+              <div class="step-status">PASS</div>
+              <div class="step-decorator">
+                <b><i>* </i></b>
+                <span>Table Example</span>
+              </div>
+              <div class="step-duration">(0.00s)</div>
+              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L69">features/steps/steps.py:69</a>
+            </div>
+            <table class="table">
+              <thead onclick="toggle_hash('table_0')">
+                <tr>
+                  <th>Field</th>
+                  <th>Data</th>
+                </tr>
+              </thead>
+              <tbody class="" id="table_0">
+                <tr>
+                  <td>Number</td>
+                  <td>dummy_data</td>
+                </tr>
+                <tr>
+                  <td>Number_1</td>
+                  <td>dummy_data_1</td>
+                </tr>
+                <tr>
+                  <td>Number_2</td>
+                  <td>dummy_data_2</td>
+                </tr>
+                <tr>
+                  <td>Number_3</td>
+                  <td>dummy_data_3</td>
+                </tr>
+                <tr>
+                  <td>Number_3</td>
+                  <td>dummy_data_4</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="embeds"></div>
+            <div class="step-capsule passed ">
+              <div class="step-status">PASS</div>
+              <div class="step-decorator">
+                <b><i>* </i></b>
+                <span>Dummy pass</span>
+              </div>
+              <div class="step-duration">(0.00s)</div>
+              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
+            </div>
+            <div class="embeds"></div>
+            <div class="step-capsule passed ">
+              <div class="step-status">PASS</div>
+              <div class="step-decorator">
+                <b><i>* </i></b>
+                <span>Text Example</span>
+              </div>
+              <div class="step-duration">(0.00s)</div>
+              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L87">features/steps/steps.py:87</a>
+            </div>
+            <table class="table">
+              <tbody class="" id="table_1">
+                <tr>
+                  <td>Hello World</td>
+                </tr>
+                <tr>
+                  <td>Hello World Again</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="embeds"></div>
+            <div class="step-capsule passed ">
+              <div class="step-status">PASS</div>
+              <div class="step-decorator">
+                <b><i>* </i></b>
+                <span>Dummy pass</span>
+              </div>
+              <div class="step-duration">(0.00s)</div>
+              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
+            </div>
+            <div class="embeds"></div>
+          </div>
+        </section>
+        <section class="scenario-filter-container failed" id="f1-s7">
+          <div class="scenario-header failed " id="f1-s7-h">
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L57">@dummy_feature</a>
+            </div>
+            <div class="scenario-tags">
+              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L57">@dummy_scenario_fail</a>
+            </div>
+            <div class="scenario-info">
+              <div class="scenario-name" id="f1-s7" onclick="expand_this_only(this)">Scenario: Dummy Scenario Fail</div>
+              <div class="scenario-duration">Scenario duration: 0.00s</div>
+            </div>
+          </div>
+          <div class="scenario-capsule failed " id="f1-s7-c">
+            <div class="step-capsule failed ">
+              <div class="step-status">FAIL</div>
+              <div class="step-decorator">
+                <b><i>* </i></b>
+                <span>Dummy fail</span>
+              </div>
+              <div class="step-duration">(0.00s)</div>
+              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L21">features/steps/steps.py:21</a>
+            </div>
+            <div class="embeds">
+              <div class="messages">
+                <div class="embed-capsule">
+                  <div class="embed-button " id="embed_button_4b57" onclick="toggle_hash('4b57')">Error Message</div>
+                  <pre class="embed-content " id="embed_4b57"><span mime="text">Assertion Failed: This test always fails.</span></pre>
+                </div>
+              </div>
+              <div class="messages">
+                <div class="embed-capsule">
+                  <div class="embed-button " id="embed_button_5bf9" onclick="toggle_hash('5bf9')">Error Traceback</div>
+                  <pre class="embed-content " id="embed_5bf9"><span mime="text">Traceback (most recent call last):
+  File &quot;/usr/local/lib/python3.12/site-packages/behave/model.py&quot;, line 1329, in run
+    match.run(runner.context)
+  File &quot;/usr/local/lib/python3.12/site-packages/behave/matchers.py&quot;, line 98, in run
+    self.func(context, *args, **kwargs)
+  File &quot;features/steps/steps.py&quot;, line 31, in dummy_fail
+    raise AssertionError(error_message)
+AssertionError: This test always fails.
+</span></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+    <div class="return-to-the-top-dummy-div">
+      <span class="return-button" id="return_to_the_top_button" onclick="return_to_the_top()">Return to the Top</span>
+    </div>
+  </body>
+</html>

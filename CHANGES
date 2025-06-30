@@ -1,3 +1,11 @@
+behave-html-pretty-formatter 1.14
+=================================
+Adding Return to the Top button.
+Simplifying contrast switching. Fixing Issue #32
+Updating README with current page design and latest features.
+Enabling GitHub Pages to let users try a live example of a generated page.
+
+
 behave-html-pretty-formatter 1.13
 =================================
 Adding Filtering Options to Feature's Summary and Global Summary.
@@ -5,7 +13,7 @@ Adding Filtering Options to Feature's Summary and Global Summary.
 
 behave-html-pretty-formatter 1.12.7
 ===================================
-Fix hook_error status of step not embeddng exception.
+Fix hook_error status of step not embedding exception.
 
 
 behave-html-pretty-formatter 1.12.6
@@ -98,7 +106,7 @@ Support embed filename change
 
 behave-html-pretty-formatter 1.9.2
 ==================================
-Replace invalid data when embeding text files. Fixes #42
+Replace invalid data when embedding text files. Fixes #42
 Summary timestamps: show one of them always. Fixes #45
 
 
@@ -160,7 +168,7 @@ Support HTML and markdown mime type in embed.
 
 behave-html-pretty-formatter 1.3
 ================================
-Add additional info in summarry.
+Add additional info in summary.
 
 
 behave-html-pretty-formatter 1.2
