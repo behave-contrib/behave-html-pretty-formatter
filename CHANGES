@@ -1,3 +1,8 @@
+behave-html-pretty-formatter 1.14.2
+===================================
+Respect encoding inherited from behave.
+
+
 behave-html-pretty-formatter 1.14.1
 ===================================
 Hotfix - font off-center, switching sans-serif to the front.
