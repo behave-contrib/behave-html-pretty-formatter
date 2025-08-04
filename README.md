@@ -22,7 +22,6 @@ python3 -m pip install behave-html-pretty-formatter
 ```
 
 [![PyPI version](https://img.shields.io/pypi/v/behave-html-pretty-formatter.svg?style=flat)](https://pypi.org/project/behave-html-pretty-formatter/)
-[![PyPI downloads](https://img.shields.io/pypi/dm/behave-html-pretty-formatter.svg?style=flat)](https://pypi.org/project/behave-html-pretty-formatter/)
 
 ## Usage
 
