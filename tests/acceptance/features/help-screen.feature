@@ -14,7 +14,7 @@ Feature: List HTML formatter among the available formatters
     Then it should pass
     And the command output should contain:
       """
-      AVAILABLE FORMATTERS:
+      Available formatters:
         html-pretty    Pretty HTML Formatter
         json           JSON dump of test run
       """
