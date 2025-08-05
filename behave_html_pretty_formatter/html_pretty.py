@@ -1735,7 +1735,10 @@ class PrettyHTMLFormatter(Formatter):
             behave_encoding = self.stream_opener.encoding
 
             # Set content and http-equiv - taken from the base html formatter.
-            meta(content=f"text/html;charset={behave_encoding}", http_equiv="content-type")
+            meta(
+                content=f"text/html;charset={behave_encoding}",
+                http_equiv="content-type",
+            )
 
             # Load and insert css theme.
             css_fname = "behave.css" if self.pretty_output else "behave.min.css"
