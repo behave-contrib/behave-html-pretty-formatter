@@ -330,6 +330,7 @@ pre * {
   margin-top: 0;
   margin-bottom: 0;
   color: var(--strong-color);
+  background: var(--feature-bg);
 }
 
 .scenario-capsule:last-child {
@@ -1257,7 +1258,7 @@ function return_to_the_top() {
     <section class="feature-filter-container failed" id="f1">
       <div class="feature-title flex-gap" id="f1">
         <span>Feature: Dummy Feature</span>
-        <span class="feature-started">Started: 24-06-2025 16:46:06 (1750776366)</span>
+        <span class="feature-started">Started: 15-08-2025 13:57:23 (1755259043)</span>
         <span class="button flex-left-space" data-next-value="dark" data-value="auto" id="dark_mode_toggle" onclick="toggle_dark_mode()">Dark mode</span>
         <span class="button" id="high_contrast" onclick="toggle_hash('high_contrast')">High contrast toggle</span>
         <span class="button" onclick="toggle_hash('summary-f1')">Summary</span>
@@ -1268,7 +1269,7 @@ function return_to_the_top() {
           <div class="feature-summary-row failed">Failed: 1</div>
           <div class="feature-summary-row undefined">Undefined: 1</div>
           <div class="feature-summary-row skipped">Skipped: 1</div>
-          <div class="feature-summary-row">Scenarios Filter:
+          <div class="feature-summary-row">Scenarios Filter: 
             <label class="global-summary-status passed">
               <input id="scenario-filter-f1" onchange="filter_scenarios_by_status(this)" type="checkbox" value="passed">passed
             </label>
@@ -1284,9 +1285,9 @@ function return_to_the_top() {
           </div>
         </div>
         <div class="feature-summary-stats flex-left-space">
-          <div class="feature-summary-row">Started: 24-06-2025 16:46:06 (1750776366)</div>
-          <div class="feature-summary-row">Duration: 4.53</div>
-          <div class="feature-summary-row">Finished: 24-06-2025 16:46:10 (1750776370)</div>
+          <div class="feature-summary-row">Started: 15-08-2025 13:57:23 (1755259043)</div>
+          <div class="feature-summary-row">Duration: 0.00</div>
+          <div class="feature-summary-row">Finished: 15-08-2025 13:57:23 (1755259043)</div>
         </div>
         <div class="feature-summary-stats">
           <span class="button display-block" onclick="expander('expand_all', this)">Expand All</span>
@@ -1298,13 +1299,13 @@ function return_to_the_top() {
         <section class="scenario-filter-container passed" id="f1-s1">
           <div class="scenario-header passed " id="f1-s1-h">
             <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L6">@dummy_feature</a>
+              <span>@dummy_feature</span>
             </div>
             <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L6">@dummy_scenario_pass</a>
+              <span>@dummy_scenario_pass_pseudo_steps</span>
             </div>
             <div class="scenario-info">
-              <div class="scenario-name" id="f1-s1" onclick="expand_this_only(this)">Scenario: Dummy Scenario Pass</div>
+              <div class="scenario-name" id="f1-s1" onclick="expand_this_only(this)">Scenario: Dummy Scenario Pass Pseudo Steps</div>
               <div class="scenario-duration">Scenario duration: 0.00s</div>
             </div>
           </div>
@@ -1312,36 +1313,10 @@ function return_to_the_top() {
             <div class="step-capsule passed ">
               <div class="step-status">PASS</div>
               <div class="step-decorator">
-                <b><i>* </i></b>
-                <span>Dummy pass</span>
-              </div>
-              <div class="step-duration">(0.00s)</div>
-              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
-            </div>
-            <div class="embeds"></div>
-          </div>
-        </section>
-        <section class="scenario-filter-container passed" id="f1-s2">
-          <div class="scenario-header passed " id="f1-s2-h">
-            <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L11">@dummy_feature</a>
-            </div>
-            <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L11">@dummy_scenario_pass_pseudo_steps</a>
-            </div>
-            <div class="scenario-info">
-              <div class="scenario-name" id="f1-s2" onclick="expand_this_only(this)">Scenario: Dummy Scenario Pass Pseudo Steps</div>
-              <div class="scenario-duration">Scenario duration: 0.00s</div>
-            </div>
-          </div>
-          <div class="scenario-capsule passed " id="f1-s2-c">
-            <div class="step-capsule passed ">
-              <div class="step-status">PASS</div>
-              <div class="step-decorator">
                 <b><i>Before </i></b>
                 <span>scenario</span>
               </div>
-              <div class="step-duration">(1.00s)</div>
+              <div class="step-duration">(0.00s)</div>
               <span class="flex-left-space"></span>
             </div>
             <div class="embeds"></div>
@@ -1352,7 +1327,7 @@ function return_to_the_top() {
                 <span>Dummy pass</span>
               </div>
               <div class="step-duration">(0.00s)</div>
-              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
+              <span class="flex-left-space">features/steps/steps.py:9</span>
             </div>
             <div class="embeds"></div>
             <div class="step-capsule passed margin-top">
@@ -1361,8 +1336,34 @@ function return_to_the_top() {
                 <b><i>After </i></b>
                 <span>scenario</span>
               </div>
-              <div class="step-duration">(0.31s)</div>
+              <div class="step-duration">(0.00s)</div>
               <span class="flex-left-space"></span>
+            </div>
+            <div class="embeds"></div>
+          </div>
+        </section>
+        <section class="scenario-filter-container passed" id="f1-s2">
+          <div class="scenario-header passed " id="f1-s2-h">
+            <div class="scenario-tags">
+              <span>@dummy_feature</span>
+            </div>
+            <div class="scenario-tags">
+              <span>@dummy_scenario_pass</span>
+            </div>
+            <div class="scenario-info">
+              <div class="scenario-name" id="f1-s2" onclick="expand_this_only(this)">Scenario: Dummy Scenario Pass</div>
+              <div class="scenario-duration">Scenario duration: 0.00s</div>
+            </div>
+          </div>
+          <div class="scenario-capsule passed " id="f1-s2-c">
+            <div class="step-capsule passed ">
+              <div class="step-status">PASS</div>
+              <div class="step-decorator">
+                <b><i>* </i></b>
+                <span>Dummy pass</span>
+              </div>
+              <div class="step-duration">(0.00s)</div>
+              <span class="flex-left-space">features/steps/steps.py:9</span>
             </div>
             <div class="embeds"></div>
           </div>
@@ -1370,10 +1371,10 @@ function return_to_the_top() {
         <section class="scenario-filter-container undefined" id="f1-s3">
           <div class="scenario-header undefined " id="f1-s3-h">
             <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L16">@dummy_feature</a>
+              <span>@dummy_feature</span>
             </div>
             <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L16">@dummy_scenario_undefined</a>
+              <span>@dummy_scenario_undefined</span>
             </div>
             <div class="scenario-info">
               <div class="scenario-name" id="f1-s3" onclick="expand_this_only(this)">Scenario: Dummy Scenario Undefined</div>
@@ -1393,13 +1394,13 @@ function return_to_the_top() {
             <div class="embeds">
               <div class="messages">
                 <div class="embed-capsule">
-                  <div class="embed-button " id="embed_button_24a8" onclick="toggle_hash('24a8')">Error Message</div>
-                  <pre class="embed-content " id="embed_24a8"><span mime="text">
+                  <div class="embed-button " id="embed_button_395a" onclick="toggle_hash('395a')">Error Message</div>
+                  <pre class="embed-content " id="embed_395a"><span mime="text">
 You can implement step definitions for undefined steps with these snippets:
 
 @given(u'Dummy undefined')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Given Dummy undefined')
+    raise StepNotImplementedError(u'Given Dummy undefined')
 
 </span></pre>
                 </div>
@@ -1410,10 +1411,10 @@ def step_impl(context):
         <section class="scenario-filter-container skipped" id="f1-s4">
           <div class="scenario-header skipped " id="f1-s4-h">
             <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L21">@dummy_feature</a>
+              <span>@dummy_feature</span>
             </div>
             <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L21">@dummy_scenario_skip</a>
+              <span>@dummy_scenario_skip</span>
             </div>
             <div class="scenario-info">
               <div class="scenario-name" id="f1-s4" onclick="expand_this_only(this)">Scenario: Dummy Scenario Skip</div>
@@ -1428,7 +1429,7 @@ def step_impl(context):
                 <span>Dummy skip</span>
               </div>
               <div class="step-duration">(0.00s)</div>
-              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L34">features/steps/steps.py:34</a>
+              <span class="flex-left-space">features/steps/steps.py:34</span>
             </div>
             <div class="embeds"></div>
           </div>
@@ -1436,10 +1437,10 @@ def step_impl(context):
         <section class="scenario-filter-container passed" id="f1-s5">
           <div class="scenario-header passed " id="f1-s5-h">
             <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L26">@dummy_feature</a>
+              <span>@dummy_feature</span>
             </div>
             <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L26">@dummy_scenario_commentary</a>
+              <span>@dummy_scenario_commentary</span>
             </div>
             <div class="scenario-info">
               <div class="scenario-name" id="f1-s5" onclick="expand_this_only(this)">Scenario: Dummy Scenario Commentary</div>
@@ -1454,7 +1455,7 @@ def step_impl(context):
                 <span>Dummy pass</span>
               </div>
               <div class="step-duration">(0.00s)</div>
-              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
+              <span class="flex-left-space">features/steps/steps.py:9</span>
             </div>
             <div class="embeds"></div>
             <pre class="step-capsule commentary ">This field is generated from decorator 'Commentary'
@@ -1468,7 +1469,7 @@ The text will get printed and will be seen, as you can see.</pre>
                 <span>Dummy pass</span>
               </div>
               <div class="step-duration">(0.00s)</div>
-              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
+              <span class="flex-left-space">features/steps/steps.py:9</span>
             </div>
             <div class="embeds"></div>
           </div>
@@ -1476,10 +1477,10 @@ The text will get printed and will be seen, as you can see.</pre>
         <section class="scenario-filter-container passed" id="f1-s6">
           <div class="scenario-header passed " id="f1-s6-h">
             <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L38">@dummy_feature</a>
+              <span>@dummy_feature</span>
             </div>
             <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L38">@dummy_scenario_table_and_text</a>
+              <span>@dummy_scenario_table_and_text</span>
             </div>
             <div class="scenario-info">
               <div class="scenario-name" id="f1-s6" onclick="expand_this_only(this)">Scenario: Dummy Scenario Table and Text</div>
@@ -1494,7 +1495,7 @@ The text will get printed and will be seen, as you can see.</pre>
                 <span>Dummy pass</span>
               </div>
               <div class="step-duration">(0.00s)</div>
-              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
+              <span class="flex-left-space">features/steps/steps.py:9</span>
             </div>
             <div class="embeds"></div>
             <div class="step-capsule passed ">
@@ -1504,7 +1505,7 @@ The text will get printed and will be seen, as you can see.</pre>
                 <span>Table Example</span>
               </div>
               <div class="step-duration">(0.00s)</div>
-              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L69">features/steps/steps.py:69</a>
+              <span class="flex-left-space">features/steps/steps.py:69</span>
             </div>
             <table class="table">
               <thead onclick="toggle_hash('table_0')">
@@ -1544,7 +1545,7 @@ The text will get printed and will be seen, as you can see.</pre>
                 <span>Dummy pass</span>
               </div>
               <div class="step-duration">(0.00s)</div>
-              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
+              <span class="flex-left-space">features/steps/steps.py:9</span>
             </div>
             <div class="embeds"></div>
             <div class="step-capsule passed ">
@@ -1554,7 +1555,7 @@ The text will get printed and will be seen, as you can see.</pre>
                 <span>Text Example</span>
               </div>
               <div class="step-duration">(0.00s)</div>
-              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L87">features/steps/steps.py:87</a>
+              <span class="flex-left-space">features/steps/steps.py:87</span>
             </div>
             <table class="table">
               <tbody class="" id="table_1">
@@ -1574,7 +1575,7 @@ The text will get printed and will be seen, as you can see.</pre>
                 <span>Dummy pass</span>
               </div>
               <div class="step-duration">(0.00s)</div>
-              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L9">features/steps/steps.py:9</a>
+              <span class="flex-left-space">features/steps/steps.py:9</span>
             </div>
             <div class="embeds"></div>
           </div>
@@ -1582,10 +1583,10 @@ The text will get printed and will be seen, as you can see.</pre>
         <section class="scenario-filter-container failed" id="f1-s7">
           <div class="scenario-header failed " id="f1-s7-h">
             <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L57">@dummy_feature</a>
+              <span>@dummy_feature</span>
             </div>
             <div class="scenario-tags">
-              <a href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/scenarios/00_dummy.feature#L57">@dummy_scenario_fail</a>
+              <span>@dummy_scenario_fail</span>
             </div>
             <div class="scenario-info">
               <div class="scenario-name" id="f1-s7" onclick="expand_this_only(this)">Scenario: Dummy Scenario Fail</div>
@@ -1600,22 +1601,22 @@ The text will get printed and will be seen, as you can see.</pre>
                 <span>Dummy fail</span>
               </div>
               <div class="step-duration">(0.00s)</div>
-              <a class="flex-left-space" href="https://github.com/behave-contrib/behave-html-pretty-formatter/-/tree/149174124df96aac55233f8a86660b2cee1eb8c5/features/steps/steps.py#L21">features/steps/steps.py:21</a>
+              <span class="flex-left-space">features/steps/steps.py:21</span>
             </div>
             <div class="embeds">
               <div class="messages">
                 <div class="embed-capsule">
-                  <div class="embed-button " id="embed_button_4b57" onclick="toggle_hash('4b57')">Error Message</div>
-                  <pre class="embed-content " id="embed_4b57"><span mime="text">Assertion Failed: This test always fails.</span></pre>
+                  <div class="embed-button " id="embed_button_1511" onclick="toggle_hash('1511')">Error Message</div>
+                  <pre class="embed-content " id="embed_1511"><span mime="text">ASSERT FAILED: This test always fails.</span></pre>
                 </div>
               </div>
               <div class="messages">
                 <div class="embed-capsule">
-                  <div class="embed-button " id="embed_button_5bf9" onclick="toggle_hash('5bf9')">Error Traceback</div>
-                  <pre class="embed-content " id="embed_5bf9"><span mime="text">Traceback (most recent call last):
-  File &quot;/usr/local/lib/python3.12/site-packages/behave/model.py&quot;, line 1329, in run
+                  <div class="embed-button " id="embed_button_9ccb" onclick="toggle_hash('9ccb')">Error Traceback</div>
+                  <pre class="embed-content " id="embed_9ccb"><span mime="text">Traceback (most recent call last):
+  File &quot;/usr/local/lib/python3.12/site-packages/behave/model.py&quot;, line 1991, in run
     match.run(runner.context)
-  File &quot;/usr/local/lib/python3.12/site-packages/behave/matchers.py&quot;, line 98, in run
+  File &quot;/usr/local/lib/python3.12/site-packages/behave/matchers.py&quot;, line 105, in run
     self.func(context, *args, **kwargs)
   File &quot;features/steps/steps.py&quot;, line 31, in dummy_fail
     raise AssertionError(error_message)

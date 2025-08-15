@@ -1,14 +1,13 @@
 @dummy_feature
 Feature: Dummy Feature
 
-
-  @dummy_scenario_pass
-  Scenario: Dummy Scenario Pass
+  @dummy_scenario_pass_pseudo_steps
+  Scenario: Dummy Scenario Pass Pseudo Steps
     * Dummy pass
 
 
-  @dummy_scenario_pass_pseudo_steps
-  Scenario: Dummy Scenario Pass Pseudo Steps
+  @dummy_scenario_pass
+  Scenario: Dummy Scenario Pass
     * Dummy pass
 
 
