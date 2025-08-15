@@ -37,7 +37,7 @@ Feature: Dummy Feature
   @dummy_scenario_table_and_text
   Scenario: Dummy Scenario Table and Text
     * Dummy pass
-    * Table Example:
+    * Table Example
       | Field    | Data         |
       | Number   | dummy_data   |
       | Number_1 | dummy_data_1 |
@@ -45,7 +45,7 @@ Feature: Dummy Feature
       | Number_3 | dummy_data_3 |
       | Number_3 | dummy_data_4 |
     * Dummy pass
-    * Text Example:
+    * Text Example
       """
       Hello World
       Hello World Again
