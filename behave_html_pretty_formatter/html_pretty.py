@@ -1155,7 +1155,7 @@ class PrettyHTMLFormatter(Formatter):
     feature_counter = 0
     scenario_counter = 0
 
-    def __init__(self, stream, config):
+    def __init__(self, stream, config, _late_registration_feature=None):
         super().__init__(stream, config)
 
         self.features = []
@@ -1246,6 +1246,10 @@ class PrettyHTMLFormatter(Formatter):
             if key.startswith(additional_info_path):
                 short_key = key.replace(additional_info_path, "")
                 self.additional_info[short_key] = item
+
+        # In case of custom registration in before_scenario.
+        if _late_registration_feature:
+            self.feature(_late_registration_feature)
 
         atexit.register(self._force_close)
 
