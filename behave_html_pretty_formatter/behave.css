@@ -325,6 +325,7 @@ pre * {
   margin-top: 0;
   margin-bottom: 0;
   color: var(--strong-color);
+  background: var(--feature-bg);
 }
 
 .scenario-capsule:last-child {
