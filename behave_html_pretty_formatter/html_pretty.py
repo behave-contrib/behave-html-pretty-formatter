@@ -82,7 +82,6 @@ class Feature:
         self.scenario_finished = True
         self.scenario_begin_timestamp = time.time()
         self.before_scenario_duration = 0.0
-        self.before_scenario_status = Status.skipped
 
     def add_background(self, background):
         """
@@ -139,11 +138,13 @@ class Feature:
         """
         Sets status and duration of before scenario pseudo step.
         """
+        self.before_scenario_duration = time.time() - self.scenario_begin_timestamp
         _scenario = self.scenarios[-1]
         _scenario.pseudo_step_id = 1
         _step = _scenario.before_scenario_step
-        _step.duration = time.time() - self.scenario_begin_timestamp
-        _step.status = Status.from_name(status)
+        if _step is not None:
+            _step.duration = self.before_scenario_duration
+            _step.status = Status.from_name(status)
 
     def after_scenario_finish(self, status):
         """
