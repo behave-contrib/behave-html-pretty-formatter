@@ -108,8 +108,7 @@ extend-ignore = []
 [tool.ruff.lint.per-file-ignores]
 "behave_html_pretty_formatter/__init__.py" = ["F401"]
 "behave_html_pretty_formatter/html_pretty.py" = ["DTZ005", "PLR0913", "SIM102", "SIM117", "C901"]
-"tests/*.py" = ["S101"]
-"tests/acceptance/steps/*.py" = ["F821"]
-
+"tests/acceptance/steps/*.py" = ["F821", "S101"]
+"tests/formatter_features/features/steps/*.py" = ["F821", "S101"]
 [tool.setuptools.packages.find]
 namespaces = false
