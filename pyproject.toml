@@ -101,14 +101,14 @@ color = false
 extend-exclude = "behave4cmd0"
 
 [tool.ruff]
-extend-exclude = ["tests/acceptance/steps/behave4cmd0"]
+extend-exclude = ["behave4cmd0"]
 extend-select = ["B", "BLE", "C4", "C90", "COM", "DJ", "DTZ", "EM", "G", "I", "N", "PIE", "PL", "PT", "PTH", "R", "S", "SIM", "T10", "TID", "W", "YTT"]
 extend-ignore = []
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "behave_html_pretty_formatter/__init__.py" = ["F401"]
 "behave_html_pretty_formatter/html_pretty.py" = ["DTZ005", "PLR0913", "SIM102", "SIM117", "C901"]
-"tests/**/*.py" = ["S101"]
+"tests/*.py" = ["S101"]
 "tests/acceptance/steps/*.py" = ["F821"]
 
 [tool.setuptools.packages.find]
