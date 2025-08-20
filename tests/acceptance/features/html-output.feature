@@ -5,42 +5,53 @@ Feature: Make behave generate Pretty HTML as output
   So that I can ensure integration and basic functionality.
 
   Scenario: Run behave with Pretty HTML Formatter
-    Given a file named "behave.ini" with:
+    Given a file named "behave.ini" with
       """
       [behave.formatters]
       html-pretty = behave_html_pretty_formatter:PrettyHTMLFormatter
       """
+    And a file named "features/steps/use_behave4cmd0_steps.py" with
+      """
+      from behave4cmd0 import passing_steps
+      """
+    And a file named "features/passing.feature" with
+      """
+      Feature: Passing
+        Scenario: One
+          Given a step passes
+          When another step passes
+      """
     When I run "behave --format html-pretty --dry-run"
     Then it should pass
-    And the command output should contain:
+    And the command output should contain
       """
       <!DOCTYPE html>
       <html>
       """
-    And the command output should contain:
+    And the command output should contain
       """
       <head>
       <title>Test Suite Reporter</title>
       """
-    And the command output should contain:
+    And the command output should contain
       """
       <meta content="text/html;charset=utf-8" http-equiv="content-type">
       """
-    And the command output should contain:
+    And the command output should contain
       """
       <style rel="stylesheet">
       """
-    And the command output should contain:
+    And the command output should contain
       """
       <script type="text/javascript">
       """
-    And the command output should contain:
+    And the command output should contain
       """
       </script>
       </head>
       <body onload="body_onload();">
       """
-    And the command output should contain:
+    And the command output should contain
       """
       </body>
       </html>

@@ -82,7 +82,6 @@ class Feature:
         self.scenario_finished = True
         self.scenario_begin_timestamp = time.time()
         self.before_scenario_duration = 0.0
-        self.before_scenario_status = Status.skipped
 
     def add_background(self, background):
         """
@@ -104,7 +103,6 @@ class Feature:
         """
         Create new scenario in feature based on behave scenario object
         """
-
         # React to fail in before_scenario, do not fail on no 'run' in scenario.
         if not hasattr(scenario, "run"):
             self._scenario_run_id = 0
@@ -121,13 +119,8 @@ class Feature:
         for embed_data in self.to_embed:
             _scenario.embed(embed_data)
         self.to_embed = []
-        # Stop embedding to before_scenario.
-        _scenario.pseudo_step_id = 1
-
-        if pseudo_steps:
-            _step = _scenario.before_scenario_step
-            _step.duration = self.before_scenario_duration
-            _step.status = self.before_scenario_status
+        # embed to before_scenario, since behave==1.3.0 the order of calls is reversed: add_scenario(), before_scenario_finish()
+        _scenario.pseudo_step_id = 0
 
         self.scenarios.append(_scenario)
         return _scenario
@@ -146,7 +139,12 @@ class Feature:
         Sets status and duration of before scenario pseudo step.
         """
         self.before_scenario_duration = time.time() - self.scenario_begin_timestamp
-        self.before_scenario_status = Status.from_name(status)
+        _scenario = self.scenarios[-1]
+        _scenario.pseudo_step_id = 1
+        _step = _scenario.before_scenario_step
+        if _step is not None:
+            _step.duration = self.before_scenario_duration
+            _step.status = Status.from_name(status)
 
     def after_scenario_finish(self, status):
         """
@@ -1157,7 +1155,7 @@ class PrettyHTMLFormatter(Formatter):
     feature_counter = 0
     scenario_counter = 0
 
-    def __init__(self, stream, config):
+    def __init__(self, stream, config, _late_registration_feature=None):
         super().__init__(stream, config)
 
         self.features = []
@@ -1248,6 +1246,10 @@ class PrettyHTMLFormatter(Formatter):
             if key.startswith(additional_info_path):
                 short_key = key.replace(additional_info_path, "")
                 self.additional_info[short_key] = item
+
+        # In case of custom registration in before_scenario.
+        if _late_registration_feature:
+            self.feature(_late_registration_feature)
 
         atexit.register(self._force_close)
 

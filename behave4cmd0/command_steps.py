@@ -195,7 +195,7 @@ def step_the_command_returncode_is_nonzero(context):
 @then("it should pass")
 def step_it_should_pass(context):
     assert_that(
-        context.command_result.returncode, equal_to(0), context.command_result.output
+        context.command_result.returncode, equal_to(0), context.command_result.output,
     )
 
 
@@ -222,7 +222,7 @@ def step_it_should_pass_with(context):
     assert context.text is not None, "ENSURE: multiline text is provided."
     step_command_output_should_contain(context)
     assert_that(
-        context.command_result.returncode, equal_to(0), context.command_result.output
+        context.command_result.returncode, equal_to(0), context.command_result.output,
     )
 
 
@@ -298,7 +298,7 @@ def step_command_output_should_contain_text_multiple_times(context, text, count)
     actual_output = context.command_result.output
     with on_assert_failed_print_details(actual_output, expected_text):
         textutil.assert_normtext_should_contain_multiple_times(
-            actual_output, expected_text, count
+            actual_output, expected_text, count,
         )
 
 

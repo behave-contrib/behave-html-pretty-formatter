@@ -10,8 +10,6 @@ This file provides setup for machine environment for our testing pipeline.
 import sys
 import traceback
 
-from qecore.sandbox import TestSandbox
-
 
 def before_all(context) -> None:
     """
@@ -20,20 +18,12 @@ def before_all(context) -> None:
 
     try:
 
-        context.sandbox = TestSandbox("dummy", context=context)
-
-        # Adds only noise to this example, turning it off.
-        context.sandbox.status_report = False
-        context.sandbox.change_title = False
-
-        context.dummy = context.sandbox.get_application(
-            name="dummy",
-            desktop_file_exists=False,
-        )
+        # ... various other actions ...
 
         for formatter in context._runner.formatters:
             if formatter.name == "html-pretty":
                 context.html_formatter = formatter
+                context.embed = context.html_formatter.embed
 
     except Exception as error:
         print(f"Environment error: before_all: {error}")
@@ -49,7 +39,8 @@ def before_scenario(context, scenario) -> None:
     """
 
     try:
-        context.sandbox.before_scenario(context, scenario)
+
+        # ... various other actions ...
 
         if "dummy_scenario_pass_pseudo_steps" in scenario.effective_tags:
             context.html_formatter.pseudo_steps = True
@@ -80,7 +71,8 @@ def after_scenario(context, scenario) -> None:
     """
 
     try:
-        context.sandbox.after_scenario(context, scenario)
+
+        # ... various other actions ...
 
         if "dummy_scenario_pass_pseudo_steps" in scenario.effective_tags:
 
