@@ -503,22 +503,26 @@ class Scenario:
         """
         Embeds error message and traceback.
         """
-        if not behave_obj.error_message:
+
+        err = behave_obj.error_message
+        if not err:
+            err = behave_obj.exception
+        if not err:
             return
         if self.reported_error:
-            if self.reported_error.data == behave_obj.error_message:
+            if self.reported_error.data == err:
                 return
-            if self.reported_error.data in behave_obj.error_message:
+            if self.reported_error.data in err:
                 # Do not update traceback, as behave saves only first traceback.
                 self.reported_error.set_data(
                     "text",
-                    behave_obj.error_message,
+                    err,
                     "Error Message",
                 )
                 return
-        self.reported_error = Embed("text", behave_obj.error_message, "Error Message")
+        self.reported_error = Embed("text", err, "Error Message")
         self.embed(self.reported_error)
-        if "Traceback" not in behave_obj.error_message:
+        if "Traceback" not in err:
             self.embed(
                 Embed(
                     "text",
@@ -634,8 +638,11 @@ class Step:
         if hasattr(Status, "hook_error") and self.status is Status.hook_error:
             self.status = Status.failed
 
+        if hasattr(Status, "error") and self.status is Status.error:
+            self.status = Status.failed
+
         # If the step has error message and step failed, set the error message.
-        if result.error_message and self.status is Status.failed:
+        if (result.error_message or result.exception) and self.status is Status.failed:
             self.scenario.report_error(result)
 
         # If the step is undefined use the behave function to provide
