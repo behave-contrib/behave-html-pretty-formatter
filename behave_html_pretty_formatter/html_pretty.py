@@ -254,13 +254,6 @@ class Feature:
                 with div(cls=f"feature-summary-stats {flex_left_space}"):
                     stats = self.get_feature_stats()
 
-                    statuses = [
-                        Status.passed,
-                        Status.failed,
-                        Status.undefined,
-                        Status.skipped,
-                    ]
-
                     for stat, value in stats.items():
                         div(
                             f"{stat}: {value}",
@@ -269,7 +262,7 @@ class Feature:
 
                     # Filter features.
                     with div("Scenarios Filter: ", cls="feature-summary-row"):
-                        for status in statuses:
+                        for status in EXPECTED_STATUSES:
 
                             # If there is a Status with zero counter, skip it.
                             if stats.get(status.name.capitalize(), 0) == 0:
