@@ -50,17 +50,27 @@ from dominate.tags import (
 )
 from dominate.util import raw
 
+# Constants for better maintainability
 DEFAULT_CAPTION_FOR_MIME_TYPE = {
     "video/webm": "Video",
     "image/png": "Screenshot",
     "text": "Data",
     "link": "Link",
 }
-
+EXPECTED_STATUSES = (
+    Status.passed,
+    Status.failed,
+    Status.skipped,
+    Status.undefined,
+)
+EMBED_COMPRESSION_THRESHOLD = 48 * 1024  # 48KB
+MAX_FILENAME_LENGTH = 256
+MIN_UUID_LENGTH = 8  # Reduced collision probability
+LINK_PAIR_SIZE = 2
 
 class Feature:
     """
-    Simplified behave feature used by PrettyHTMLFormatter
+    Simplified behave feature used by PrettyHTMLFormatter.
     """
 
     def __init__(self, feature, feature_counter):
@@ -330,7 +340,7 @@ class Feature:
 
 class Scenario:
     """
-    Simplified behaves's scenario.
+    Simplified behave scenario representation.
     """
 
     def __init__(self, scenario, feature, scenario_counter, pseudo_steps=False):
@@ -472,14 +482,9 @@ class Scenario:
         step = self.current_step
         step.add_result(result)
 
-        expected_statuses = (
-            Status.passed,
-            Status.failed,
-            Status.skipped,
-            Status.undefined,
-        )
 
-        if self.is_last_step or (result.status in expected_statuses):
+
+        if self.is_last_step or (result.status in EXPECTED_STATUSES):
             self.status = result.status
             self.duration = self._scenario.duration
 
@@ -634,11 +639,8 @@ class Step:
         self.status = result.status
         self.duration = result.duration
 
-        # Treat hook_error from upstream behave as failed
-        if hasattr(Status, "hook_error") and self.status is Status.hook_error:
-            self.status = Status.failed
-
-        if hasattr(Status, "error") and self.status is Status.error:
+        # Treat any error/hook_error/failure as error, for now there is no need to differentiate.
+        if Status.has_failed(self.status):
             self.status = Status.failed
 
         # If the step has error message and step failed, set the error message.
@@ -763,7 +765,7 @@ class Step:
 
         # Javascript will decompress data and render them, if small enough.
         if compress == "auto":
-            compress = len(data) > 48 * 1024
+            compress = len(data) > EMBED_COMPRESSION_THRESHOLD
 
         # Rule for embed_data.download_button as None - default value.
         if embed_data.download_button is None:
@@ -824,21 +826,31 @@ class Step:
 
             # Javascript will decompress data and render them, if small enough.
             if compress == "auto":
-                compress = len(data) > 48 * 1024
+                compress = len(data) > EMBED_COMPRESSION_THRESHOLD
 
             if compress:
-                show = len(data) < 1024 * 1024 or is_html
-                data = data.encode("utf-8")
-                data = gzip.compress(data)
+                # Performance optimization: limit what we show inline
+                max_inline_size = 1024 * 1024  # 1MB
+                show = len(data) < max_inline_size or is_html
 
-                data_base64 = base64.b64encode(data).decode("utf-8").replace("\n", "")
-                span(
-                    cls="to-render",
-                    data=data_base64,
-                    show=str(show).lower(),
-                    compressed=str(compress).lower(),
-                    mime=mime_type,
-                )
+                try:
+                    data_bytes = data.encode("utf-8")
+                    # compresslevel 0 - fastest, lowest compression
+                    # compresslevel 9 - slowest, biggest compression
+                    # Balance compression/speed with 6
+                    compressed_data = gzip.compress(data_bytes, compresslevel=6)
+                    data_base64 = base64.b64encode(compressed_data).decode("utf-8").replace("\n", "")
+
+                    span(
+                        cls="to-render",
+                        data=data_base64,
+                        show=str(show).lower(),
+                        compressed=str(compress).lower(),
+                        mime=mime_type,
+                    )
+                except (UnicodeEncodeError, MemoryError) as error:
+                    # Fallback for problematic data
+                    span(f"Data encoding error: {error}", mime="text/plain")
             elif is_html:
                 with span(mime=mime_type):
                     raw(data)
@@ -891,13 +903,11 @@ class Step:
                     else:
                         data = data.decode("utf-8")
 
-            except ValueError as error:
+            except (ValueError, OSError, UnicodeDecodeError) as error:
+                # Handle various file reading errors gracefully
                 mime_type = "text"
-                data = f"data removed: ValueError: '{error}'"
-
-            except FileNotFoundError as error:
-                mime_type = "text"
-                data = f"data removed: FileNotFoundError: '{error}'"
+                error_type = type(error).__name__
+                data = f"data removed: {error_type}: '{error}'"
 
         with div(cls="messages"), div(cls="embed-capsule"):
             # Embed Caption.
@@ -989,7 +999,7 @@ class Step:
         file_path = None
         # Do not try to check filename for long data.
         # Leads to OSError on some filesystems.
-        filename_len_limit = 256
+        filename_len_limit = MAX_FILENAME_LENGTH
 
         if isinstance(data, Path):
             file_path = data
@@ -1007,7 +1017,7 @@ class Step:
 
 class Embed:
     """
-    Encapsulates data to be embedded to the step.
+    Encapsulates data to be embedded in test steps.
     """
 
     count = 0
@@ -1024,10 +1034,10 @@ class Embed:
         filename=None,
         compress="auto",
     ):
-        # Generating unique ID.
-        self.uuid = str(uuid.uuid4())[:4]
+        # Generate unique ID with improved collision prevention.
+        self.uuid = str(uuid.uuid4()).replace('-', '')[:MIN_UUID_LENGTH]
         while self.uuid in Embed.uuids:
-            self.uuid = str(uuid.uuid4())[:4]
+            self.uuid = str(uuid.uuid4()).replace('-', '')[:MIN_UUID_LENGTH]
         Embed.uuids.add(self.uuid)
         self.set_data(mime_type, data, caption)
         self._fail_only = fail_only
@@ -1037,22 +1047,51 @@ class Embed:
 
     def set_data(self, mime_type, data, caption=None):
         """
-        Set data, mime_type and caption.
+        Set data, mime_type and caption with validation.
         """
+
+        # Validating mime_type.
+        if not isinstance(mime_type, str) or not mime_type:
+            # One option is to raise an exception - with no generated log.
+            #raise ValueError(mime_type_value_error_message)
+
+            # Another option is to let user know in their generated log.
+            self._mime_type = "text"
+            self._data = "mime_type must be a non-empty string"
+            self._caption = "Embed 'mime_type' validation fail"
+            return
+
+        # Check that link is in format: list of [link, label] pairs
+        if mime_type == "link":
+            parsed_link_data = []
+            for single_link in data:
+                if not isinstance(single_link, (list, tuple)) or len(single_link) != LINK_PAIR_SIZE:
+                    self._mime_type = "text"
+                    self._data = "Link mime_type 'data' must be a [link, label] pair"
+                    self._caption = "Embed 'mime_type' validation fail"
+                    return
+
+                link, label = single_link
+                parsed_link_data.append([str(link), str(label)])
+            data = parsed_link_data
+
         self._mime_type = mime_type
 
+        # Validating data.
         # Unexpected data passed with text mime type.
         if "text" in mime_type and not isinstance(data, str):
             data = str(data)
 
-        # Check that link is in format: set([link, label], ...)
-        if mime_type == "link":
-            new_data = []
-            for single_link in data:
-                link, label = single_link
-                new_data.append([link, label])
-            data = new_data
         self._data = data
+
+        # Validating caption.
+        if not (isinstance(caption, (str, None))):
+            # Let user know in their generated log an issue was detected.
+            self._mime_type = "text"
+            self._data = f"The 'caption' must be of type None or str, not '{type(caption)}'"
+            self._caption = "Embed 'caption' validation fail"
+            return
+
         self._caption = caption
 
     def set_fail_only(self, fail_only):
@@ -1139,7 +1178,7 @@ class Tag:
         """
         with div(cls="scenario-tags"):
             # Do not make links by default, this is handled on qecore
-            # side for links to bugzilla. Tags come with structure
+            # side for links to bugzilla or Jira. Tags come with structure
             # [<tag>, None] or [<tag>, <bugzilla_link/git_link>].
             if self.has_link():
                 a("@" + self.behave_tag, href=self._link)
@@ -1184,7 +1223,6 @@ class PrettyHTMLFormatter(Formatter):
         self.stream = self.open()
 
         config_path = f"behave.formatter.{self.name}"
-        additional_info_path = "behave.additional-info."
         additional_info_path = "behave.additional-info."
 
         self.pseudo_steps = self._str_to_bool(
@@ -1273,14 +1311,17 @@ class PrettyHTMLFormatter(Formatter):
         return "collapse" if collapse else ""
 
     def _str_to_bool(self, value):
-        accepted_values = str(["true", "false", "yes", "no", "0", "1"])
-        if value.lower() not in accepted_values:
-            value_error = (
-                f"Value '{value.lower()}' was not in correct format '{accepted_values}'"
-            )
+        """
+        Convert string configuration value to boolean.
+        """
+        value_lower = value.lower().strip()
+        accepted_values = ["true", "false", "yes", "no", "0", "1"]
+
+        if value_lower not in accepted_values:
+            value_error = f"Value '{value}' is not valid. Accepted values: {accepted_values}"
             raise ValueError(value_error)
 
-        return value.lower() in ["true", "yes", "1"]
+        return value_lower in ["true", "yes", "1"]
 
     def feature(self, feature):
         current_feature = self.current_feature
@@ -1566,16 +1607,10 @@ class PrettyHTMLFormatter(Formatter):
             cls=f"feature-summary-container flex-gap {collapse}",
         ):
             with div(cls="feature-summary-stats"):
-                statuses = [
-                    Status.passed,
-                    Status.failed,
-                    Status.undefined,
-                    Status.skipped,
-                ]
 
                 # Features Status with Filter.
                 with div("Features: ", cls="feature-summary-row"):
-                    for status in statuses:
+                    for status in EXPECTED_STATUSES:
 
                         # Status counter.
                         status_counter = feature_statuses.get(status.name.lower(), 0)
@@ -1604,7 +1639,7 @@ class PrettyHTMLFormatter(Formatter):
 
                 # Scenarios Status with Filter.
                 with div("Scenarios: ", cls="feature-summary-row"):
-                    for status in statuses:
+                    for status in EXPECTED_STATUSES:
 
                         # Status counter.
                         status_counter = scenario_statuses.get(status.name.lower(), 0)
