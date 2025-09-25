@@ -189,6 +189,11 @@ class Feature:
 
         for scenario in self.scenarios:
             status = scenario.status.name.capitalize()
+
+            # Count all possible errors as fails.
+            if scenario.status.has_failed():
+                status = "Failed"
+
             if status in stats:
                 stats[status] += 1
             else:
@@ -463,39 +468,42 @@ class Scenario:
         step = self.current_step
         step.location = str(match.location.filename) + ":" + str(match.location.line)
 
-    def add_result(self, result):
+    def add_result(self, behave_step):
         """
         Process information about executed step.
         """
 
         # If step is "undefined", match() is not called by behave.
-        if result.status == Status.undefined:
+        if behave_step.status == Status.undefined:
             self.match_id += 1
 
-        step = self.current_step
-        step.add_result(result)
+        current_step = self.current_step
+        current_step.add_result(behave_step)
 
+        if self.is_last_step or (behave_step.status in EXPECTED_STATUSES):
+            # Treat any error/hook_error/failure as error, for now there is no need to differentiate.
+            if Status.has_failed(behave_step.status):
+                self.status = Status.failed
+            else:
+                self.status = behave_step.status
 
-
-        if self.is_last_step or (result.status in EXPECTED_STATUSES):
-            self.status = result.status
             self.duration = self._scenario.duration
 
             # Check if feature status is already set
             if self.feature.status == Status.skipped:
-                self.feature.status = result.status
+                self.feature.status = self.status
 
             # Override feature status, if step is not "skipped" or "passed"
-            if result.status not in [Status.skipped, Status.passed]:
-                self.feature.status = result.status
+            if behave_step.status not in [Status.skipped, Status.passed]:
+                self.feature.status = self.status
 
         # Check if step execution finished.
         # Embed to after_scenario_step if pseudo_steps enabled.
-        if self.is_last_step or result.status != Status.passed:
+        if self.is_last_step or self.status != Status.passed:
             self.steps_finished = True
             self.steps_finished_timestamp = time.time()
 
-        return step
+        return behave_step
 
     def report_error(self, behave_obj):
         """
@@ -625,30 +633,30 @@ class Step:
         self.commentary_override = False
         self.margin_top = False
 
-    def add_result(self, result):
+    def add_result(self, behave_step):
         """
         Process result of the executed step.
         """
-        self.status = result.status
-        self.duration = result.duration
+        self.status = behave_step.status
+        self.duration = behave_step.duration
 
         # Treat any error/hook_error/failure as error, for now there is no need to differentiate.
         if Status.has_failed(self.status):
             self.status = Status.failed
 
         # If the step has error message and step failed, set the error message.
-        if (result.error_message or result.exception) and self.status is Status.failed:
-            self.scenario.report_error(result)
+        if (behave_step.error_message or behave_step.exception) and self.status is Status.failed:
+            self.scenario.report_error(behave_step)
 
         # If the step is undefined use the behave function to provide
         # information about it.
-        if result.status == Status.undefined:
+        if behave_step.status == Status.undefined:
             undefined_step_message = (
                 "\nYou can implement step definitions for undefined steps with "
             )
             undefined_step_message += "these snippets:\n\n"
             undefined_step_message += "\n".join(
-                make_undefined_step_snippets(undefined_steps=[result]),
+                make_undefined_step_snippets(undefined_steps=[behave_step]),
             )
 
             self.embed(Embed("text", undefined_step_message, "Error Message"))
