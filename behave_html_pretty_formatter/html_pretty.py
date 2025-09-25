@@ -191,7 +191,8 @@ class Feature:
             status = scenario.status.name.capitalize()
 
             # Count all possible errors as fails.
-            if scenario.status.has_failed():
+            # Do not include Status.undefined, we want to see that one as is.
+            if scenario.status.has_failed() and not scenario.status.is_undefined():
                 status = "Failed"
 
             if status in stats:
@@ -482,7 +483,8 @@ class Scenario:
 
         if self.is_last_step or (behave_step.status in EXPECTED_STATUSES):
             # Treat any error/hook_error/failure as error, for now there is no need to differentiate.
-            if Status.has_failed(behave_step.status):
+            # Do not include Status.undefined, we want to see that one as is.
+            if Status.has_failed(behave_step.status) and not Status.is_undefined(behave_step.status):
                 self.status = Status.failed
             else:
                 self.status = behave_step.status
@@ -641,8 +643,11 @@ class Step:
         self.duration = behave_step.duration
 
         # Treat any error/hook_error/failure as error, for now there is no need to differentiate.
-        if Status.has_failed(self.status):
+        # Do not include Status.undefined, we want to see that one as is.
+        if Status.has_failed(behave_step.status) and not Status.is_undefined(behave_step.status):
             self.status = Status.failed
+        else:
+            self.status = behave_step.status
 
         # If the step has error message and step failed, set the error message.
         if (behave_step.error_message or behave_step.exception) and self.status is Status.failed:
