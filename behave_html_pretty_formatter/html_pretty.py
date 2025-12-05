@@ -486,7 +486,7 @@ class Scenario:
             # Treat any error/hook_error/failure as error, for now there is no need to differentiate.
             # Do not include Status.undefined, we want to see that one as is.
             if Status.has_failed(behave_step.status) and not Status.is_undefined(
-                behave_step.status
+                behave_step.status,
             ):
                 self.status = Status.failed
             else:
@@ -648,7 +648,7 @@ class Step:
         # Treat any error/hook_error/failure as error, for now there is no need to differentiate.
         # Do not include Status.undefined, we want to see that one as is.
         if Status.has_failed(behave_step.status) and not Status.is_undefined(
-            behave_step.status
+            behave_step.status,
         ):
             self.status = Status.failed
         else:
