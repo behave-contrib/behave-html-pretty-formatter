@@ -1,3 +1,12 @@
+behave-html-pretty-formatter 1.16
+=================================
+Improve readability.
+Using global status structure not local.
+Fixing bug in filter when exception is encountered.
+Fixing variable names.
+Fix bug introduced with usage on Status.has_failed. Undefined has to be separated.
+
+
 behave-html-pretty-formatter 1.15.1
 ===================================
 Fix not embedding error message if step is Status.error.
