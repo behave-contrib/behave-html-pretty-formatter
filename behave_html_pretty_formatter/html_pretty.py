@@ -68,6 +68,7 @@ MAX_FILENAME_LENGTH = 256
 MIN_UUID_LENGTH = 8  # Reduced collision probability
 LINK_PAIR_SIZE = 2
 
+
 class Feature:
     """
     Simplified behave feature used by PrettyHTMLFormatter.
@@ -484,7 +485,9 @@ class Scenario:
         if self.is_last_step or (behave_step.status in EXPECTED_STATUSES):
             # Treat any error/hook_error/failure as error, for now there is no need to differentiate.
             # Do not include Status.undefined, we want to see that one as is.
-            if Status.has_failed(behave_step.status) and not Status.is_undefined(behave_step.status):
+            if Status.has_failed(behave_step.status) and not Status.is_undefined(
+                behave_step.status
+            ):
                 self.status = Status.failed
             else:
                 self.status = behave_step.status
@@ -644,13 +647,17 @@ class Step:
 
         # Treat any error/hook_error/failure as error, for now there is no need to differentiate.
         # Do not include Status.undefined, we want to see that one as is.
-        if Status.has_failed(behave_step.status) and not Status.is_undefined(behave_step.status):
+        if Status.has_failed(behave_step.status) and not Status.is_undefined(
+            behave_step.status
+        ):
             self.status = Status.failed
         else:
             self.status = behave_step.status
 
         # If the step has error message and step failed, set the error message.
-        if (behave_step.error_message or behave_step.exception) and self.status is Status.failed:
+        if (
+            behave_step.error_message or behave_step.exception
+        ) and self.status is Status.failed:
             self.scenario.report_error(behave_step)
 
         # If the step is undefined use the behave function to provide
@@ -845,7 +852,11 @@ class Step:
                     # compresslevel 9 - slowest, biggest compression
                     # Balance compression/speed with 6
                     compressed_data = gzip.compress(data_bytes, compresslevel=6)
-                    data_base64 = base64.b64encode(compressed_data).decode("utf-8").replace("\n", "")
+                    data_base64 = (
+                        base64.b64encode(compressed_data)
+                        .decode("utf-8")
+                        .replace("\n", "")
+                    )
 
                     span(
                         cls="to-render",
@@ -1041,9 +1052,9 @@ class Embed:
         compress="auto",
     ):
         # Generate unique ID with improved collision prevention.
-        self.uuid = str(uuid.uuid4()).replace('-', '')[:MIN_UUID_LENGTH]
+        self.uuid = str(uuid.uuid4()).replace("-", "")[:MIN_UUID_LENGTH]
         while self.uuid in Embed.uuids:
-            self.uuid = str(uuid.uuid4()).replace('-', '')[:MIN_UUID_LENGTH]
+            self.uuid = str(uuid.uuid4()).replace("-", "")[:MIN_UUID_LENGTH]
         Embed.uuids.add(self.uuid)
         self.set_data(mime_type, data, caption)
         self._fail_only = fail_only
@@ -1059,7 +1070,7 @@ class Embed:
         # Validating mime_type.
         if not isinstance(mime_type, str) or not mime_type:
             # One option is to raise an exception - with no generated log.
-            #raise ValueError(mime_type_value_error_message)
+            # raise ValueError(mime_type_value_error_message)
 
             # Another option is to let user know in their generated log.
             self._mime_type = "text"
@@ -1071,7 +1082,10 @@ class Embed:
         if mime_type == "link":
             parsed_link_data = []
             for single_link in data:
-                if not isinstance(single_link, (list, tuple)) or len(single_link) != LINK_PAIR_SIZE:
+                if (
+                    not isinstance(single_link, (list, tuple))
+                    or len(single_link) != LINK_PAIR_SIZE
+                ):
                     self._mime_type = "text"
                     self._data = "Link mime_type 'data' must be a [link, label] pair"
                     self._caption = "Embed 'mime_type' validation fail"
@@ -1094,7 +1108,9 @@ class Embed:
         if not (isinstance(caption, (str, None))):
             # Let user know in their generated log an issue was detected.
             self._mime_type = "text"
-            self._data = f"The 'caption' must be of type None or str, not '{type(caption)}'"
+            self._data = (
+                f"The 'caption' must be of type None or str, not '{type(caption)}'"
+            )
             self._caption = "Embed 'caption' validation fail"
             return
 
@@ -1324,7 +1340,9 @@ class PrettyHTMLFormatter(Formatter):
         accepted_values = ["true", "false", "yes", "no", "0", "1"]
 
         if value_lower not in accepted_values:
-            value_error = f"Value '{value}' is not valid. Accepted values: {accepted_values}"
+            value_error = (
+                f"Value '{value}' is not valid. Accepted values: {accepted_values}"
+            )
             raise ValueError(value_error)
 
         return value_lower in ["true", "yes", "1"]
