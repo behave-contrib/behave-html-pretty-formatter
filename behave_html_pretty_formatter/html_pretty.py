@@ -270,7 +270,6 @@ class Feature:
                     # Filter features.
                     with div("Scenarios Filter: ", cls="feature-summary-row"):
                         for status in EXPECTED_STATUSES:
-
                             # If there is a Status with zero counter, skip it.
                             if stats.get(status.name.capitalize(), 0) == 0:
                                 continue
@@ -575,7 +574,6 @@ class Scenario:
             cls=f"scenario-filter-container {self.status.name}",
             id=f"f{self.feature.counter}-s{self.counter}",
         ):
-
             # Scenario header.
             with div(
                 cls=f"scenario-header {common_cls}",
@@ -962,7 +960,7 @@ class Step:
         with table(cls="table"):
             # Make a heading.
             with thead(
-                onclick="toggle_hash(" f"'table_{PrettyHTMLFormatter.table_number}')",
+                onclick=f"toggle_hash('table_{PrettyHTMLFormatter.table_number}')",
             ):
                 line = tr()
                 for heading in table_headings:
@@ -990,8 +988,7 @@ class Step:
         with table(cls="table"):
             if formatter.collapse_text:
                 with thead(
-                    onclick="toggle_hash("
-                    f"'table_{PrettyHTMLFormatter.table_number}')",
+                    onclick=f"toggle_hash('table_{PrettyHTMLFormatter.table_number}')",
                 ):
                     line = tr()
                     line += th("Text")
@@ -1336,6 +1333,8 @@ class PrettyHTMLFormatter(Formatter):
         """
         Convert string configuration value to boolean.
         """
+        if isinstance(value, bool):
+            return value
         value_lower = value.lower().strip()
         accepted_values = ["true", "false", "yes", "no", "0", "1"]
 
@@ -1631,11 +1630,9 @@ class PrettyHTMLFormatter(Formatter):
             cls=f"feature-summary-container flex-gap {collapse}",
         ):
             with div(cls="feature-summary-stats"):
-
                 # Features Status with Filter.
                 with div("Features: ", cls="feature-summary-row"):
                     for status in EXPECTED_STATUSES:
-
                         # Status counter.
                         status_counter = feature_statuses.get(status.name.lower(), 0)
 
@@ -1664,7 +1661,6 @@ class PrettyHTMLFormatter(Formatter):
                 # Scenarios Status with Filter.
                 with div("Scenarios: ", cls="feature-summary-row"):
                     for status in EXPECTED_STATUSES:
-
                         # Status counter.
                         status_counter = scenario_statuses.get(status.name.lower(), 0)
 
