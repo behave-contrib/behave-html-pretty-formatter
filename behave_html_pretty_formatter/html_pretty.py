@@ -1336,6 +1336,9 @@ class PrettyHTMLFormatter(Formatter):
         """
         Convert string configuration value to boolean.
         """
+        if isinstance(value, bool):
+            return value
+
         value_lower = value.lower().strip()
         accepted_values = ["true", "false", "yes", "no", "0", "1"]
 

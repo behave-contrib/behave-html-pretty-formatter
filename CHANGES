@@ -1,3 +1,8 @@
+behave-html-pretty-formatter 1.16.1
+=================================
+Fixing bug with boolean values in pyproject.toml
+
+
 behave-html-pretty-formatter 1.16
 =================================
 Improve readability.
