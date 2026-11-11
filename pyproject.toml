@@ -4,19 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "behave-html-pretty-formatter"
-version = "1.16.1"
+version = "1.17"
 description = "Pretty HTML Formatter for Behave"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = { file = "LICENSE" }
 authors = [
-  {name = "Michal Odehnal", email = "modehnal@redhat.com"},
-  {name = "Filip Pokryvka", email = "fpokryvk@redhat.com"},
-  {name = "Peter Bittner", email = "django@bittner.it"},
-  {name = "Luca Macavero", email = "luca.macavero@dorbit.space"},
+  { name = "Michal Odehnal", email = "modehnal@redhat.com" },
+  { name = "Filip Pokryvka", email = "fpokryvk@redhat.com" },
+  { name = "Peter Bittner", email = "django@bittner.it" },
+  { name = "Luca Macavero", email = "luca.macavero@dorbit.space" },
 ]
 maintainers = [
-  {name = "Michal Odehnal", email = "modehnal@redhat.com"},
-  {name = "Filip Pokryvka", email = "fpokryvk@redhat.com"},
+  { name = "Michal Odehnal", email = "modehnal@redhat.com" },
+  { name = "Filip Pokryvka", email = "fpokryvk@redhat.com" },
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -36,16 +36,9 @@ classifiers = [
   "Topic :: Software Development :: Testing",
   "Topic :: Software Development :: Testing :: BDD",
 ]
-keywords = [
-  "behave",
-  "formatter",
-]
+keywords = ["behave", "formatter"]
 requires-python = ">=3.6"
-dependencies = [
-  "behave>=1.3.0",
-  "dominate==2.9.0",
-  "markdown",
-]
+dependencies = ["behave>=1.3.0", "dominate==2.9.0", "markdown"]
 
 [project.urls]
 homepage = "https://github.com/behave-contrib/behave-html-pretty-formatter"
@@ -102,12 +95,41 @@ extend-exclude = "behave4cmd0"
 
 [tool.ruff]
 extend-exclude = ["behave4cmd0"]
-extend-select = ["B", "BLE", "C4", "C90", "COM", "DJ", "DTZ", "EM", "G", "I", "N", "PIE", "PL", "PT", "PTH", "R", "S", "SIM", "T10", "TID", "W", "YTT"]
+extend-select = [
+  "B",
+  "BLE",
+  "C4",
+  "C90",
+  "COM",
+  "DJ",
+  "DTZ",
+  "EM",
+  "G",
+  "I",
+  "N",
+  "PIE",
+  "PL",
+  "PT",
+  "PTH",
+  "R",
+  "S",
+  "SIM",
+  "T10",
+  "TID",
+  "W",
+  "YTT",
+]
 extend-ignore = []
 
 [tool.ruff.lint.per-file-ignores]
 "behave_html_pretty_formatter/__init__.py" = ["F401"]
-"behave_html_pretty_formatter/html_pretty.py" = ["DTZ005", "PLR0913", "SIM102", "SIM117", "C901"]
+"behave_html_pretty_formatter/html_pretty.py" = [
+  "DTZ005",
+  "PLR0913",
+  "SIM102",
+  "SIM117",
+  "C901",
+]
 "tests/acceptance/steps/*.py" = ["F821", "S101"]
 "tests/formatter_features/features/steps/*.py" = ["F821", "S101"]
 [tool.setuptools.packages.find]

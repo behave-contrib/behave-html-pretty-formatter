@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 HTML Pretty formatter for behave
 Inspired by https://github.com/Hargne/jest-html-reporter
@@ -7,7 +6,6 @@ Inspired by https://github.com/Hargne/jest-html-reporter
 # pylint: disable=protected-access
 # pylint: disable=too-many-lines
 
-from __future__ import absolute_import
 
 import atexit
 import base64
@@ -375,6 +373,11 @@ class Scenario:
         self.match_id = -1
         self.steps_finished = False
         self.steps_finished_timestamp = None
+
+        # When using behave's <Scenario>.continue_after_failed_step = True logic.
+        # Keep track of present failures. Failing the Scenario on fail presence.
+        self.contains_failure = False
+
         self.steps = []
         self.to_embed = []
 
@@ -487,7 +490,7 @@ class Scenario:
             # Do not include Status.undefined, we want to see that one as is.
             if Status.has_failed(behave_step.status) and not Status.is_undefined(
                 behave_step.status,
-            ):
+            ) or self.contains_failure:
                 self.status = Status.failed
             else:
                 self.status = behave_step.status
@@ -651,6 +654,7 @@ class Step:
             behave_step.status,
         ):
             self.status = Status.failed
+            self.scenario.contains_failure = True
         else:
             self.status = behave_step.status
 
