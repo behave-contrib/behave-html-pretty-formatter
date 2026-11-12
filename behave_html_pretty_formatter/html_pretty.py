@@ -16,6 +16,7 @@ import uuid
 from collections import OrderedDict
 from datetime import datetime
 from pathlib import Path
+from typing import ClassVar
 
 import dominate
 import markdown
@@ -488,9 +489,13 @@ class Scenario:
         if self.is_last_step or (behave_step.status in EXPECTED_STATUSES):
             # Treat any error/hook_error/failure as error, for now there is no need to differentiate.
             # Do not include Status.undefined, we want to see that one as is.
-            if Status.has_failed(behave_step.status) and not Status.is_undefined(
-                behave_step.status,
-            ) or self.contains_failure:
+            if (
+                Status.has_failed(behave_step.status)
+                and not Status.is_undefined(
+                    behave_step.status,
+                )
+                or self.contains_failure
+            ):
                 self.status = Status.failed
             else:
                 self.status = behave_step.status
@@ -1042,7 +1047,7 @@ class Embed:
     """
 
     count = 0
-    uuids = set()
+    uuids: ClassVar[set] = set()
 
     def __init__(
         self,
@@ -1738,10 +1743,10 @@ class PrettyHTMLFormatter(Formatter):
             """
 
             name = "Unknown scenario"
-            effective_tags = []
+            effective_tags: ClassVar[list] = []
             description = ""
             location = None
-            steps = [DummyStep]
+            steps: ClassVar[list] = [DummyStep]
             error_message = None
             status = Status.failed
 

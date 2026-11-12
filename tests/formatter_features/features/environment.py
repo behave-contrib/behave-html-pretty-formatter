@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 This file provides setup for machine environment for our testing pipeline.
 """
