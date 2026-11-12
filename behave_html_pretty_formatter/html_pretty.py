@@ -1812,7 +1812,9 @@ class PrettyHTMLFormatter(Formatter):
         # Generate the head of the html page.
         with document.head:
             # Respect encoding inherited from behave.
-            behave_encoding = self.stream_opener.encoding
+            # Normalize the case: Python 3.6 reports "UTF-8", newer versions
+            # "utf-8". HTML charset labels are case-insensitive.
+            behave_encoding = (self.stream_opener.encoding or "utf-8").lower()
 
             # Set content and http-equiv - taken from the base html formatter.
             meta(
