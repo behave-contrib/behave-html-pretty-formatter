@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 HTML Pretty formatter for behave
 Inspired by https://github.com/Hargne/jest-html-reporter
@@ -7,7 +6,6 @@ Inspired by https://github.com/Hargne/jest-html-reporter
 # pylint: disable=protected-access
 # pylint: disable=too-many-lines
 
-from __future__ import absolute_import
 
 import atexit
 import base64
@@ -18,6 +16,7 @@ import uuid
 from collections import OrderedDict
 from datetime import datetime
 from pathlib import Path
+from typing import ClassVar
 
 import dominate
 import markdown
@@ -375,6 +374,11 @@ class Scenario:
         self.match_id = -1
         self.steps_finished = False
         self.steps_finished_timestamp = None
+
+        # When using behave's <Scenario>.continue_after_failed_step = True logic.
+        # Keep track of present failures. Failing the Scenario on fail presence.
+        self.contains_failure = False
+
         self.steps = []
         self.to_embed = []
 
@@ -485,8 +489,12 @@ class Scenario:
         if self.is_last_step or (behave_step.status in EXPECTED_STATUSES):
             # Treat any error/hook_error/failure as error, for now there is no need to differentiate.
             # Do not include Status.undefined, we want to see that one as is.
-            if Status.has_failed(behave_step.status) and not Status.is_undefined(
-                behave_step.status,
+            if (
+                Status.has_failed(behave_step.status)
+                and not Status.is_undefined(
+                    behave_step.status,
+                )
+                or self.contains_failure
             ):
                 self.status = Status.failed
             else:
@@ -651,6 +659,7 @@ class Step:
             behave_step.status,
         ):
             self.status = Status.failed
+            self.scenario.contains_failure = True
         else:
             self.status = behave_step.status
 
@@ -1038,7 +1047,7 @@ class Embed:
     """
 
     count = 0
-    uuids = set()
+    uuids: ClassVar[set] = set()
 
     def __init__(
         self,
@@ -1734,10 +1743,10 @@ class PrettyHTMLFormatter(Formatter):
             """
 
             name = "Unknown scenario"
-            effective_tags = []
+            effective_tags: ClassVar[list] = []
             description = ""
             location = None
-            steps = [DummyStep]
+            steps: ClassVar[list] = [DummyStep]
             error_message = None
             status = Status.failed
 
@@ -1803,7 +1812,9 @@ class PrettyHTMLFormatter(Formatter):
         # Generate the head of the html page.
         with document.head:
             # Respect encoding inherited from behave.
-            behave_encoding = self.stream_opener.encoding
+            # Normalize the case: Python 3.6 reports "UTF-8", newer versions
+            # "utf-8". HTML charset labels are case-insensitive.
+            behave_encoding = (self.stream_opener.encoding or "utf-8").lower()
 
             # Set content and http-equiv - taken from the base html formatter.
             meta(

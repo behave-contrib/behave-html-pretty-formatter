@@ -30,6 +30,26 @@ jobs:
         - pypy-3.8
         - pypy-3.9
         - pypy-3.10
+        exclude:
+        # ubuntu-latest is 26.04; setup-python has no CPython 3.8/3.9 build for it
+        - platform: ubuntu-latest
+          python-version: '3.8'
+        - platform: ubuntu-latest
+          python-version: '3.9'
+        # virtualenv >=21.14.9 imports stat.IO_REPARSE_TAG_MOUNT_POINT,
+        # which PyPy's Windows stat module lacks
+        - platform: windows-latest
+          python-version: pypy-3.8
+        - platform: windows-latest
+          python-version: pypy-3.9
+        - platform: windows-latest
+          python-version: pypy-3.10
+        # keep legacy CPython covered on a runner that still ships builds
+        include:
+        - platform: ubuntu-24.04
+          python-version: '3.8'
+        - platform: ubuntu-24.04
+          python-version: '3.9'
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4

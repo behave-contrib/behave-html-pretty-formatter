@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Main file where the python code is located for execution via behave.
 """
